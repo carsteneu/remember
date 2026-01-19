@@ -1,0 +1,10 @@
+{
+    "uuid": "remember@thechief",
+    "name": "Window Position Remember",
+    "description": "Remembers window positions across sessions and monitors. Automatically restores window positions and can restart applications with their original command line arguments.",
+    "version": "1.1",
+    "author": "carsteneu",
+    "url": "https://github.com/carsteneu/remember",
+    "cinnamon-version": ["5.0", "5.2", "5.4", "5.6", "5.8", "6.0", "6.2", "6.4"],
+    "external-configuration-app": "settings.py"
+}

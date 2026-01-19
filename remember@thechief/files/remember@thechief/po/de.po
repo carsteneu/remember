@@ -1,0 +1,840 @@
+# German translation for Window Position Remember Extension
+# Copyright (C) 2025
+# This file is distributed under the same license as the Window Position Remember package.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Window Position Remember 1.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-01-14 12:00+0000\n"
+"PO-Revision-Date: 2026-01-14 12:00+0000\n"
+"Last-Translator: \n"
+"Language-Team: German\n"
+"Language: de\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+# Extension messages
+msgid "Extension initialized at"
+msgstr "Erweiterung initialisiert in"
+
+msgid "Applet added to panel."
+msgstr "Applet zur Leiste hinzugefügt."
+
+msgid "Extension enabled"
+msgstr "Erweiterung aktiviert"
+
+msgid "Extension disabled"
+msgstr "Erweiterung deaktiviert"
+
+msgid "Window tracking enabled"
+msgstr "Fenster-Tracking aktiviert"
+
+msgid "Window tracking disabled"
+msgstr "Fenster-Tracking deaktiviert"
+
+msgid "Window Remember"
+msgstr "Fensterposition Merken"
+
+msgid "Saved %d windows"
+msgstr "%d Fenster gespeichert"
+
+msgid "Saved %d window positions"
+msgstr "%d Fensterpositionen gespeichert"
+
+msgid "Restored %d window positions"
+msgstr "%d Fensterpositionen wiederhergestellt"
+
+msgid "Launching %d applications..."
+msgstr "%d Anwendungen werden gestartet..."
+
+msgid "Window Position Remember - Click to open settings"
+msgstr "Fensterposition Merken - Klicken zum Öffnen der Einstellungen"
+
+# Session restore messages
+msgid "Scheduling auto-restore in %dms"
+msgstr "Plane automatische Wiederherstellung in %dms"
+
+msgid "Performing auto-restore..."
+msgstr "Führe automatische Wiederherstellung durch..."
+
+msgid "Auto-restore disabled by preferences, skipping"
+msgstr "Automatische Wiederherstellung in Einstellungen deaktiviert, überspringe"
+
+msgid "Restored positions for %d existing windows"
+msgstr "Positionen für %d existierende Fenster wiederhergestellt"
+
+msgid "Fallback timeout - ending restore phase"
+msgstr "Timeout erreicht - beende Wiederherstellungsphase"
+
+msgid "All apps launched, waiting for positioning to complete..."
+msgstr "Alle Apps gestartet, warte auf Positionierung..."
+
+msgid "Scheduling restore finalization in %dms"
+msgstr "Plane Wiederherstellungsabschluss in %dms"
+
+msgid "Finalizing session restore..."
+msgstr "Schließe Sitzungswiederherstellung ab..."
+
+msgid "Session restore FINALIZED - saves now enabled"
+msgstr "Sitzungswiederherstellung ABGESCHLOSSEN - Speicherung jetzt aktiviert"
+
+msgid "Full save completed - %d windows saved"
+msgstr "Vollständige Speicherung abgeschlossen - %d Fenster gespeichert"
+
+msgid "Force saved all positions"
+msgstr "Alle Positionen zwangsweise gespeichert"
+
+# Launcher messages
+msgid "Launch timeout for %s - entering grace period"
+msgstr "Start-Timeout für %s - trete in Schonfrist ein"
+
+msgid "Window appeared for launched app: %s"
+msgstr "Fenster erschienen für gestartete App: %s"
+
+msgid "Launched %s with PID %d"
+msgstr "%s gestartet mit PID %d"
+
+msgid "Launch queue completed"
+msgstr "Start-Warteschlange abgearbeitet"
+
+msgid "All %d launches completed"
+msgstr "Alle %d Starts abgeschlossen"
+
+msgid "%s crashed early (PID %d, exit %d)"
+msgstr "%s ist früh abgestürzt (PID %d, exit %d)"
+
+msgid "Grace period expired for %s"
+msgstr "Schonfrist abgelaufen für %s"
+
+msgid "Finalized restore, cleaned %d expired expected launches"
+msgstr "Wiederherstellung abgeschlossen, %d abgelaufene erwartete Starts bereinigt"
+
+# Tracker messages
+msgid "Window tracking enabled, tracking %d windows"
+msgstr "Fenster-Tracking aktiviert, verfolge %d Fenster"
+
+msgid "Skipping blacklisted wm_class: %s"
+msgstr "Überspringe blockierte wm_class: %s"
+
+msgid "Skipping blacklisted title: %s"
+msgstr "Überspringe blockierten Titel: %s"
+
+msgid "Now tracking window: %s"
+msgstr "Verfolge jetzt Fenster: %s"
+
+msgid "Window %s untracked (cleanup deferred to periodic save)"
+msgstr "Fenster %s nicht mehr verfolgt (Bereinigung auf periodisches Speichern verschoben)"
+
+msgid "Updated position for %s: %d,%d %dx%d on %s"
+msgstr "Position aktualisiert für %s: %d,%d %dx%d auf %s"
+
+msgid "Monitor configuration changed"
+msgstr "Monitor-Konfiguration geändert"
+
+msgid "Restored position for %s: %d,%d %dx%d on monitor %s"
+msgstr "Position wiederhergestellt für %s: %d,%d %dx%d auf Monitor %s"
+
+msgid "Matched by X11 ID: %s (score=%d)"
+msgstr "Übereinstimmung durch X11-ID: %s (Wertung=%d)"
+
+msgid "Matched by stable sequence: %d (score=%d)"
+msgstr "Übereinstimmung durch stabile Sequenz: %d (Wertung=%d)"
+
+msgid "Matched by exact title: \"%s\" (score=%d)"
+msgstr "Übereinstimmung durch exakten Titel: \"%s\" (Wertung=%d)"
+
+msgid "Best match for %s: score=%d, id=%s"
+msgstr "Beste Übereinstimmung für %s: Wertung=%d, id=%s"
+
+msgid "Close match! Runner-up: score=%d (delta=%d)"
+msgstr "Knappe Übereinstimmung! Zweitplatzierter: Wertung=%d (Differenz=%d)"
+
+msgid "No scored match found, using first unassigned instance for %s"
+msgstr "Keine bewertete Übereinstimmung gefunden, verwende erste nicht zugewiesene Instanz für %s"
+
+msgid "Matched by order (fallback)"
+msgstr "Übereinstimmung durch Reihenfolge (Fallback)"
+
+msgid "Workspace restore: %s -> WS %d (%d available)"
+msgstr "Arbeitsflächen-Wiederherstellung: %s -> AF %d (%d verfügbar)"
+
+msgid "Moved %s from WS %d to WS %d"
+msgstr "%s verschoben von AF %d zu AF %d"
+
+msgid "%s already on correct WS %d"
+msgstr "%s bereits auf korrekter AF %d"
+
+msgid "WARNING: Target workspace %d doesn't exist (only %d available)"
+msgstr "WARNUNG: Ziel-Arbeitsfläche %d existiert nicht (nur %d verfügbar)"
+
+msgid "Maximized window %s"
+msgstr "Fenster %s maximiert"
+
+msgid "Using saved monitor_index %d"
+msgstr "Verwende gespeicherten monitor_index %d"
+
+msgid "Saved monitor_index %d doesn't exist, using primary"
+msgstr "Gespeicherter monitor_index %d existiert nicht, verwende primären"
+
+msgid "Reset all instance assignments (kept IDs for matching)"
+msgstr "Alle Instanz-Zuweisungen zurückgesetzt (IDs für Zuordnung behalten)"
+
+msgid "Removed app %s (no windows open)"
+msgstr "App %s entfernt (keine Fenster geöffnet)"
+
+msgid "Keeping expected instance %s for %s"
+msgstr "Behalte erwartete Instanz %s für %s"
+
+msgid "Cleaned orphaned instance %s (title: \"%s\")"
+msgstr "Verwaiste Instanz %s bereinigt (Titel: \"%s\")"
+
+msgid "Cleanup complete - removed %d excess instances"
+msgstr "Bereinigung abgeschlossen - %d überschüssige Instanzen entfernt"
+
+msgid "Full save - %d windows"
+msgstr "Vollständige Speicherung - %d Fenster"
+
+# Storage messages
+msgid "Loaded %d apps from storage"
+msgstr "%d Apps aus Speicher geladen"
+
+msgid "Failed to load storage"
+msgstr "Laden des Speichers fehlgeschlagen"
+
+msgid "Saved data to storage"
+msgstr "Daten im Speicher gespeichert"
+
+msgid "Failed to save storage"
+msgstr "Speichern fehlgeschlagen"
+
+# Monitor manager messages
+msgid "Monitor configuration: %d monitors"
+msgstr "Monitor-Konfiguration: %d Monitore"
+
+msgid "Found monitor by EDID hash: %s -> index %d"
+msgstr "Monitor gefunden durch EDID-Hash: %s -> Index %d"
+
+msgid "Found monitor by connector+resolution: %s %dx%d -> index %d"
+msgstr "Monitor gefunden durch Anschluss+Auflösung: %s %dx%d -> Index %d"
+
+msgid "Found monitor by layout match: %s (confidence: %.2f)"
+msgstr "Monitor gefunden durch Layout-Übereinstimmung: %s (Zuversicht: %.2f)"
+
+msgid "Monitor layout fingerprint: %s"
+msgstr "Monitor-Layout-Fingerabdruck: %s"
+
+# Progress window messages (Python)
+msgid "Session Restore in Progress"
+msgstr "Sitzungswiederherstellung läuft"
+
+msgid "Restoring your session..."
+msgstr "Stelle deine Sitzung wieder her..."
+
+msgid "Launching applications and restoring window positions."
+msgstr "Starte Anwendungen und stelle Fensterpositionen wieder her."
+
+msgid "Launching:"
+msgstr "Starte:"
+
+msgid "Workspace:"
+msgstr "Arbeitsfläche:"
+
+msgid "Monitor:"
+msgstr "Monitor:"
+
+msgid "Positioning:"
+msgstr "Positioniere:"
+
+msgid "Ready:"
+msgstr "Fertig:"
+
+msgid "Timeout:"
+msgstr "Timeout:"
+
+msgid "Error:"
+msgstr "Fehler:"
+
+msgid "Status:"
+msgstr "Status:"
+
+msgid "Launching..."
+msgstr "Starte..."
+
+msgid "Positioning..."
+msgstr "Positioniere..."
+
+msgid "Ready"
+msgstr "Fertig"
+
+msgid "Timeout"
+msgstr "Timeout"
+
+msgid "Error"
+msgstr "Fehler"
+
+# Settings dialog messages (Python)
+msgid "Window Position Remember - Settings"
+msgstr "Fensterposition Merken - Einstellungen"
+
+msgid "Overview"
+msgstr "Übersicht"
+
+msgid "Windows"
+msgstr "Fenster"
+
+msgid "Apps & Session"
+msgstr "Apps & Sitzung"
+
+msgid "Preferences"
+msgstr "Einstellungen"
+
+msgid "Active Windows"
+msgstr "Aktive Fenster"
+
+msgid "Tracked Apps"
+msgstr "Verfolgte Apps"
+
+msgid "Active"
+msgstr "Aktiv"
+
+msgid "Saved Instances"
+msgstr "Gespeicherte Instanzen"
+
+msgid "Monitors"
+msgstr "Monitore"
+
+msgid "Status"
+msgstr "Status"
+
+msgid "Extension Active"
+msgstr "Extension Aktiv"
+
+msgid "Applet Installed"
+msgstr "Applet Installiert"
+
+msgid "Applet Not Installed"
+msgstr "Applet Nicht Installiert"
+
+msgid "Install"
+msgstr "Installieren"
+
+msgid "Manage"
+msgstr "Verwalten"
+
+msgid "Quick Actions"
+msgstr "Schnellaktionen"
+
+msgid "Save All"
+msgstr "Alle speichern"
+
+msgid "Restore All"
+msgstr "Alle wiederherstellen"
+
+msgid "Launch Session"
+msgstr "Sitzung starten"
+
+msgid "All Windows"
+msgstr "Alle Fenster"
+
+msgid "Application"
+msgstr "Anwendung"
+
+msgid "Title"
+msgstr "Titel"
+
+msgid "Workspace"
+msgstr "Arbeitsfläche"
+
+msgid "Position"
+msgstr "Position"
+
+msgid "Monitor"
+msgstr "Monitor"
+
+msgid "Close"
+msgstr "Schließen"
+
+msgid "Autostart"
+msgstr "Autostart"
+
+msgid "Blacklist"
+msgstr "Sperrliste"
+
+msgid "Session Restore"
+msgstr "Sitzungswiederherstellung"
+
+msgid "Enable auto-restore on login"
+msgstr "Automatische Wiederherstellung beim Anmelden aktivieren"
+
+msgid "Tracking Behavior"
+msgstr "Tracking-Verhalten"
+
+msgid "Track all workspaces"
+msgstr "Alle Arbeitsflächen verfolgen"
+
+msgid "Track dialog windows"
+msgstr "Dialogfenster verfolgen"
+
+msgid "Window States"
+msgstr "Fensterzustände"
+
+msgid "Remember sticky (on all workspaces)"
+msgstr "Sticky merken (auf allen Arbeitsflächen)"
+
+msgid "Remember shaded (rolled up)"
+msgstr "Eingeklappt merken (aufgerollt)"
+
+msgid "Remember always-on-top"
+msgstr "Immer-im-Vordergrund merken"
+
+msgid "Remember fullscreen"
+msgstr "Vollbild merken"
+
+msgid "Restore minimized state"
+msgstr "Minimierten Zustand wiederherstellen"
+
+msgid "Position Behavior"
+msgstr "Positions-Verhalten"
+
+msgid "Clamp windows to screen bounds"
+msgstr "Fenster auf Bildschirmgrenzen beschränken"
+
+msgid "Restore workspace assignments"
+msgstr "Arbeitsflächen-Zuweisungen wiederherstellen"
+
+msgid "Browser Session Restore"
+msgstr "Browser-Sitzungswiederherstellung"
+
+msgid "Use Brave session restore"
+msgstr "Brave-Sitzungswiederherstellung verwenden"
+
+msgid "Use Chrome session restore"
+msgstr "Chrome-Sitzungswiederherstellung verwenden"
+
+msgid "Use Firefox session restore"
+msgstr "Firefox-Sitzungswiederherstellung verwenden"
+
+msgid "Text Editor Session Restore"
+msgstr "Texteditor-Sitzungswiederherstellung"
+
+msgid "Use Kate session restore"
+msgstr "Kate-Sitzungswiederherstellung verwenden"
+
+msgid "IDE Session Restore"
+msgstr "IDE-Sitzungswiederherstellung"
+
+msgid "Use JetBrains project restore"
+msgstr "JetBrains-Projektwiederherstell verwenden"
+
+msgid "Save"
+msgstr "Speichern"
+
+msgid "Cancel"
+msgstr "Abbrechen"
+
+msgid "Apply"
+msgstr "Anwenden"
+
+msgid "Refresh"
+msgstr "Aktualisieren"
+
+msgid "Delete"
+msgstr "Löschen"
+
+msgid "Edit"
+msgstr "Bearbeiten"
+
+msgid "Settings saved successfully"
+msgstr "Einstellungen erfolgreich gespeichert"
+
+msgid "Failed to save settings"
+msgstr "Speichern der Einstellungen fehlgeschlagen"
+
+# Windows Tab
+msgid "By Application"
+msgstr "Nach Anwendung"
+
+msgid "By Workspace"
+msgstr "Nach Arbeitsfläche"
+
+msgid "Filter..."
+msgstr "Filtern..."
+
+msgid "Expand All"
+msgstr "Alle aufklappen"
+
+msgid "Collapse All"
+msgstr "Alle zuklappen"
+
+msgid "Delete Selected"
+msgstr "Auswahl löschen"
+
+msgid "Application / Window"
+msgstr "Anwendung / Fenster"
+
+msgid "WS"
+msgstr "AF"
+
+msgid "States"
+msgstr "Zustände"
+
+msgid "Untitled"
+msgstr "Ohne Titel"
+
+msgid "Workspace {0} ({1} windows)"
+msgstr "Arbeitsfläche {0} ({1} Fenster)"
+
+msgid "  Monitor {0} ({1} windows)"
+msgstr "  Monitor {0} ({1} Fenster)"
+
+msgid "Select a window to view details"
+msgstr "Fenster auswählen, um Details anzuzeigen"
+
+msgid "Window Details"
+msgstr "Fenster-Details"
+
+msgid "APPLICATION"
+msgstr "ANWENDUNG"
+
+msgid "WORKSPACE"
+msgstr "ARBEITSFLÄCHE"
+
+msgid "TITLE"
+msgstr "TITEL"
+
+msgid "MONITOR INDEX"
+msgstr "MONITOR-INDEX"
+
+msgid "X11 WINDOW ID"
+msgstr "X11-FENSTER-ID"
+
+msgid "STABLE SEQ"
+msgstr "STABILE SEQ"
+
+msgid "GEOMETRY"
+msgstr "GEOMETRIE"
+
+msgid "GEOMETRY %"
+msgstr "GEOMETRIE %"
+
+msgid "STATES"
+msgstr "ZUSTÄNDE"
+
+msgid "Maximized"
+msgstr "Maximiert"
+
+msgid "Fullscreen"
+msgstr "Vollbild"
+
+msgid "Sticky"
+msgstr "Auf allen Arbeitsflächen"
+
+msgid "Always on Top"
+msgstr "Immer im Vordergrund"
+
+msgid "Shaded"
+msgstr "Eingeklappt"
+
+msgid "Minimized"
+msgstr "Minimiert"
+
+msgid "Delete all saved data for '{0}'?"
+msgstr "Alle gespeicherten Daten für '{0}' löschen?"
+
+msgid "Delete this window instance?"
+msgstr "Diese Fensterinstanz löschen?"
+
+# Apps & Session Tab
+msgid "App Session Restore Settings"
+msgstr "App Sitzungswiederherstellung Einstellungen"
+
+msgid "Configure apps to restore their windows/tabs automatically on startup."
+msgstr "Apps konfigurieren, um Fenster/Tabs beim Start automatisch wiederherzustellen."
+
+msgid "App Session Restore"
+msgstr "App Sitzungswiederherstellung"
+
+msgid "Launch Flags"
+msgstr "Start-Parameter"
+
+msgid "Configure command-line flags used when launching apps via Session Restore."
+msgstr "Kommandozeilen-Parameter konfigurieren, die beim Session-Restore verwendet werden."
+
+msgid "Use --restore-last-session flag for Brave/Chrome"
+msgstr "--restore-last-session Parameter für Brave/Chrome verwenden"
+
+msgid "Firefox Session Restore"
+msgstr "Firefox Sitzungswiederherstellung"
+
+msgid "Use --restore-session flag for Firefox"
+msgstr "--restore-session Parameter für Firefox verwenden"
+
+msgid "Kate Session Restore"
+msgstr "Kate Sitzungswiederherstellung"
+
+msgid "Use -s default flag for Kate editor"
+msgstr "-s default Parameter für Kate Editor verwenden"
+
+msgid "JetBrains Restore"
+msgstr "JetBrains Wiederherstellung"
+
+msgid "Allow JetBrains IDEs to restore (automatic)"
+msgstr "JetBrains IDEs Wiederherstellung erlauben (automatisch)"
+
+msgid "Visual Studio Code"
+msgstr "Visual Studio Code"
+
+msgid "Restore all windows with their tabs"
+msgstr "Alle Fenster mit ihren Tabs wiederherstellen"
+
+msgid "Brave Browser"
+msgstr "Brave Browser"
+
+msgid "Continue where you left off"
+msgstr "Dort weitermachen, wo du aufgehört hast"
+
+msgid "Firefox"
+msgstr "Firefox"
+
+msgid "Restore previous session on startup"
+msgstr "Vorherige Sitzung beim Start wiederherstellen"
+
+msgid "Google Chrome"
+msgstr "Google Chrome"
+
+msgid "Thunderbird"
+msgstr "Thunderbird"
+
+msgid "Auto-restores state (always enabled)"
+msgstr "Stellt Status automatisch wieder her (immer aktiviert)"
+
+# Preferences Tab
+msgid "Extension Preferences"
+msgstr "Erweiterungs-Einstellungen"
+
+msgid "Configure how windows are tracked and restored."
+msgstr "Konfigurieren, wie Fenster verfolgt und wiederhergestellt werden."
+
+# Footer buttons
+msgid "Data: {0}"
+msgstr "Daten: {0}"
+
+# Dialog messages - app_config.py
+msgid "VS Code configured!"
+msgstr "VS Code konfiguriert!"
+
+msgid "VS Code will now restore all windows on startup."
+msgstr "VS Code wird nun alle Fenster beim Start wiederherstellen."
+
+
+msgid "Failed to configure VS Code: {0}"
+msgstr "VS Code Konfiguration fehlgeschlagen: {0}"
+
+msgid "Configure Brave Browser"
+msgstr "Brave Browser konfigurieren"
+
+msgid "Brave settings cannot be changed externally.\n\nPlease configure manually:\n1. Open Brave\n2. Go to Settings (brave://settings/)\n3. Find 'On startup'\n4. Select 'Continue where you left off'"
+msgstr "Brave Einstellungen können nicht extern geändert werden.\n\nBitte manuell konfigurieren:\n1. Brave öffnen\n2. Zu Einstellungen gehen (brave://settings/)\n3. 'Beim Start' finden\n4. 'Dort weitermachen, wo du aufgehört hast' wählen"
+
+msgid "Firefox not found"
+msgstr "Firefox nicht gefunden"
+
+msgid "Firefox profile directory not found."
+msgstr "Firefox Profilverzeichnis nicht gefunden."
+
+msgid "Already configured"
+msgstr "Bereits konfiguriert"
+
+msgid "Firefox session restore is already enabled."
+msgstr "Firefox Sitzungswiederherstellung ist bereits aktiviert."
+
+msgid "Firefox configured!"
+msgstr "Firefox konfiguriert!"
+
+msgid "Firefox will now restore previous session.\nRestart Firefox for changes to take effect."
+msgstr "Firefox wird nun die vorherige Sitzung wiederherstellen.\nFirefox neu starten, damit die Änderungen wirksam werden."
+
+msgid "Failed to configure Firefox: {0}"
+msgstr "Firefox Konfiguration fehlgeschlagen: {0}"
+
+msgid "Firefox profile not found"
+msgstr "Firefox Profil nicht gefunden"
+
+msgid "Could not find Firefox default profile."
+msgstr "Firefox Standard-Profil konnte nicht gefunden werden."
+
+msgid "Chrome not found"
+msgstr "Chrome nicht gefunden"
+
+msgid "Chrome preferences file not found."
+msgstr "Chrome Einstellungsdatei nicht gefunden."
+
+msgid "Chrome session restore is already enabled."
+msgstr "Chrome Sitzungswiederherstellung ist bereits aktiviert."
+
+msgid "Chrome configured!"
+msgstr "Chrome konfiguriert!"
+
+msgid "Chrome will now restore previous session on startup.\n\nNote: Chrome must be fully closed for this to take effect."
+msgstr "Chrome wird nun die vorherige Sitzung beim Start wiederherstellen.\n\nHinweis: Chrome muss vollständig geschlossen sein, damit dies wirksam wird."
+
+msgid "Failed to configure Chrome: {0}"
+msgstr "Chrome Konfiguration fehlgeschlagen: {0}"
+
+msgid "Manual Action Required"
+msgstr "Manuelle Aktion erforderlich"
+
+msgid "To disable session restore, please open the app's settings and change it manually."
+msgstr "Um die Sitzungswiederherstellung zu deaktivieren, öffnen Sie bitte die App-Einstellungen und ändern Sie diese manuell."
+
+# Dialog messages - overview.py
+msgid "Save command sent to extension."
+msgstr "Speicher-Befehl an Extension gesendet."
+
+msgid "Restore command sent to extension."
+msgstr "Wiederherstellungs-Befehl an Extension gesendet."
+
+msgid "Clear ALL saved window positions?\n\nThis cannot be undone!"
+msgstr "ALLE gespeicherten Fensterpositionen löschen?\n\nDies kann nicht rückgängig gemacht werden!"
+
+msgid "Applet source not found.\n\nLooked in:\n{0}"
+msgstr "Applet-Quellcode nicht gefunden.\n\nGesucht in:\n{0}"
+
+
+msgid "Applet installed successfully!\n\nTo add it to your panel:\n1. Right-click on your panel\n2. Select 'Applets'\n3. Find 'Window Remember Control'\n4. Click '+' to add it"
+msgstr "Applet erfolgreich installiert!\n\nUm es zur Leiste hinzuzufügen:\n1. Rechtsklick auf die Leiste\n2. 'Applets' auswählen\n3. 'Window Remember Control' finden\n4. '+' klicken zum Hinzufügen"
+
+msgid "Failed to install applet:\n{0}"
+msgstr "Applet-Installation fehlgeschlagen:\n{0}"
+
+# utils.py
+msgid "No position"
+msgstr "Keine Position"
+
+# windows.py
+msgid "COMMAND"
+msgstr "BEFEHL"
+
+msgid "Close Window"
+msgstr "Fenster schließen"
+
+msgid "Cannot close window"
+msgstr "Fenster kann nicht geschlossen werden"
+
+msgid "No X11 Window ID available for this window."
+msgstr "Keine X11-Fenster-ID für dieses Fenster verfügbar."
+
+msgid "Close window '{0}'?"
+msgstr "Fenster '{0}' schließen?"
+
+msgid "This will gracefully close the window. Unsaved work may be lost."
+msgstr "Das Fenster wird ordnungsgemäß geschlossen. Ungespeicherte Arbeit kann verloren gehen."
+
+msgid "wmctrl not found"
+msgstr "wmctrl nicht gefunden"
+
+msgid "Please install wmctrl: sudo apt install wmctrl"
+msgstr "Bitte wmctrl installieren: sudo apt install wmctrl"
+
+msgid "Error closing window"
+msgstr "Fehler beim Schließen des Fensters"
+
+# apps.py
+msgid "Open App Settings"
+msgstr "App-Einstellungen öffnen"
+
+
+# progress_window.py
+msgid "Program"
+msgstr "Programm"
+
+msgid "Window"
+msgstr "Fenster"
+
+msgid "Size"
+msgstr "Größe"
+
+msgid "Show this window on startup"
+msgstr "Dieses Fenster beim Start anzeigen"
+
+# progress_window.py - Status text
+msgid "Scheduled"
+msgstr "Geplant"
+
+msgid "Positioning"
+msgstr "Positioniert"
+
+# Plugin Configuration Dialog
+msgid "Plugin Configuration"
+msgstr "Plugin-Konfiguration"
+
+msgid "Configure plugin settings. Click 'Edit' to modify values."
+msgstr "Plugin-Einstellungen konfigurieren. Klicken Sie auf 'Bearbeiten', um Werte zu ändern."
+
+msgid "Edit Settings"
+msgstr "Einstellungen bearbeiten"
+
+msgid "Allgemeine Informationen"
+msgstr "Allgemeine Informationen"
+
+msgid "Anzeigename"
+msgstr "Anzeigename"
+
+msgid "Beschreibung"
+msgstr "Beschreibung"
+
+msgid "Fensterklassen"
+msgstr "Fensterklassen"
+
+msgid "Fensterklassen-Namen (komma-getrennt)"
+msgstr "Fensterklassen-Namen (komma-getrennt)"
+
+msgid "Start-Konfiguration"
+msgstr "Start-Konfiguration"
+
+msgid "Ausführbare Dateien"
+msgstr "Ausführbare Dateien"
+
+msgid "Programmpfade (komma-getrennt)"
+msgstr "Programmpfade (komma-getrennt)"
+
+msgid "Standard-Flags"
+msgstr "Standard-Flags"
+
+msgid "Standard Kommandozeilen-Flags (komma-getrennt)"
+msgstr "Standard Kommandozeilen-Flags (komma-getrennt)"
+
+msgid "Bedingte Flags wenn aktiviert"
+msgstr "Bedingte Flags wenn aktiviert"
+
+msgid "Funktionen"
+msgstr "Funktionen"
+
+msgid "Einzelinstanz"
+msgstr "Einzelinstanz"
+
+msgid "Automatische Wiederherstellung"
+msgstr "Automatische Wiederherstellung"
+
+msgid "Timeout (ms)"
+msgstr "Timeout (ms)"
+
+msgid "Wartezeit in Millisekunden"
+msgstr "Wartezeit in Millisekunden"
+
+msgid "Kulanzzeit (ms)"
+msgstr "Kulanzzeit (ms)"
+
+msgid "Zusätzliche Wartezeit in Millisekunden"
+msgstr "Zusätzliche Wartezeit in Millisekunden"
+
+msgid "Saved"
+msgstr "Gespeichert"
+
+msgid "Plugin configuration saved. Restart Cinnamon to apply changes."
+msgstr "Plugin-Konfiguration gespeichert. Starten Sie Cinnamon neu, um die Änderungen anzuwenden."
+
+msgid "Failed to save plugin configuration."
+msgstr "Plugin-Konfiguration konnte nicht gespeichert werden."

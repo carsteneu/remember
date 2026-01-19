@@ -1,0 +1,120 @@
+# Czech translation for Window Position Remember Extension
+# Copyright (C) 2025
+# This file is distributed under the same license as the Window Position Remember package.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Window Position Remember 1.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-01-17 12:00+0000\n"
+"PO-Revision-Date: 2026-01-17 12:00+0000\n"
+"Last-Translator: \n"
+"Language-Team: Czech\n"
+"Language: cs\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+# Plugin Configuration Dialog
+msgid "Plugin Configuration"
+msgstr "Konfigurace Zásuvného Modulu"
+
+msgid "Configure plugin settings. Click 'Edit' to modify values."
+msgstr "Nakonfigurujte nastavení zásuvného modulu. Klikněte na 'Upravit' pro změnu hodnot."
+
+msgid "Edit Settings"
+msgstr "Upravit Nastavení"
+
+msgid "Allgemeine Informationen"
+msgstr "Obecné Informace"
+
+msgid "Anzeigename"
+msgstr "Zobrazované Jméno"
+
+msgid "Beschreibung"
+msgstr "Popis"
+
+msgid "Fensterklassen"
+msgstr "Třídy Oken"
+
+msgid "Fensterklassen-Namen (komma-getrennt)"
+msgstr "Názvy tříd oken (oddělené čárkami)"
+
+msgid "Start-Konfiguration"
+msgstr "Konfigurace Spuštění"
+
+msgid "Ausführbare Dateien"
+msgstr "Spustitelné Soubory"
+
+msgid "Programmpfade (komma-getrennt)"
+msgstr "Cesty k programům (oddělené čárkami)"
+
+msgid "Standard-Flags"
+msgstr "Výchozí Příznaky"
+
+msgid "Standard Kommandozeilen-Flags (komma-getrennt)"
+msgstr "Výchozí příznaky příkazového řádku (oddělené čárkami)"
+
+msgid "Bedingte Flags wenn aktiviert"
+msgstr "Podmíněné příznaky když aktivováno"
+
+msgid "Funktionen"
+msgstr "Funkce"
+
+msgid "Einzelinstanz"
+msgstr "Jediná Instance"
+
+msgid "Automatische Wiederherstellung"
+msgstr "Automatické Obnovení"
+
+msgid "Timeout (ms)"
+msgstr "Časový Limit (ms)"
+
+msgid "Wartezeit in Millisekunden"
+msgstr "Čekací doba v milisekundách"
+
+msgid "Kulanzzeit (ms)"
+msgstr "Toleranční Období (ms)"
+
+msgid "Zusätzliche Wartezeit in Millisekunden"
+msgstr "Dodatečná čekací doba v milisekundách"
+
+msgid "Saved"
+msgstr "Uloženo"
+
+msgid "Plugin configuration saved. Restart Cinnamon to apply changes."
+msgstr "Konfigurace zásuvného modulu uložena. Restartujte Cinnamon pro aplikaci změn."
+
+msgid "Failed to save plugin configuration."
+msgstr "Uložení konfigurace zásuvného modulu se nezdařilo."
+
+msgid "Cancel"
+msgstr "Zrušit"
+
+msgid "Save"
+msgstr "Uložit"
+
+# Close Window Button (windows.py)
+msgid "Close Window"
+msgstr "Zavřít okno"
+
+msgid "Cannot close window"
+msgstr "Nelze zavřít okno"
+
+msgid "No X11 Window ID available for this window."
+msgstr "Pro toto okno není k dispozici žádné ID okna X11."
+
+msgid "Close window '{0}'?"
+msgstr "Zavřít okno '{0}'?"
+
+msgid "This will gracefully close the window. Unsaved work may be lost."
+msgstr "Okno bude korektně zavřeno. Neuložená práce může být ztracena."
+
+msgid "wmctrl not found"
+msgstr "wmctrl nenalezen"
+
+msgid "Please install wmctrl: sudo apt install wmctrl"
+msgstr "Nainstalujte wmctrl: sudo apt install wmctrl"
+
+msgid "Error closing window"
+msgstr "Chyba při zavírání okna"

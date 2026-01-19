@@ -1,0 +1,43 @@
+{
+  "name": "jetbrains",
+  "displayName": "JetBrains IDEs",
+  "version": "1.0.0",
+  "description": "IntelliJ, PyCharm, WebStorm, PhpStorm with automatic project restore",
+  "wmClass": [
+    "jetbrains-idea", "jetbrains-idea-ce",
+    "jetbrains-pycharm", "jetbrains-pycharm-ce",
+    "jetbrains-webstorm",
+    "jetbrains-phpstorm",
+    "jetbrains-clion",
+    "jetbrains-goland",
+    "jetbrains-rider",
+    "jetbrains-rubymine",
+    "jetbrains-datagrip"
+  ],
+  "type": "ide",
+  "handler": "index.js",
+
+  "settings": {
+    "autoRestore": {
+      "type": "app_config",
+      "label": "Auto Restore",
+      "description": "JetBrains IDEs automatically restore projects (always enabled)",
+      "check": {
+        "type": "always_true"
+      }
+    }
+  },
+
+  "launch": {
+    "executables": [],
+    "flags": [],
+    "conditionalFlags": {}
+  },
+
+  "features": {
+    "isSingleInstance": true,
+    "timeout": 120000,
+    "gracePeriod": 60000,
+    "autoRestore": true
+  }
+}

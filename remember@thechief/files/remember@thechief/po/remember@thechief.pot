@@ -1,0 +1,460 @@
+# Translation template for Window Position Remember Extension
+# Copyright (C) 2025
+# This file is distributed under the same license as the Window Position Remember package.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Window Position Remember 1.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-01-14 12:00+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+# Extension messages
+msgid "Extension initialized at"
+msgstr ""
+
+msgid "Applet added to panel."
+msgstr ""
+
+msgid "Extension enabled"
+msgstr ""
+
+msgid "Extension disabled"
+msgstr ""
+
+msgid "Window tracking enabled"
+msgstr ""
+
+msgid "Window tracking disabled"
+msgstr ""
+
+msgid "Window Remember"
+msgstr ""
+
+msgid "Saved %d windows"
+msgstr ""
+
+msgid "Saved %d window positions"
+msgstr ""
+
+msgid "Restored %d window positions"
+msgstr ""
+
+msgid "Launching %d applications..."
+msgstr ""
+
+msgid "Window Position Remember - Click to open settings"
+msgstr ""
+
+# Session restore messages
+msgid "Scheduling auto-restore in %dms"
+msgstr ""
+
+msgid "Performing auto-restore..."
+msgstr ""
+
+msgid "Auto-restore disabled by preferences, skipping"
+msgstr ""
+
+msgid "Restored positions for %d existing windows"
+msgstr ""
+
+msgid "Fallback timeout - ending restore phase"
+msgstr ""
+
+msgid "All apps launched, waiting for positioning to complete..."
+msgstr ""
+
+msgid "Scheduling restore finalization in %dms"
+msgstr ""
+
+msgid "Finalizing session restore..."
+msgstr ""
+
+msgid "Session restore FINALIZED - saves now enabled"
+msgstr ""
+
+msgid "Full save completed - %d windows saved"
+msgstr ""
+
+msgid "Force saved all positions"
+msgstr ""
+
+msgid "Restored %d window positions"
+msgstr ""
+
+# Launcher messages
+msgid "Launch timeout for %s - entering grace period"
+msgstr ""
+
+msgid "Window appeared for launched app: %s"
+msgstr ""
+
+msgid "Launched %s with PID %d"
+msgstr ""
+
+msgid "Launch queue completed"
+msgstr ""
+
+msgid "All %d launches completed"
+msgstr ""
+
+msgid "%s crashed early (PID %d, exit %d)"
+msgstr ""
+
+msgid "Grace period expired for %s"
+msgstr ""
+
+msgid "Finalized restore, cleaned %d expired expected launches"
+msgstr ""
+
+# Tracker messages
+msgid "Window tracking enabled, tracking %d windows"
+msgstr ""
+
+msgid "Window tracking disabled"
+msgstr ""
+
+msgid "Skipping blacklisted wm_class: %s"
+msgstr ""
+
+msgid "Skipping blacklisted title: %s"
+msgstr ""
+
+msgid "Now tracking window: %s"
+msgstr ""
+
+msgid "Window %s untracked (cleanup deferred to periodic save)"
+msgstr ""
+
+msgid "Updated position for %s: %d,%d %dx%d on %s"
+msgstr ""
+
+msgid "Monitor configuration changed"
+msgstr ""
+
+msgid "Restored position for %s: %d,%d %dx%d on monitor %s"
+msgstr ""
+
+msgid "Matched by X11 ID: %s (score=%d)"
+msgstr ""
+
+msgid "Matched by stable sequence: %d (score=%d)"
+msgstr ""
+
+msgid "Matched by exact title: \"%s\" (score=%d)"
+msgstr ""
+
+msgid "Best match for %s: score=%d, id=%s"
+msgstr ""
+
+msgid "Close match! Runner-up: score=%d (delta=%d)"
+msgstr ""
+
+msgid "No scored match found, using first unassigned instance for %s"
+msgstr ""
+
+msgid "Matched by order (fallback)"
+msgstr ""
+
+msgid "Workspace restore: %s -> WS %d (%d available)"
+msgstr ""
+
+msgid "Moved %s from WS %d to WS %d"
+msgstr ""
+
+msgid "%s already on correct WS %d"
+msgstr ""
+
+msgid "WARNING: Target workspace %d doesn't exist (only %d available)"
+msgstr ""
+
+msgid "Maximized window %s"
+msgstr ""
+
+msgid "Using saved monitor_index %d"
+msgstr ""
+
+msgid "Saved monitor_index %d doesn't exist, using primary"
+msgstr ""
+
+msgid "Reset all instance assignments (kept IDs for matching)"
+msgstr ""
+
+msgid "Removed app %s (no windows open)"
+msgstr ""
+
+msgid "Keeping expected instance %s for %s"
+msgstr ""
+
+msgid "Cleaned orphaned instance %s (title: \"%s\")"
+msgstr ""
+
+msgid "Cleanup complete - removed %d excess instances"
+msgstr ""
+
+msgid "Full save - %d windows"
+msgstr ""
+
+# Storage messages
+msgid "Loaded %d apps from storage"
+msgstr ""
+
+msgid "Failed to load storage"
+msgstr ""
+
+msgid "Saved data to storage"
+msgstr ""
+
+msgid "Failed to save storage"
+msgstr ""
+
+# Monitor manager messages
+msgid "Monitor configuration: %d monitors"
+msgstr ""
+
+msgid "Found monitor by EDID hash: %s -> index %d"
+msgstr ""
+
+msgid "Found monitor by connector+resolution: %s %dx%d -> index %d"
+msgstr ""
+
+msgid "Found monitor by layout match: %s (confidence: %.2f)"
+msgstr ""
+
+msgid "Monitor layout fingerprint: %s"
+msgstr ""
+
+# Progress window messages (Python)
+msgid "Session Restore in Progress"
+msgstr ""
+
+msgid "Restoring your session..."
+msgstr ""
+
+msgid "Launching applications and restoring window positions."
+msgstr ""
+
+msgid "Launching:"
+msgstr ""
+
+msgid "Workspace:"
+msgstr ""
+
+msgid "Monitor:"
+msgstr ""
+
+msgid "Positioning:"
+msgstr ""
+
+msgid "Ready:"
+msgstr ""
+
+msgid "Timeout:"
+msgstr ""
+
+msgid "Error:"
+msgstr ""
+
+msgid "Status:"
+msgstr ""
+
+msgid "Launching..."
+msgstr ""
+
+msgid "Positioning..."
+msgstr ""
+
+msgid "Ready"
+msgstr ""
+
+msgid "Timeout"
+msgstr ""
+
+msgid "Error"
+msgstr ""
+
+# Settings dialog messages (Python)
+msgid "Window Position Remember - Settings"
+msgstr ""
+
+msgid "Overview"
+msgstr ""
+
+msgid "Windows"
+msgstr ""
+
+msgid "Apps & Session"
+msgstr ""
+
+msgid "Preferences"
+msgstr ""
+
+msgid "Active Windows"
+msgstr ""
+
+msgid "Active"
+msgstr ""
+
+msgid "Tracked Apps"
+msgstr ""
+
+msgid "Saved Instances"
+msgstr ""
+
+msgid "Monitors"
+msgstr ""
+
+msgid "Status"
+msgstr ""
+
+msgid "Extension Active"
+msgstr ""
+
+msgid "Applet Installed"
+msgstr ""
+
+msgid "Applet Not Installed"
+msgstr ""
+
+msgid "Install"
+msgstr ""
+
+msgid "Manage"
+msgstr ""
+
+msgid "Quick Actions"
+msgstr ""
+
+msgid "Save All"
+msgstr ""
+
+msgid "Restore All"
+msgstr ""
+
+msgid "Launch Session"
+msgstr ""
+
+msgid "All Windows"
+msgstr ""
+
+msgid "Application"
+msgstr ""
+
+msgid "Title"
+msgstr ""
+
+msgid "Workspace"
+msgstr ""
+
+msgid "Position"
+msgstr ""
+
+msgid "Monitor"
+msgstr ""
+
+msgid "Close"
+msgstr ""
+
+msgid "Autostart"
+msgstr ""
+
+msgid "Blacklist"
+msgstr ""
+
+msgid "Session Restore"
+msgstr ""
+
+msgid "Enable auto-restore on login"
+msgstr ""
+
+msgid "Tracking Behavior"
+msgstr ""
+
+msgid "Track all workspaces"
+msgstr ""
+
+msgid "Track dialog windows"
+msgstr ""
+
+msgid "Window States"
+msgstr ""
+
+msgid "Remember sticky (on all workspaces)"
+msgstr ""
+
+msgid "Remember shaded (rolled up)"
+msgstr ""
+
+msgid "Remember always-on-top"
+msgstr ""
+
+msgid "Remember fullscreen"
+msgstr ""
+
+msgid "Restore minimized state"
+msgstr ""
+
+msgid "Position Behavior"
+msgstr ""
+
+msgid "Clamp windows to screen bounds"
+msgstr ""
+
+msgid "Restore workspace assignments"
+msgstr ""
+
+msgid "Browser Session Restore"
+msgstr ""
+
+msgid "Use Brave session restore"
+msgstr ""
+
+msgid "Use Chrome session restore"
+msgstr ""
+
+msgid "Use Firefox session restore"
+msgstr ""
+
+msgid "Text Editor Session Restore"
+msgstr ""
+
+msgid "Use Kate session restore"
+msgstr ""
+
+msgid "IDE Session Restore"
+msgstr ""
+
+msgid "Use JetBrains project restore"
+msgstr ""
+
+msgid "Save"
+msgstr ""
+
+msgid "Cancel"
+msgstr ""
+
+msgid "Apply"
+msgstr ""
+
+msgid "Refresh"
+msgstr ""
+
+msgid "Delete"
+msgstr ""
+
+msgid "Edit"
+msgstr ""
+
+msgid "Settings saved successfully"
+msgstr ""
+
+msgid "Failed to save settings"
+msgstr ""

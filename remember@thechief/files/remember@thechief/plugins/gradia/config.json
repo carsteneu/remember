@@ -1,0 +1,20 @@
+{
+  "name": "gradia",
+  "displayName": "Gradia",
+  "version": "1.0.0",
+  "description": "Screenshot annotation tool (Flatpak)",
+  "wmClass": ["gradia", "Gradia", "gradia.gradia"],
+  "type": "screenshot-tool",
+
+  "launch": {
+    "executables": ["flatpak"],
+    "flags": ["run", "be.alexandervanhee.gradia"],
+    "conditionalFlags": {}
+  },
+
+  "features": {
+    "isSingleInstance": true,
+    "timeout": 30000,
+    "gracePeriod": 15000
+  }
+}

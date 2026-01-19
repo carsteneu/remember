@@ -1,0 +1,37 @@
+{
+  "name": "thunderbird",
+  "displayName": "Thunderbird",
+  "version": "1.0.0",
+  "description": "Mail client with profile detection from window title",
+  "wmClass": ["thunderbird", "Thunderbird", "thunderbird-esr", "Mail"],
+  "type": "mail-client",
+  "handler": "index.js",
+
+  "settings": {
+    "autoRestore": {
+      "type": "app_config",
+      "label": "Auto Restore",
+      "description": "Thunderbird automatically restores its state (always enabled)",
+      "check": {
+        "type": "always_true"
+      }
+    }
+  },
+
+  "launch": {
+    "executables": ["thunderbird", "thunderbird-esr"],
+    "flags": [],
+    "conditionalFlags": {}
+  },
+
+  "features": {
+    "isSingleInstance": false,
+    "timeout": 120000,
+    "gracePeriod": 60000,
+    "needsTitleParsing": true
+  },
+
+  "configPaths": {
+    "profilesIni": ".thunderbird/profiles.ini"
+  }
+}

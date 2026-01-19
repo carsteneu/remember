@@ -1,0 +1,49 @@
+{
+    "layout": {
+        "type": "layout",
+        "pages": ["appearance"],
+        "appearance": {
+            "type": "page",
+            "title": "Appearance",
+            "sections": ["panel", "menu"]
+        },
+        "panel": {
+            "type": "section",
+            "title": "Panel Display",
+            "keys": ["show-count", "symbolic-icon"]
+        },
+        "menu": {
+            "type": "section",
+            "title": "Menu Options",
+            "keys": ["show-monitor-info", "show-stats"]
+        }
+    },
+
+    "show-count": {
+        "type": "switch",
+        "default": true,
+        "description": "Show window count in panel",
+        "tooltip": "Display the number of tracked windows next to the icon"
+    },
+
+    "symbolic-icon": {
+        "type": "switch",
+        "default": true,
+        "description": "Use symbolic icon",
+        "tooltip": "Use a monochrome symbolic icon instead of a colored one"
+    },
+
+    "show-monitor-info": {
+        "type": "switch",
+        "default": true,
+        "description": "Show monitor information",
+        "tooltip": "Display monitor details in the menu"
+    },
+
+    "show-stats": {
+        "type": "switch",
+        "default": true,
+        "description": "Show statistics",
+        "tooltip": "Display tracking statistics in the menu"
+    }
+}

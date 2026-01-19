@@ -1,0 +1,27 @@
+{
+  "name": "nemo",
+  "displayName": "Nemo",
+  "version": "1.0.0",
+  "description": "File manager with directory restoration from window title",
+  "wmClass": ["nemo", "Nemo"],
+  "type": "file-manager",
+  "handler": "index.js",
+
+  "launch": {
+    "executables": ["nemo"],
+    "flags": [],
+    "conditionalFlags": {}
+  },
+
+  "features": {
+    "isSingleInstance": false,
+    "timeout": 45000,
+    "gracePeriod": 30000,
+    "needsTitleParsing": true
+  },
+
+  "titlePatterns": {
+    "homeKeywords": ["Persönlicher Ordner", "Home Folder", "Home", "Startseite"],
+    "pathSeparator": " - "
+  }
+}

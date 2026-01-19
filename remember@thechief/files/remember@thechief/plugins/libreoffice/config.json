@@ -1,0 +1,31 @@
+{
+  "name": "libreoffice",
+  "displayName": "LibreOffice",
+  "version": "1.0.0",
+  "description": "Office suite with document path extraction from window title",
+  "wmClass": [
+    "libreoffice-calc", "libreoffice-writer", "libreoffice-impress",
+    "libreoffice-draw", "libreoffice-base", "libreoffice-math",
+    "Soffice", "soffice"
+  ],
+  "type": "office-suite",
+  "handler": "index.js",
+
+  "launch": {
+    "executables": ["libreoffice", "soffice"],
+    "flags": ["--nologo"],
+    "conditionalFlags": {}
+  },
+
+  "features": {
+    "isSingleInstance": false,
+    "timeout": 60000,
+    "gracePeriod": 30000,
+    "needsTitleParsing": true
+  },
+
+  "titlePatterns": {
+    "unsaved": ["^Unbenannt", "^Untitled", "^Sans titre", "^Sin título"],
+    "documentSuffix": " – LibreOffice"
+  }
+}

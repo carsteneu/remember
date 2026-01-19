@@ -1,0 +1,120 @@
+# Russian translation for Window Position Remember Extension
+# Copyright (C) 2025
+# This file is distributed under the same license as the Window Position Remember package.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Window Position Remember 1.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-01-17 12:00+0000\n"
+"PO-Revision-Date: 2026-01-17 12:00+0000\n"
+"Last-Translator: \n"
+"Language-Team: Russian\n"
+"Language: ru\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+# Plugin Configuration Dialog
+msgid "Plugin Configuration"
+msgstr "Настройка Плагина"
+
+msgid "Configure plugin settings. Click 'Edit' to modify values."
+msgstr "Настройте параметры плагина. Нажмите 'Изменить' для изменения значений."
+
+msgid "Edit Settings"
+msgstr "Изменить Настройки"
+
+msgid "Allgemeine Informationen"
+msgstr "Общая Информация"
+
+msgid "Anzeigename"
+msgstr "Отображаемое Имя"
+
+msgid "Beschreibung"
+msgstr "Описание"
+
+msgid "Fensterklassen"
+msgstr "Классы Окон"
+
+msgid "Fensterklassen-Namen (komma-getrennt)"
+msgstr "Имена классов окон (через запятую)"
+
+msgid "Start-Konfiguration"
+msgstr "Конфигурация Запуска"
+
+msgid "Ausführbare Dateien"
+msgstr "Исполняемые Файлы"
+
+msgid "Programmpfade (komma-getrennt)"
+msgstr "Пути программ (через запятую)"
+
+msgid "Standard-Flags"
+msgstr "Стандартные Флаги"
+
+msgid "Standard Kommandozeilen-Flags (komma-getrennt)"
+msgstr "Стандартные флаги командной строки (через запятую)"
+
+msgid "Bedingte Flags wenn aktiviert"
+msgstr "Условные флаги при активации"
+
+msgid "Funktionen"
+msgstr "Функции"
+
+msgid "Einzelinstanz"
+msgstr "Единственный Экземпляр"
+
+msgid "Automatische Wiederherstellung"
+msgstr "Автоматическое Восстановление"
+
+msgid "Timeout (ms)"
+msgstr "Тайм-аут (мс)"
+
+msgid "Wartezeit in Millisekunden"
+msgstr "Время ожидания в миллисекундах"
+
+msgid "Kulanzzeit (ms)"
+msgstr "Льготный Период (мс)"
+
+msgid "Zusätzliche Wartezeit in Millisekunden"
+msgstr "Дополнительное время ожидания в миллисекундах"
+
+msgid "Saved"
+msgstr "Сохранено"
+
+msgid "Plugin configuration saved. Restart Cinnamon to apply changes."
+msgstr "Конфигурация плагина сохранена. Перезапустите Cinnamon для применения изменений."
+
+msgid "Failed to save plugin configuration."
+msgstr "Не удалось сохранить конфигурацию плагина."
+
+msgid "Cancel"
+msgstr "Отмена"
+
+msgid "Save"
+msgstr "Сохранить"
+
+# Close Window Button (windows.py)
+msgid "Close Window"
+msgstr "Закрыть окно"
+
+msgid "Cannot close window"
+msgstr "Невозможно закрыть окно"
+
+msgid "No X11 Window ID available for this window."
+msgstr "Нет идентификатора окна X11 для этого окна."
+
+msgid "Close window '{0}'?"
+msgstr "Закрыть окно '{0}'?"
+
+msgid "This will gracefully close the window. Unsaved work may be lost."
+msgstr "Окно будет корректно закрыто. Несохранённая работа может быть потеряна."
+
+msgid "wmctrl not found"
+msgstr "wmctrl не найден"
+
+msgid "Please install wmctrl: sudo apt install wmctrl"
+msgstr "Пожалуйста, установите wmctrl: sudo apt install wmctrl"
+
+msgid "Error closing window"
+msgstr "Ошибка при закрытии окна"

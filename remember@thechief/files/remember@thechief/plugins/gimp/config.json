@@ -1,0 +1,30 @@
+{
+  "name": "gimp",
+  "displayName": "GIMP",
+  "version": "1.0.0",
+  "description": "GNU Image Manipulation Program with image file restoration",
+  "wmClass": ["Gimp", "gimp", "Gimp-2.10", "gimp-2.10"],
+  "type": "image-editor",
+  "handler": "index.js",
+
+  "launch": {
+    "executables": ["gimp"],
+    "flags": [],
+    "conditionalFlags": {}
+  },
+
+  "features": {
+    "isSingleInstance": false,
+    "timeout": 60000,
+    "gracePeriod": 30000,
+    "needsTitleParsing": true
+  },
+
+  "titlePatterns": {
+    "skipPatterns": ["Unbenannt", "Untitled", "Sans titre"],
+    "fullPathRegex": "^\\*?\\[(.+?)\\]",
+    "filenameRegex": "^\\*?\\[([^/\\]]+)\\]"
+  },
+
+  "restoreTimings": [500, 1000, 2000, 4000]
+}

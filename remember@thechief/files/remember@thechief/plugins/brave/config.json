@@ -1,0 +1,63 @@
+{
+  "name": "brave",
+  "displayName": "Brave Browser",
+  "version": "1.0.0",
+  "description": "Browser session restore support with preferences fix",
+  "wmClass": ["brave-browser", "Brave-browser", "brave", "Brave"],
+  "type": "chromium-browser",
+  "handler": "index.js",
+
+  "settings": {
+    "sessionRestore": {
+      "type": "app_config",
+      "label": "Session Restore",
+      "description": "Configure Brave to restore previous session on startup",
+      "check": {
+        "type": "json_key",
+        "path": "~/.config/BraveSoftware/Brave-Browser/Default/Preferences",
+        "key": "session.restore_on_startup",
+        "value": 1
+      },
+      "configure": {
+        "type": "manual",
+        "message": "Brave settings cannot be changed externally.\n\nPlease configure manually:\n1. Open Brave\n2. Go to Settings (brave://settings/)\n3. Find 'On startup'\n4. Select 'Continue where you left off'"
+      },
+      "unconfigure": {
+        "type": "manual",
+        "message": "Please disable session restore in Brave settings manually:\n1. Open Brave\n2. Go to Settings (brave://settings/)\n3. Find 'On startup'\n4. Select 'Open the New Tab page'"
+      },
+      "openSettings": {
+        "type": "url",
+        "url": "brave://settings/"
+      }
+    }
+  },
+
+  "launch": {
+    "executables": [
+      "brave-browser",
+      "brave-browser-stable",
+      "/usr/bin/brave-browser",
+      "/usr/bin/brave-browser-stable",
+      "/opt/brave.com/brave/brave-browser"
+    ],
+    "flags": [],
+    "conditionalFlags": {
+      "launchFlags.browserSessionRestore": [
+        "--restore-last-session",
+        "--disable-session-crashed-bubble"
+      ]
+    }
+  },
+
+  "features": {
+    "isSingleInstance": true,
+    "timeout": 120000,
+    "gracePeriod": 60000,
+    "needsConfigManipulation": true
+  },
+
+  "configPaths": {
+    "preferences": ".config/BraveSoftware/Brave-Browser/Default/Preferences"
+  }
+}

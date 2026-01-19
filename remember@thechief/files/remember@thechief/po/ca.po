@@ -1,0 +1,120 @@
+# Catalan translation for Window Position Remember Extension
+# Copyright (C) 2025
+# This file is distributed under the same license as the Window Position Remember package.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Window Position Remember 1.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-01-17 12:00+0000\n"
+"PO-Revision-Date: 2026-01-17 12:00+0000\n"
+"Last-Translator: \n"
+"Language-Team: Catalan\n"
+"Language: ca\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+# Plugin Configuration Dialog
+msgid "Plugin Configuration"
+msgstr "Configuració de Connector"
+
+msgid "Configure plugin settings. Click 'Edit' to modify values."
+msgstr "Configura els paràmetres del connector. Feu clic a 'Edita' per modificar valors."
+
+msgid "Edit Settings"
+msgstr "Edita Paràmetres"
+
+msgid "Allgemeine Informationen"
+msgstr "Informació General"
+
+msgid "Anzeigename"
+msgstr "Nom de Visualització"
+
+msgid "Beschreibung"
+msgstr "Descripció"
+
+msgid "Fensterklassen"
+msgstr "Classes de Finestra"
+
+msgid "Fensterklassen-Namen (komma-getrennt)"
+msgstr "Noms de classes de finestra (separats per comes)"
+
+msgid "Start-Konfiguration"
+msgstr "Configuració d'Inici"
+
+msgid "Ausführbare Dateien"
+msgstr "Fitxers Executables"
+
+msgid "Programmpfade (komma-getrennt)"
+msgstr "Rutes de programa (separades per comes)"
+
+msgid "Standard-Flags"
+msgstr "Indicadors Predeterminats"
+
+msgid "Standard Kommandozeilen-Flags (komma-getrennt)"
+msgstr "Indicadors de línia d'ordres predeterminats (separats per comes)"
+
+msgid "Bedingte Flags wenn aktiviert"
+msgstr "Indicadors condicionals quan està activat"
+
+msgid "Funktionen"
+msgstr "Funcions"
+
+msgid "Einzelinstanz"
+msgstr "Instància Única"
+
+msgid "Automatische Wiederherstellung"
+msgstr "Restauració Automàtica"
+
+msgid "Timeout (ms)"
+msgstr "Temps d'Espera (ms)"
+
+msgid "Wartezeit in Millisekunden"
+msgstr "Temps d'espera en mil·lisegons"
+
+msgid "Kulanzzeit (ms)"
+msgstr "Període de Gràcia (ms)"
+
+msgid "Zusätzliche Wartezeit in Millisekunden"
+msgstr "Temps d'espera addicional en mil·lisegons"
+
+msgid "Saved"
+msgstr "Desat"
+
+msgid "Plugin configuration saved. Restart Cinnamon to apply changes."
+msgstr "Configuració del connector desada. Reinicieu Cinnamon per aplicar els canvis."
+
+msgid "Failed to save plugin configuration."
+msgstr "No s'ha pogut desar la configuració del connector."
+
+msgid "Cancel"
+msgstr "Cancel·la"
+
+msgid "Save"
+msgstr "Desa"
+
+# Close Window Button (windows.py)
+msgid "Close Window"
+msgstr "Tanca la finestra"
+
+msgid "Cannot close window"
+msgstr "No es pot tancar la finestra"
+
+msgid "No X11 Window ID available for this window."
+msgstr "No hi ha cap ID de finestra X11 disponible per a aquesta finestra."
+
+msgid "Close window '{0}'?"
+msgstr "Tancar la finestra '{0}'?"
+
+msgid "This will gracefully close the window. Unsaved work may be lost."
+msgstr "La finestra es tancarà correctament. El treball no desat es pot perdre."
+
+msgid "wmctrl not found"
+msgstr "wmctrl no trobat"
+
+msgid "Please install wmctrl: sudo apt install wmctrl"
+msgstr "Si us plau, instal·leu wmctrl: sudo apt install wmctrl"
+
+msgid "Error closing window"
+msgstr "Error en tancar la finestra"

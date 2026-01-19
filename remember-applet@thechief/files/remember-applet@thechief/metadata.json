@@ -1,0 +1,10 @@
+{
+    "uuid": "remember-applet@thechief",
+    "name": "Window Remember Control",
+    "description": "Panel control for Window Position Remember extension. Save, restore and launch session windows with one click.",
+    "icon": "preferences-system-windows",
+    "version": "1.0",
+    "author": "carsteneu",
+    "url": "https://github.com/carsteneu/remember",
+    "max-instances": 1
+}

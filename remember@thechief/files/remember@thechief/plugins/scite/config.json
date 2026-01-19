@@ -1,0 +1,28 @@
+{
+  "name": "scite",
+  "displayName": "SciTE",
+  "version": "1.0.0",
+  "description": "Text editor with file restoration from window title",
+  "wmClass": ["SciTE", "scite"],
+  "type": "text-editor",
+  "handler": "index.js",
+
+  "launch": {
+    "executables": ["SciTE", "scite"],
+    "flags": [],
+    "conditionalFlags": {}
+  },
+
+  "features": {
+    "isSingleInstance": false,
+    "timeout": 45000,
+    "gracePeriod": 30000,
+    "needsTitleParsing": true
+  },
+
+  "titlePatterns": {
+    "skipPatterns": ["untitled", "unsaved", "new"],
+    "fullPathRegex": "^(/[^\\s]+\\.[a-zA-Z0-9]+)\\s*-\\s*",
+    "filenameRegex": "^([^\\s/]+\\.[a-zA-Z0-9]+)\\s*-\\s*"
+  }
+}

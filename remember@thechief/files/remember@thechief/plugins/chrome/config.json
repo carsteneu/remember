@@ -1,0 +1,67 @@
+{
+  "name": "chrome",
+  "displayName": "Google Chrome",
+  "version": "1.0.0",
+  "description": "Browser session restore support with preferences fix",
+  "wmClass": ["google-chrome", "Google-chrome", "chromium", "Chromium", "chromium-browser"],
+  "type": "chromium-browser",
+  "handler": "index.js",
+
+  "settings": {
+    "sessionRestore": {
+      "type": "app_config",
+      "label": "Session Restore",
+      "description": "Configure Chrome to restore previous session on startup",
+      "check": {
+        "type": "json_key",
+        "path": "~/.config/google-chrome/Default/Preferences",
+        "key": "session.restore_on_startup",
+        "value": 1
+      },
+      "configure": {
+        "type": "json_set",
+        "path": "~/.config/google-chrome/Default/Preferences",
+        "key": "session.restore_on_startup",
+        "value": 1
+      },
+      "unconfigure": {
+        "type": "manual",
+        "message": "Please disable session restore in Chrome settings manually:\n1. Open Chrome\n2. Go to Settings (chrome://settings/)\n3. Find 'On startup'\n4. Select 'Open the New Tab page'"
+      },
+      "openSettings": {
+        "type": "url",
+        "url": "chrome://settings/"
+      }
+    }
+  },
+
+  "launch": {
+    "executables": [
+      "google-chrome-stable",
+      "google-chrome",
+      "chromium-browser",
+      "chromium",
+      "/usr/bin/google-chrome-stable",
+      "/usr/bin/chromium-browser"
+    ],
+    "flags": [],
+    "conditionalFlags": {
+      "launchFlags.browserSessionRestore": [
+        "--restore-last-session",
+        "--disable-session-crashed-bubble"
+      ]
+    }
+  },
+
+  "features": {
+    "isSingleInstance": true,
+    "timeout": 120000,
+    "gracePeriod": 60000,
+    "needsConfigManipulation": true
+  },
+
+  "configPaths": {
+    "chrome": ".config/google-chrome/Default/Preferences",
+    "chromium": ".config/chromium/Default/Preferences"
+  }
+}

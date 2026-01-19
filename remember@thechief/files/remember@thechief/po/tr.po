@@ -1,0 +1,120 @@
+# Turkish translation for Window Position Remember Extension
+# Copyright (C) 2025
+# This file is distributed under the same license as the Window Position Remember package.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Window Position Remember 1.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-01-17 12:00+0000\n"
+"PO-Revision-Date: 2026-01-17 12:00+0000\n"
+"Last-Translator: \n"
+"Language-Team: Turkish\n"
+"Language: tr\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+# Plugin Configuration Dialog
+msgid "Plugin Configuration"
+msgstr "Eklenti Yapılandırması"
+
+msgid "Configure plugin settings. Click 'Edit' to modify values."
+msgstr "Eklenti ayarlarını yapılandırın. Değerleri değiştirmek için 'Düzenle'ye tıklayın."
+
+msgid "Edit Settings"
+msgstr "Ayarları Düzenle"
+
+msgid "Allgemeine Informationen"
+msgstr "Genel Bilgiler"
+
+msgid "Anzeigename"
+msgstr "Görünen Ad"
+
+msgid "Beschreibung"
+msgstr "Açıklama"
+
+msgid "Fensterklassen"
+msgstr "Pencere Sınıfları"
+
+msgid "Fensterklassen-Namen (komma-getrennt)"
+msgstr "Pencere sınıfı adları (virgülle ayrılmış)"
+
+msgid "Start-Konfiguration"
+msgstr "Başlatma Yapılandırması"
+
+msgid "Ausführbare Dateien"
+msgstr "Çalıştırılabilir Dosyalar"
+
+msgid "Programmpfade (komma-getrennt)"
+msgstr "Program yolları (virgülle ayrılmış)"
+
+msgid "Standard-Flags"
+msgstr "Varsayılan Bayraklar"
+
+msgid "Standard Kommandozeilen-Flags (komma-getrennt)"
+msgstr "Varsayılan komut satırı bayrakları (virgülle ayrılmış)"
+
+msgid "Bedingte Flags wenn aktiviert"
+msgstr "Etkinleştirildiğinde koşullu bayraklar"
+
+msgid "Funktionen"
+msgstr "Özellikler"
+
+msgid "Einzelinstanz"
+msgstr "Tek Örnek"
+
+msgid "Automatische Wiederherstellung"
+msgstr "Otomatik Geri Yükleme"
+
+msgid "Timeout (ms)"
+msgstr "Zaman Aşımı (ms)"
+
+msgid "Wartezeit in Millisekunden"
+msgstr "Milisaniye cinsinden bekleme süresi"
+
+msgid "Kulanzzeit (ms)"
+msgstr "Ek Süre (ms)"
+
+msgid "Zusätzliche Wartezeit in Millisekunden"
+msgstr "Milisaniye cinsinden ek bekleme süresi"
+
+msgid "Saved"
+msgstr "Kaydedildi"
+
+msgid "Plugin configuration saved. Restart Cinnamon to apply changes."
+msgstr "Eklenti yapılandırması kaydedildi. Değişiklikleri uygulamak için Cinnamon'u yeniden başlatın."
+
+msgid "Failed to save plugin configuration."
+msgstr "Eklenti yapılandırması kaydedilemedi."
+
+msgid "Cancel"
+msgstr "İptal"
+
+msgid "Save"
+msgstr "Kaydet"
+
+# Close Window Button (windows.py)
+msgid "Close Window"
+msgstr "Pencereyi Kapat"
+
+msgid "Cannot close window"
+msgstr "Pencere kapatılamıyor"
+
+msgid "No X11 Window ID available for this window."
+msgstr "Bu pencere için X11 Pencere Kimliği mevcut değil."
+
+msgid "Close window '{0}'?"
+msgstr "'{0}' penceresi kapatılsın mı?"
+
+msgid "This will gracefully close the window. Unsaved work may be lost."
+msgstr "Pencere düzgün şekilde kapatılacak. Kaydedilmemiş çalışma kaybolabilir."
+
+msgid "wmctrl not found"
+msgstr "wmctrl bulunamadı"
+
+msgid "Please install wmctrl: sudo apt install wmctrl"
+msgstr "Lütfen wmctrl'yi yükleyin: sudo apt install wmctrl"
+
+msgid "Error closing window"
+msgstr "Pencere kapatılırken hata"

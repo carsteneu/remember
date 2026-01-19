@@ -1,0 +1,57 @@
+{
+  "name": "vscode",
+  "displayName": "Visual Studio Code",
+  "version": "1.0.0",
+  "description": "Editor with aggressive restore timings",
+  "wmClass": ["code", "Code", "code-oss", "Code - OSS"],
+  "type": "editor",
+  "handler": "index.js",
+
+  "settings": {
+    "restoreWindows": {
+      "type": "app_config",
+      "label": "Restore Windows",
+      "description": "Configure VS Code to restore all windows on startup",
+      "check": {
+        "type": "json_key",
+        "path": "~/.config/Code/User/settings.json",
+        "key": "window.restoreWindows",
+        "value": "all"
+      },
+      "configure": {
+        "type": "json_set",
+        "path": "~/.config/Code/User/settings.json",
+        "key": "window.restoreWindows",
+        "value": "all"
+      },
+      "unconfigure": {
+        "type": "manual",
+        "message": "Please change window.restoreWindows in VS Code settings:\n1. Open VS Code\n2. Go to Settings (Ctrl+,)\n3. Search for 'window.restoreWindows'\n4. Change to 'none' or 'one'"
+      },
+      "openSettings": {
+        "type": "command",
+        "cmd": ["code", "--goto", "settings.json"]
+      }
+    }
+  },
+
+  "launch": {
+    "executables": [
+      "code",
+      "/usr/bin/code",
+      "/usr/share/code/code",
+      "/snap/bin/code",
+      "code-oss"
+    ],
+    "flags": [],
+    "conditionalFlags": {}
+  },
+
+  "features": {
+    "isSingleInstance": true,
+    "timeout": 90000,
+    "gracePeriod": 45000,
+    "autoRestore": true,
+    "titleStabilizationDelay": 1500
+  }
+}

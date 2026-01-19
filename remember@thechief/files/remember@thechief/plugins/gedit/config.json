@@ -1,0 +1,28 @@
+{
+  "name": "gedit",
+  "displayName": "Gedit",
+  "version": "1.0.0",
+  "description": "GNOME text editor with file restoration from window title",
+  "wmClass": ["gedit", "Gedit", "org.gnome.gedit"],
+  "type": "text-editor",
+  "handler": "index.js",
+
+  "launch": {
+    "executables": ["gedit"],
+    "flags": [],
+    "conditionalFlags": {}
+  },
+
+  "features": {
+    "isSingleInstance": false,
+    "timeout": 45000,
+    "gracePeriod": 30000,
+    "needsTitleParsing": true
+  },
+
+  "titlePatterns": {
+    "skipPatterns": ["untitled", "unsaved", "new file", "unbenannt"],
+    "fullPathRegex": "^(/[^\\s]+\\.[a-zA-Z0-9]+)\\s*-\\s*",
+    "filenameRegex": "^([^\\s/]+\\.[a-zA-Z0-9]+)\\s*[~()]*\\s*-\\s*"
+  }
+}

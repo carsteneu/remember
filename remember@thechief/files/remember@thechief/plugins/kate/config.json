@@ -1,0 +1,22 @@
+{
+  "name": "kate",
+  "displayName": "Kate",
+  "version": "1.0.0",
+  "description": "KDE text editor session restore support",
+  "wmClass": ["kate", "Kate", "org.kde.kate"],
+  "type": "editor",
+
+  "launch": {
+    "executables": ["kate"],
+    "flags": [],
+    "conditionalFlags": {
+      "launchFlags.kateSessionRestore": ["-s", "default"]
+    }
+  },
+
+  "features": {
+    "isSingleInstance": false,
+    "timeout": 45000,
+    "gracePeriod": 30000
+  }
+}

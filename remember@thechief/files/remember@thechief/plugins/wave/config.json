@@ -1,0 +1,42 @@
+{
+  "name": "wave",
+  "displayName": "Wave Terminal",
+  "version": "1.0.0",
+  "description": "AI-native terminal with automatic session restore",
+  "wmClass": ["Wave", "wave", "waveterm"],
+  "type": "terminal",
+
+  "settings": {
+    "autoRestore": {
+      "type": "app_config",
+      "label": "Auto Restore",
+      "description": "Wave Terminal automatically restores session state (always enabled)",
+      "check": {
+        "type": "always_true"
+      }
+    }
+  },
+
+  "launch": {
+    "executables": [
+      "waveterm",
+      "/opt/Wave/waveterm"
+    ],
+    "flags": [
+      "--enable-features",
+      "UseOzonePlatform",
+      "--ozone-platform-hint",
+      "auto"
+    ],
+    "conditionalFlags": {}
+  },
+
+  "features": {
+    "isSingleInstance": true,
+    "timeout": 120000,
+    "gracePeriod": 60000,
+    "autoRestore": true
+  },
+
+  "notes": "Wave Terminal automatically restores its session state from ~/.waveterm on startup. No special flags needed."
+}

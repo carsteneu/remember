@@ -1,0 +1,177 @@
+{
+    "layout": {
+        "type": "layout",
+        "pages": ["general", "behavior", "blacklist"],
+        "general": {
+            "type": "page",
+            "title": "General",
+            "sections": ["tracking", "session"]
+        },
+        "behavior": {
+            "type": "page",
+            "title": "Behavior",
+            "sections": ["timing", "restore", "window-states"]
+        },
+        "blacklist": {
+            "type": "page",
+            "title": "Blacklist",
+            "sections": ["excluded"]
+        },
+        "tracking": {
+            "type": "section",
+            "title": "Window Tracking",
+            "keys": ["track-all-workspaces", "track-dialogs"]
+        },
+        "session": {
+            "type": "section",
+            "title": "Session Management",
+            "keys": ["auto-restore", "auto-launch", "capture-cmdline"]
+        },
+        "timing": {
+            "type": "section",
+            "title": "Timing",
+            "keys": ["save-delay", "restore-delay"]
+        },
+        "restore": {
+            "type": "section",
+            "title": "Restore Behavior",
+            "keys": ["use-percentage", "clamp-to-screen", "restore-workspace"]
+        },
+        "window-states": {
+            "type": "section",
+            "title": "Window States",
+            "keys": ["remember-sticky", "remember-always-on-top", "remember-shaded", "remember-fullscreen", "restore-minimized"]
+        },
+        "excluded": {
+            "type": "section",
+            "title": "Excluded Applications",
+            "keys": ["blacklist-info", "blacklist"]
+        }
+    },
+
+    "track-all-workspaces": {
+        "type": "switch",
+        "default": true,
+        "description": "Track windows on all workspaces",
+        "tooltip": "When enabled, window positions are tracked across all workspaces"
+    },
+
+    "track-dialogs": {
+        "type": "switch",
+        "default": false,
+        "description": "Track dialog windows",
+        "tooltip": "When enabled, dialog windows will also be tracked (not recommended)"
+    },
+
+    "auto-restore": {
+        "type": "switch",
+        "default": true,
+        "description": "Auto-restore positions on window open",
+        "tooltip": "Automatically restore window position when a tracked app opens"
+    },
+
+    "auto-launch": {
+        "type": "switch",
+        "default": false,
+        "description": "Auto-launch session on login",
+        "tooltip": "Automatically launch saved applications when Cinnamon starts"
+    },
+
+    "capture-cmdline": {
+        "type": "switch",
+        "default": true,
+        "description": "Capture command line arguments",
+        "tooltip": "Store command line arguments for better session restore"
+    },
+
+    "save-delay": {
+        "type": "spinbutton",
+        "default": 1000,
+        "min": 100,
+        "max": 5000,
+        "step": 100,
+        "units": "ms",
+        "description": "Save delay",
+        "tooltip": "Delay before saving position changes (debouncing)"
+    },
+
+    "restore-delay": {
+        "type": "spinbutton",
+        "default": 500,
+        "min": 100,
+        "max": 2000,
+        "step": 100,
+        "units": "ms",
+        "description": "Restore delay",
+        "tooltip": "Delay before applying position to new windows"
+    },
+
+    "use-percentage": {
+        "type": "switch",
+        "default": true,
+        "description": "Use percentage-based positioning",
+        "tooltip": "Store positions as percentage of monitor size for better multi-resolution support"
+    },
+
+    "clamp-to-screen": {
+        "type": "switch",
+        "default": true,
+        "description": "Clamp windows to screen bounds",
+        "tooltip": "Ensure windows are always visible on screen"
+    },
+
+    "restore-workspace": {
+        "type": "switch",
+        "default": true,
+        "description": "Restore to original workspace",
+        "tooltip": "Move windows to their saved workspace"
+    },
+
+    "blacklist-info": {
+        "type": "label",
+        "description": "Enter WM_CLASS names of applications to exclude from tracking (one per line)"
+    },
+
+    "blacklist": {
+        "type": "textview",
+        "default": "",
+        "description": "Excluded applications",
+        "tooltip": "Applications that should not be tracked",
+        "height": 200
+    },
+
+    "remember-sticky": {
+        "type": "switch",
+        "default": true,
+        "description": "Remember 'on all workspaces' state",
+        "tooltip": "Save and restore the sticky state (visible on all workspaces)"
+    },
+
+    "remember-always-on-top": {
+        "type": "switch",
+        "default": true,
+        "description": "Remember 'always on top' state",
+        "tooltip": "Save and restore whether window is always on top of others"
+    },
+
+    "remember-shaded": {
+        "type": "switch",
+        "default": false,
+        "description": "Remember 'rolled up' state",
+        "tooltip": "Save and restore the shaded (rolled up) state"
+    },
+
+    "remember-fullscreen": {
+        "type": "switch",
+        "default": true,
+        "description": "Remember fullscreen state",
+        "tooltip": "Save and restore fullscreen mode"
+    },
+
+    "restore-minimized": {
+        "type": "switch",
+        "default": false,
+        "description": "Restore windows in minimized state",
+        "tooltip": "When enabled, windows that were minimized will be restored minimized (usually not desired)"
+    }
+}

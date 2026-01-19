@@ -1,0 +1,47 @@
+{
+  "name": "firefox",
+  "displayName": "Firefox",
+  "version": "1.0.0",
+  "description": "Browser session restore support",
+  "wmClass": ["firefox", "Firefox", "Navigator"],
+  "type": "mozilla-browser",
+
+  "settings": {
+    "sessionRestore": {
+      "type": "app_config",
+      "label": "Session Restore",
+      "description": "Configure Firefox to restore previous session on startup",
+      "check": {
+        "type": "firefox_profile",
+        "pattern": "browser.startup.page\", 3"
+      },
+      "configure": {
+        "type": "firefox",
+        "prefLine": "user_pref(\"browser.startup.page\", 3);",
+        "checkPattern": "browser.startup.page\", 3"
+      },
+      "unconfigure": {
+        "type": "manual",
+        "message": "Please disable session restore in Firefox settings manually:\n1. Open Firefox\n2. Go to Settings (about:preferences#general)\n3. Find 'Startup' section\n4. Uncheck 'Restore previous session'"
+      },
+      "openSettings": {
+        "type": "url",
+        "url": "about:preferences#general"
+      }
+    }
+  },
+
+  "launch": {
+    "executables": ["firefox"],
+    "flags": [],
+    "conditionalFlags": {
+      "launchFlags.firefoxSessionRestore": ["--restore-session"]
+    }
+  },
+
+  "features": {
+    "isSingleInstance": true,
+    "timeout": 120000,
+    "gracePeriod": 60000
+  }
+}

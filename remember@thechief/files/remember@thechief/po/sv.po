@@ -1,0 +1,120 @@
+# Swedish translation for Window Position Remember Extension
+# Copyright (C) 2025
+# This file is distributed under the same license as the Window Position Remember package.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Window Position Remember 1.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-01-17 12:00+0000\n"
+"PO-Revision-Date: 2026-01-17 12:00+0000\n"
+"Last-Translator: \n"
+"Language-Team: Swedish\n"
+"Language: sv\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+# Plugin Configuration Dialog
+msgid "Plugin Configuration"
+msgstr "Plugin Konfiguration"
+
+msgid "Configure plugin settings. Click 'Edit' to modify values."
+msgstr "Konfigurera plugin-inställningar. Klicka på 'Redigera' för att ändra värden."
+
+msgid "Edit Settings"
+msgstr "Redigera Inställningar"
+
+msgid "Allgemeine Informationen"
+msgstr "Allmän Information"
+
+msgid "Anzeigename"
+msgstr "Visningsnamn"
+
+msgid "Beschreibung"
+msgstr "Beskrivning"
+
+msgid "Fensterklassen"
+msgstr "Fönsterklasser"
+
+msgid "Fensterklassen-Namen (komma-getrennt)"
+msgstr "Fönsterklassnamn (kommaseparerade)"
+
+msgid "Start-Konfiguration"
+msgstr "Startkonfiguration"
+
+msgid "Ausführbare Dateien"
+msgstr "Körbara Filer"
+
+msgid "Programmpfade (komma-getrennt)"
+msgstr "Programsökvägar (kommaseparerade)"
+
+msgid "Standard-Flags"
+msgstr "Standardflaggor"
+
+msgid "Standard Kommandozeilen-Flags (komma-getrennt)"
+msgstr "Standardkommandoradsflaggor (kommaseparerade)"
+
+msgid "Bedingte Flags wenn aktiviert"
+msgstr "Villkorliga flaggor när aktiverad"
+
+msgid "Funktionen"
+msgstr "Funktioner"
+
+msgid "Einzelinstanz"
+msgstr "Enskild Instans"
+
+msgid "Automatische Wiederherstellung"
+msgstr "Automatisk Återställning"
+
+msgid "Timeout (ms)"
+msgstr "Timeout (ms)"
+
+msgid "Wartezeit in Millisekunden"
+msgstr "Väntetid i millisekunder"
+
+msgid "Kulanzzeit (ms)"
+msgstr "Respitperiod (ms)"
+
+msgid "Zusätzliche Wartezeit in Millisekunden"
+msgstr "Extra väntetid i millisekunder"
+
+msgid "Saved"
+msgstr "Sparad"
+
+msgid "Plugin configuration saved. Restart Cinnamon to apply changes."
+msgstr "Plugin-konfiguration sparad. Starta om Cinnamon för att tillämpa ändringar."
+
+msgid "Failed to save plugin configuration."
+msgstr "Misslyckades spara plugin-konfiguration."
+
+msgid "Cancel"
+msgstr "Avbryt"
+
+msgid "Save"
+msgstr "Spara"
+
+# Close Window Button (windows.py)
+msgid "Close Window"
+msgstr "Stäng fönster"
+
+msgid "Cannot close window"
+msgstr "Kan inte stänga fönstret"
+
+msgid "No X11 Window ID available for this window."
+msgstr "Inget X11-fönster-ID tillgängligt för detta fönster."
+
+msgid "Close window '{0}'?"
+msgstr "Stäng fönster '{0}'?"
+
+msgid "This will gracefully close the window. Unsaved work may be lost."
+msgstr "Fönstret kommer att stängas korrekt. Osparat arbete kan gå förlorat."
+
+msgid "wmctrl not found"
+msgstr "wmctrl hittades inte"
+
+msgid "Please install wmctrl: sudo apt install wmctrl"
+msgstr "Installera wmctrl: sudo apt install wmctrl"
+
+msgid "Error closing window"
+msgstr "Fel vid stängning av fönster"

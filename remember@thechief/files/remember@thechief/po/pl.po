@@ -1,0 +1,120 @@
+# Polish translation for Window Position Remember Extension
+# Copyright (C) 2025
+# This file is distributed under the same license as the Window Position Remember package.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Window Position Remember 1.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-01-17 12:00+0000\n"
+"PO-Revision-Date: 2026-01-17 12:00+0000\n"
+"Last-Translator: \n"
+"Language-Team: Polish\n"
+"Language: pl\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+# Plugin Configuration Dialog
+msgid "Plugin Configuration"
+msgstr "Konfiguracja Wtyczki"
+
+msgid "Configure plugin settings. Click 'Edit' to modify values."
+msgstr "Skonfiguruj ustawienia wtyczki. Kliknij 'Edytuj', aby zmodyfikować wartości."
+
+msgid "Edit Settings"
+msgstr "Edytuj Ustawienia"
+
+msgid "Allgemeine Informationen"
+msgstr "Informacje Ogólne"
+
+msgid "Anzeigename"
+msgstr "Nazwa Wyświetlana"
+
+msgid "Beschreibung"
+msgstr "Opis"
+
+msgid "Fensterklassen"
+msgstr "Klasy Okien"
+
+msgid "Fensterklassen-Namen (komma-getrennt)"
+msgstr "Nazwy klas okien (oddzielone przecinkami)"
+
+msgid "Start-Konfiguration"
+msgstr "Konfiguracja Uruchamiania"
+
+msgid "Ausführbare Dateien"
+msgstr "Pliki Wykonywalne"
+
+msgid "Programmpfade (komma-getrennt)"
+msgstr "Ścieżki programów (oddzielone przecinkami)"
+
+msgid "Standard-Flags"
+msgstr "Flagi Domyślne"
+
+msgid "Standard Kommandozeilen-Flags (komma-getrennt)"
+msgstr "Domyślne flagi linii poleceń (oddzielone przecinkami)"
+
+msgid "Bedingte Flags wenn aktiviert"
+msgstr "Flagi warunkowe gdy włączone"
+
+msgid "Funktionen"
+msgstr "Funkcje"
+
+msgid "Einzelinstanz"
+msgstr "Pojedyncza Instancja"
+
+msgid "Automatische Wiederherstellung"
+msgstr "Automatyczne Przywracanie"
+
+msgid "Timeout (ms)"
+msgstr "Limit Czasu (ms)"
+
+msgid "Wartezeit in Millisekunden"
+msgstr "Czas oczekiwania w milisekundach"
+
+msgid "Kulanzzeit (ms)"
+msgstr "Okres Karencji (ms)"
+
+msgid "Zusätzliche Wartezeit in Millisekunden"
+msgstr "Dodatkowy czas oczekiwania w milisekundach"
+
+msgid "Saved"
+msgstr "Zapisano"
+
+msgid "Plugin configuration saved. Restart Cinnamon to apply changes."
+msgstr "Konfiguracja wtyczki zapisana. Uruchom ponownie Cinnamon, aby zastosować zmiany."
+
+msgid "Failed to save plugin configuration."
+msgstr "Nie udało się zapisać konfiguracji wtyczki."
+
+msgid "Cancel"
+msgstr "Anuluj"
+
+msgid "Save"
+msgstr "Zapisz"
+
+# Close Window Button (windows.py)
+msgid "Close Window"
+msgstr "Zamknij okno"
+
+msgid "Cannot close window"
+msgstr "Nie można zamknąć okna"
+
+msgid "No X11 Window ID available for this window."
+msgstr "Brak identyfikatora okna X11 dla tego okna."
+
+msgid "Close window '{0}'?"
+msgstr "Zamknąć okno '{0}'?"
+
+msgid "This will gracefully close the window. Unsaved work may be lost."
+msgstr "Okno zostanie prawidłowo zamknięte. Niezapisana praca może zostać utracona."
+
+msgid "wmctrl not found"
+msgstr "wmctrl nie znaleziono"
+
+msgid "Please install wmctrl: sudo apt install wmctrl"
+msgstr "Proszę zainstalować wmctrl: sudo apt install wmctrl"
+
+msgid "Error closing window"
+msgstr "Błąd podczas zamykania okna"

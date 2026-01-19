@@ -1,0 +1,120 @@
+# Portuguese translation for Window Position Remember Extension
+# Copyright (C) 2025
+# This file is distributed under the same license as the Window Position Remember package.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Window Position Remember 1.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-01-17 12:00+0000\n"
+"PO-Revision-Date: 2026-01-17 12:00+0000\n"
+"Last-Translator: \n"
+"Language-Team: Portuguese\n"
+"Language: pt\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+# Plugin Configuration Dialog
+msgid "Plugin Configuration"
+msgstr "Configuração de Plugin"
+
+msgid "Configure plugin settings. Click 'Edit' to modify values."
+msgstr "Configurar definições do plugin. Clique em 'Editar' para modificar valores."
+
+msgid "Edit Settings"
+msgstr "Editar Definições"
+
+msgid "Allgemeine Informationen"
+msgstr "Informação Geral"
+
+msgid "Anzeigename"
+msgstr "Nome de Exibição"
+
+msgid "Beschreibung"
+msgstr "Descrição"
+
+msgid "Fensterklassen"
+msgstr "Classes de Janela"
+
+msgid "Fensterklassen-Namen (komma-getrennt)"
+msgstr "Nomes de classes de janela (separados por vírgulas)"
+
+msgid "Start-Konfiguration"
+msgstr "Configuração de Inicialização"
+
+msgid "Ausführbare Dateien"
+msgstr "Ficheiros Executáveis"
+
+msgid "Programmpfade (komma-getrennt)"
+msgstr "Caminhos de programa (separados por vírgulas)"
+
+msgid "Standard-Flags"
+msgstr "Flags Padrão"
+
+msgid "Standard Kommandozeilen-Flags (komma-getrennt)"
+msgstr "Flags de linha de comando padrão (separados por vírgulas)"
+
+msgid "Bedingte Flags wenn aktiviert"
+msgstr "Flags condicionais quando ativado"
+
+msgid "Funktionen"
+msgstr "Funcionalidades"
+
+msgid "Einzelinstanz"
+msgstr "Instância Única"
+
+msgid "Automatische Wiederherstellung"
+msgstr "Restauração Automática"
+
+msgid "Timeout (ms)"
+msgstr "Tempo Limite (ms)"
+
+msgid "Wartezeit in Millisekunden"
+msgstr "Tempo de espera em milissegundos"
+
+msgid "Kulanzzeit (ms)"
+msgstr "Período de Tolerância (ms)"
+
+msgid "Zusätzliche Wartezeit in Millisekunden"
+msgstr "Tempo de espera adicional em milissegundos"
+
+msgid "Saved"
+msgstr "Guardado"
+
+msgid "Plugin configuration saved. Restart Cinnamon to apply changes."
+msgstr "Configuração do plugin guardada. Reinicie o Cinnamon para aplicar as alterações."
+
+msgid "Failed to save plugin configuration."
+msgstr "Falha ao guardar a configuração do plugin."
+
+msgid "Cancel"
+msgstr "Cancelar"
+
+msgid "Save"
+msgstr "Guardar"
+
+# Close Window Button (windows.py)
+msgid "Close Window"
+msgstr "Fechar janela"
+
+msgid "Cannot close window"
+msgstr "Não é possível fechar a janela"
+
+msgid "No X11 Window ID available for this window."
+msgstr "Nenhum ID de janela X11 disponível para esta janela."
+
+msgid "Close window '{0}'?"
+msgstr "Fechar janela '{0}'?"
+
+msgid "This will gracefully close the window. Unsaved work may be lost."
+msgstr "A janela será fechada corretamente. O trabalho não guardado pode ser perdido."
+
+msgid "wmctrl not found"
+msgstr "wmctrl não encontrado"
+
+msgid "Please install wmctrl: sudo apt install wmctrl"
+msgstr "Por favor instale wmctrl: sudo apt install wmctrl"
+
+msgid "Error closing window"
+msgstr "Erro ao fechar a janela"
