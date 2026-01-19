@@ -31,6 +31,10 @@ var AutoRestore = class AutoRestore {
         this._pluginManager = options.pluginManager;
         this._sessionConfig = options.sessionConfig;
 
+        // Logger injection - no-op until injected
+        this._log = options.log || function() {};
+        this._logError = options.logError || global.logError;
+
         this._startupTimeoutId = null;
         this._restoreFinalizeTimeoutId = null;
     }
@@ -44,7 +48,7 @@ var AutoRestore = class AutoRestore {
             Mainloop.source_remove(this._startupTimeoutId);
         }
 
-        global.log(`${UUID}: Scheduling auto-restore in ${this._sessionConfig.STARTUP_DELAY}ms`);
+        this._log(`Scheduling auto-restore in ${this._sessionConfig.STARTUP_DELAY}ms`);
 
         this._startupTimeoutId = Mainloop.timeout_add(this._sessionConfig.STARTUP_DELAY, () => {
             this._startupTimeoutId = null;
@@ -69,7 +73,7 @@ var AutoRestore = class AutoRestore {
             );
 
             if (!success || exitCode !== 0) {
-                global.log(`${UUID}: Login check: Could not get Cinnamon uptime, assuming not login`);
+                this._log(`Login check: Could not get Cinnamon uptime, assuming not login`);
                 return false;
             }
 
@@ -79,17 +83,17 @@ var AutoRestore = class AutoRestore {
             const cinnamonUptime = parseInt(uptimeStr, 10);
 
             if (isNaN(cinnamonUptime)) {
-                global.log(`${UUID}: Login check: Invalid uptime "${uptimeStr}", assuming not login`);
+                this._log(`Login check: Invalid uptime "${uptimeStr}", assuming not login`);
                 return false;
             }
 
             const isLogin = cinnamonUptime < this._sessionConfig.STARTUP_GRACE_PERIOD_SECONDS;
 
-            global.log(`${UUID}: Login check: Cinnamon uptime=${cinnamonUptime}s, grace=${this._sessionConfig.STARTUP_GRACE_PERIOD_SECONDS}s, isLogin=${isLogin}`);
+            this._log(`Login check: Cinnamon uptime=${cinnamonUptime}s, grace=${this._sessionConfig.STARTUP_GRACE_PERIOD_SECONDS}s, isLogin=${isLogin}`);
             return isLogin;
 
         } catch (e) {
-            global.logError(`${UUID}: Login check failed: ${e.message}`);
+            this._logError(`${UUID}: Login check failed: ${e.message}`);
             return false;
         }
     }
@@ -103,10 +107,10 @@ var AutoRestore = class AutoRestore {
             const workspace1 = workspaceManager.get_workspace_by_index(0);
             if (workspace1) {
                 workspace1.activate(global.get_current_time());
-                global.log(`${UUID}: Focused Workspace 1 for session restore visibility`);
+                this._log(`Focused Workspace 1 for session restore visibility`);
             }
         } catch (e) {
-            global.logError(`${UUID}: Failed to focus Workspace 1: ${e.message}`);
+            this._logError(`${UUID}: Failed to focus Workspace 1: ${e.message}`);
         }
     }
 
@@ -121,7 +125,7 @@ var AutoRestore = class AutoRestore {
 
         // Check if auto-restore is enabled in preferences
         if (!this._preferences.shouldAutoRestore()) {
-            global.log(`${UUID}: Auto-restore disabled by preferences, skipping`);
+            this._log(`Auto-restore disabled by preferences, skipping`);
             // Clear restore flag and unblock saves
             this._tracker._isRestoringSession = false;
             this._storage.unblockSaves();
@@ -132,13 +136,13 @@ var AutoRestore = class AutoRestore {
         // Manual enable via Extensions Manager should do NOTHING
         // (just start tracking, no restore, no app launch)
         if (!this.isLoginSession()) {
-            global.log(`${UUID}: Manual enable detected (not login), skipping ALL restore actions`);
+            this._log(`Manual enable detected (not login), skipping ALL restore actions`);
             this._tracker._isRestoringSession = false;
             this._storage.unblockSaves();
             return;
         }
 
-        global.log(`${UUID}: Performing auto-restore (login session)...`);
+        this._log(`Performing auto-restore (login session)...`);
 
         // _isRestoringSession was already set to true in enable() before tracking started
         // This prevents any position updates from overwriting saved data
@@ -160,7 +164,7 @@ var AutoRestore = class AutoRestore {
             }
         });
 
-        global.log(`${UUID}: Restored positions for ${restoredCount} existing windows`);
+        this._log(`Restored positions for ${restoredCount} existing windows`);
 
         // Step 2: Launch all missing instances from saved session
         // CRITICAL: Wait for windows to finish appearing before counting them
@@ -179,7 +183,7 @@ var AutoRestore = class AutoRestore {
                 // or callback never fires (e.g., all apps already running)
                 GLib.timeout_add(GLib.PRIORITY_DEFAULT, 30000, () => {
                     if (this._tracker._isRestoringSession) {
-                        global.log(`${UUID}: Fallback timeout - ending restore phase (skipping workspace focus)`);
+                        this._log(`Fallback timeout - ending restore phase (skipping workspace focus)`);
                         // Skip workspace focus - user may have manually switched during the 30s wait
                         this.finalizeSessionRestore(true);
                     }
@@ -203,7 +207,7 @@ var AutoRestore = class AutoRestore {
             return; // Already completed
         }
 
-        global.log(`${UUID}: All apps launched, waiting for positioning to complete...`);
+        this._log(`All apps launched, waiting for positioning to complete...`);
 
         // DON'T unblock saves yet - the windows are still being positioned
         // The actual unblock happens in finalizeSessionRestore() which is called
@@ -231,7 +235,7 @@ var AutoRestore = class AutoRestore {
         // Expected-Launch tracking now handles late-starting apps, so we don't need the long 10s delay
         const FINALIZE_DELAY = 3000;
 
-        global.log(`${UUID}: Scheduling restore finalization in ${FINALIZE_DELAY}ms`);
+        this._log(`Scheduling restore finalization in ${FINALIZE_DELAY}ms`);
 
         this._restoreFinalizeTimeoutId = GLib.timeout_add(GLib.PRIORITY_DEFAULT, FINALIZE_DELAY, () => {
             this._restoreFinalizeTimeoutId = null;
@@ -250,7 +254,7 @@ var AutoRestore = class AutoRestore {
             return; // Already completed
         }
 
-        global.log(`${UUID}: Finalizing session restore...`);
+        this._log(`Finalizing session restore...`);
 
         // Inform SessionLauncher: cleanup any expired grace periods
         if (this._launcher) {
@@ -262,7 +266,7 @@ var AutoRestore = class AutoRestore {
         // NOW we can safely unblock saves
         this._storage.unblockSaves();
 
-        global.log(`${UUID}: Session restore FINALIZED - saves now enabled`);
+        this._log(`Session restore FINALIZED - saves now enabled`);
 
         // Return focus to Workspace 1 so user sees the restored session
         // (apps may have grabbed focus to other workspaces during launch)
@@ -314,10 +318,10 @@ var AutoRestore = class AutoRestore {
         // - Browser session restore
         // - Progress window
         if (instancesToLaunch.length > 0) {
-            global.log(`${UUID}: Passing ${instancesToLaunch.length} instances to SessionLauncher`);
+            this._log(`Passing ${instancesToLaunch.length} instances to SessionLauncher`);
             this._launcher.launchInstances(instancesToLaunch);
         } else {
-            global.log(`${UUID}: No instances to launch`);
+            this._log(`No instances to launch`);
         }
     }
 
@@ -344,13 +348,13 @@ var AutoRestore = class AutoRestore {
                         this._storage.save();
                     }
                 } catch (e) {
-                    global.logError(`${UUID}: Plugin deduplication failed for ${plugin.name}: ${e}`);
+                    this._logError(`${UUID}: Plugin deduplication failed for ${plugin.name}: ${e}`);
                 }
             }
         }
 
         if (totalRemoved > 0) {
-            global.log(`${UUID}: Plugin deduplication removed ${totalRemoved} duplicate instances`);
+            this._log(`Plugin deduplication removed ${totalRemoved} duplicate instances`);
         }
     }
 
@@ -373,7 +377,7 @@ var AutoRestore = class AutoRestore {
         });
 
         this._storage.save();
-        global.log(`${UUID}: Full save completed - ${savedCount} windows saved`);
+        this._log(`Full save completed - ${savedCount} windows saved`);
     }
 
     /**

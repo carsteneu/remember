@@ -27,8 +27,12 @@ var AppletManager = class AppletManager {
      * Create a new AppletManager
      * @param {string} extensionPath - Path to the extension directory
      */
-    constructor(extensionPath) {
+    constructor(extensionPath, log = null, logError = null) {
         this._extPath = extensionPath;
+
+        // Logger injection - no-op until injected
+        this._log = log || function() {};
+        this._logError = logError || global.logError;
     }
 
     /**
@@ -49,7 +53,7 @@ var AppletManager = class AppletManager {
         const appletSrcFile = Gio.File.new_for_path(appletSrc);
 
         if (!appletSrcFile.query_exists(null)) {
-            global.log(`${UUID}: Applet source not found at ${appletSrc}`);
+            this._log(`Applet source not found at ${appletSrc}`);
             return;
         }
 
@@ -73,9 +77,9 @@ var AppletManager = class AppletManager {
                     srcFile.copy(dstFile, Gio.FileCopyFlags.OVERWRITE, null, null);
                 }
 
-                global.log(`${UUID}: Applet installed to ${appletDir}`);
+                this._log(`Applet installed to ${appletDir}`);
             } catch (e) {
-                global.logError(`${UUID}: Failed to install applet: ${e}`);
+                this._logError(`${UUID}: Failed to install applet: ${e}`);
                 return;
             }
         }
@@ -96,7 +100,7 @@ var AppletManager = class AppletManager {
             // Check if applet is already enabled
             const isEnabled = enabledApplets.some(entry => entry.includes(APPLET_UUID));
             if (isEnabled) {
-                global.log(`${UUID}: Applet already active in panel`);
+                this._log(`Applet already active in panel`);
                 return;
             }
 
@@ -106,11 +110,11 @@ var AppletManager = class AppletManager {
             settings.set_strv('enabled-applets', enabledApplets);
             Gio.Settings.sync();
 
-            global.log(`${UUID}: Applet activated in panel (${appletEntry})`);
+            this._log(`Applet activated in panel (${appletEntry})`);
             Main.notify(_("Window Remember"), _("Applet added to panel."));
 
         } catch (e) {
-            global.logError(`${UUID}: Failed to activate applet: ${e}`);
+            this._logError(`${UUID}: Failed to activate applet: ${e}`);
         }
     }
 
@@ -129,10 +133,10 @@ var AppletManager = class AppletManager {
             if (newApplets.length < enabledApplets.length) {
                 settings.set_strv('enabled-applets', newApplets);
                 Gio.Settings.sync();
-                global.log(`${UUID}: Applet removed from panel`);
+                this._log(`Applet removed from panel`);
             }
         } catch (e) {
-            global.logError(`${UUID}: Failed to deactivate applet: ${e}`);
+            this._logError(`${UUID}: Failed to deactivate applet: ${e}`);
         }
     }
 };

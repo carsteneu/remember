@@ -31,6 +31,10 @@ var InstanceCleanup = class InstanceCleanup {
         this._getX11WindowIdFn = options.getX11WindowIdFn;
         this._isWmClassBlacklistedFn = options.isWmClassBlacklistedFn;
         this._everTrackedWmClasses = options.everTrackedWmClasses; // Reference to Set
+
+        // Logger injection - no-op until injected
+        this._log = options.log || function() {};
+        this._logError = options.logError || global.logError;
     }
 
     /**
@@ -87,7 +91,7 @@ var InstanceCleanup = class InstanceCleanup {
             if (this._isWmClassBlacklistedFn(wmClass)) {
                 const instanceCount = appData.instances.length;
                 this._storage.removeApp(wmClass);
-                global.log(`${UUID}: Removed blacklisted app from storage: ${wmClass} (${instanceCount} instances)`);
+                this._log(`Removed blacklisted app from storage: ${wmClass} (${instanceCount} instances)`);
                 removedCount += instanceCount;
                 continue;
             }
@@ -100,7 +104,7 @@ var InstanceCleanup = class InstanceCleanup {
                 const xid = instance.x11_window_id;
                 if (xid && seenXids.has(xid)) {
                     // Duplicate x11_window_id - remove this instance
-                    global.log(`${UUID}: Removing duplicate instance for ${wmClass} with xid ${xid}`);
+                    this._log(`Removing duplicate instance for ${wmClass} with xid ${xid}`);
                     removedCount++;
                     continue;
                 }
@@ -115,7 +119,7 @@ var InstanceCleanup = class InstanceCleanup {
             const validInstances = appData.instances.filter(instance => {
                 // Remove instances with null geometry (invalid data)
                 if (instance.geometry_percent === null && instance.geometry_absolute === null) {
-                    global.log(`${UUID}: Removing instance with null geometry for ${wmClass}`);
+                    this._log(`Removing instance with null geometry for ${wmClass}`);
                     removedCount++;
                     return false;
                 }
@@ -134,13 +138,13 @@ var InstanceCleanup = class InstanceCleanup {
 
                 if (expectedIds.length > 0) {
                     // Don't remove - windows are still expected to appear
-                    global.log(`${UUID}: Keeping ${wmClass} - ${expectedIds.length} instances still expected`);
+                    this._log(`Keeping ${wmClass} - ${expectedIds.length} instances still expected`);
                     continue;
                 }
 
                 // No windows open and none expected - remove the app
                 this._storage.removeApp(wmClass);
-                global.log(`${UUID}: Removed app ${wmClass} (no windows open)`);
+                this._log(`Removed app ${wmClass} (no windows open)`);
                 removedCount += savedCount;
                 continue;
             }
@@ -163,7 +167,7 @@ var InstanceCleanup = class InstanceCleanup {
                     // 2. Still expected from SessionLauncher (pending or in grace period): keep
                     else if (expectedIds.has(instance.id)) {
                         instancesToKeep.push(instance);
-                        global.log(`${UUID}: Keeping expected instance ${instance.id} for ${wmClass}`);
+                        this._log(`Keeping expected instance ${instance.id} for ${wmClass}`);
                     }
                     // 3. Not matching any open window: candidate for removal
                     else {
@@ -177,7 +181,7 @@ var InstanceCleanup = class InstanceCleanup {
                     // Remove excess unassigned instances
                     for (let i = 0; i < Math.min(excessCount, instancesToRemove.length); i++) {
                         const inst = instancesToRemove[i];
-                        global.log(`${UUID}: Cleaned orphaned instance ${wmClass} (title: "${inst.title_snapshot}")`);
+                        this._log(`Cleaned orphaned instance ${wmClass} (title: "${inst.title_snapshot}")`);
                         removedCount++;
                     }
                     // Keep remaining unassigned if needed
@@ -187,7 +191,7 @@ var InstanceCleanup = class InstanceCleanup {
                     // Log removed instances
                     if (instancesToRemove.length > 0) {
                         for (const inst of instancesToRemove) {
-                            global.log(`${UUID}: Cleaned orphaned instance ${wmClass} (title: "${inst.title_snapshot}")`);
+                            this._log(`Cleaned orphaned instance ${wmClass} (title: "${inst.title_snapshot}")`);
                         }
                         removedCount += instancesToRemove.length;
                     }
@@ -198,7 +202,7 @@ var InstanceCleanup = class InstanceCleanup {
 
         if (removedCount > 0) {
             this._storage.save();
-            global.log(`${UUID}: Cleanup complete - removed ${removedCount} orphaned/duplicate instances`);
+            this._log(`Cleanup complete - removed ${removedCount} orphaned/duplicate instances`);
         }
 
         return removedCount;

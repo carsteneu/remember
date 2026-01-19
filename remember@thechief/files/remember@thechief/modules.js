@@ -7,6 +7,9 @@
 
 const UUID = 'remember@thechief';
 
+// Logger cache - loaded once and reused
+let _loggerModule = null;
+
 /**
  * Cache for loaded modules to avoid reloading
  * @type {Object.<string, Object>}
@@ -96,5 +99,40 @@ var Modules = {
     isCached: function(subdir, moduleName) {
         const cacheKey = `_${subdir}_${moduleName}`;
         return cacheKey in moduleCache;
+    },
+
+    /**
+     * Get logger functions for use in modules
+     * Returns { log, logError, isDebugMode } from services/logger
+     *
+     * @param {Object} extensionMeta - The extension metadata object containing the path
+     * @returns {Object} Logger functions { log, logError, isDebugMode }
+     */
+    getLogger: function(extensionMeta) {
+        if (_loggerModule) {
+            return {
+                log: _loggerModule.log,
+                logError: _loggerModule.logError,
+                isDebugMode: _loggerModule.isDebugMode
+            };
+        }
+
+        const loggerPath = `${extensionMeta.path}/services`;
+        const originalSearchPath = imports.searchPath.slice();
+
+        try {
+            imports.searchPath.unshift(loggerPath);
+            _loggerModule = imports.logger;
+            return {
+                log: _loggerModule.log,
+                logError: _loggerModule.logError,
+                isDebugMode: _loggerModule.isDebugMode
+            };
+        } finally {
+            imports.searchPath.length = 0;
+            for (let i = 0; i < originalSearchPath.length; i++) {
+                imports.searchPath.push(originalSearchPath[i]);
+            }
+        }
     }
 };

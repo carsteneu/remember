@@ -3,31 +3,62 @@ const GLib = imports.gi.GLib;
 
 const UUID = 'remember@thechief';
 
+// Check debug mode once at module load
+const _debugEnv = GLib.getenv('REMEMBER_DEBUG');
+const _debugMode = _debugEnv === '1' || _debugEnv === 'true';
+
+/**
+ * Global log function - only logs if REMEMBER_DEBUG=1
+ * Use this instead of global.log() throughout the extension
+ * @param {string} message - Log message (UUID prefix added automatically)
+ */
+var log = function(message) {
+    if (_debugMode) {
+        global.log(`${UUID}: ${message}`);
+    }
+};
+
+/**
+ * Error logging - always logs regardless of debug mode
+ * @param {string} message - Error message
+ * @param {Error} error - Optional error object
+ */
+var logError = function(message, error = null) {
+    if (error) {
+        global.logError(`${UUID}: ${message}: ${error}`);
+        if (error.stack) {
+            global.logError(`${UUID}: Stack: ${error.stack}`);
+        }
+    } else {
+        global.logError(`${UUID}: ${message}`);
+    }
+};
+
+/**
+ * Check if debug mode is enabled
+ * @returns {boolean}
+ */
+var isDebugMode = function() {
+    return _debugMode;
+};
+
 /**
  * Logger Module
  * Provides sanitized logging with configurable verbosity and debug mode
  */
 var Logger = class Logger {
     constructor() {
-        this._debugMode = false;
-        this._init();
-    }
-
-    _init() {
-        // Check for debug mode from environment variable
-        const debugEnv = GLib.getenv('REMEMBER_DEBUG');
-        this._debugMode = debugEnv === '1' || debugEnv === 'true';
-
+        this._debugMode = _debugMode;
         if (this._debugMode) {
-            global.log(`${UUID}: Debug mode ENABLED - sensitive data will be logged`);
+            global.log(`${UUID}: Debug mode ENABLED - verbose logging active`);
         }
     }
 
     /**
-     * Standard log with UUID prefix
+     * Standard log with UUID prefix (only in debug mode)
      */
     log(message) {
-        global.log(`${UUID}: ${message}`);
+        log(message);
     }
 
     /**
@@ -37,47 +68,24 @@ var Logger = class Logger {
      *   Supported fields: cmdline (array), title (string), path (string), workingDir (string)
      */
     logSensitive(message, sensitiveData = {}) {
-        if (this._debugMode) {
-            // Debug mode: Log full data
-            let debugParts = [message];
+        if (!this._debugMode) return; // Skip entirely in production
 
-            if (sensitiveData.cmdline) {
-                debugParts.push(`cmdline=[${sensitiveData.cmdline.join(' ')}]`);
-            }
-            if (sensitiveData.title) {
-                debugParts.push(`title="${sensitiveData.title}"`);
-            }
-            if (sensitiveData.path) {
-                debugParts.push(`path="${sensitiveData.path}"`);
-            }
-            if (sensitiveData.workingDir) {
-                debugParts.push(`workingDir="${sensitiveData.workingDir}"`);
-            }
+        let debugParts = [message];
 
-            global.log(`${UUID}: ${debugParts.join(' ')}`);
-        } else {
-            // Production mode: Sanitize sensitive data
-            let sanitizedParts = [message];
-
-            if (sensitiveData.cmdline) {
-                const sanitized = this.sanitizeCmdline(sensitiveData.cmdline);
-                sanitizedParts.push(`cmdline=${sanitized}`);
-            }
-            if (sensitiveData.title) {
-                const sanitized = this.sanitizeTitle(sensitiveData.title);
-                sanitizedParts.push(`title=${sanitized}`);
-            }
-            if (sensitiveData.path) {
-                const sanitized = this.sanitizePath(sensitiveData.path);
-                sanitizedParts.push(`path=${sanitized}`);
-            }
-            if (sensitiveData.workingDir) {
-                const sanitized = this.sanitizePath(sensitiveData.workingDir);
-                sanitizedParts.push(`workingDir=${sanitized}`);
-            }
-
-            global.log(`${UUID}: ${sanitizedParts.join(' ')}`);
+        if (sensitiveData.cmdline) {
+            debugParts.push(`cmdline=[${sensitiveData.cmdline.join(' ')}]`);
         }
+        if (sensitiveData.title) {
+            debugParts.push(`title="${sensitiveData.title}"`);
+        }
+        if (sensitiveData.path) {
+            debugParts.push(`path="${sensitiveData.path}"`);
+        }
+        if (sensitiveData.workingDir) {
+            debugParts.push(`workingDir="${sensitiveData.workingDir}"`);
+        }
+
+        global.log(`${UUID}: ${debugParts.join(' ')}`);
     }
 
     /**
@@ -97,14 +105,7 @@ var Logger = class Logger {
      * Error logging (always logs)
      */
     error(message, error = null) {
-        if (error) {
-            global.logError(`${UUID}: ${message}: ${error}`);
-            if (error.stack) {
-                global.logError(`${UUID}: Stack: ${error.stack}`);
-            }
-        } else {
-            global.logError(`${UUID}: ${message}`);
-        }
+        logError(message, error);
     }
 
     // === Sanitization Functions ===
@@ -176,4 +177,3 @@ var Logger = class Logger {
         return checksum.substring(0, truncate);
     }
 };
-

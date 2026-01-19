@@ -13,10 +13,14 @@ const UUID = "remember@thechief";
  * Chrome Handler Class
  */
 var ChromeHandler = class ChromeHandler {
-    constructor(config, extensionSettings, storage) {
+    constructor(config, extensionSettings, storage, log = null, logError = null) {
         this._config = config;
         this._extensionSettings = extensionSettings;
         this._storage = storage;
+
+        // Logger injection - no-op until injected
+        this._log = log || function() {};
+        this._logError = logError || global.logError;
     }
 
     /**
@@ -34,7 +38,7 @@ var ChromeHandler = class ChromeHandler {
      */
     afterLaunch(instance, pid, success) {
         if (success) {
-            global.log(`${UUID}: Chrome/Chromium launched with PID ${pid}`);
+            this._log(`Chrome/Chromium launched with PID ${pid}`);
         }
     }
 
@@ -65,13 +69,13 @@ var ChromeHandler = class ChromeHandler {
 
             const file = Gio.File.new_for_path(configPath);
             if (!file.query_exists(null)) {
-                global.log(`${UUID}: Chrome preferences file not found: ${configPath}`);
+                this._log(`Chrome preferences file not found: ${configPath}`);
                 return;
             }
 
             const [success, contents] = file.load_contents(null);
             if (!success) {
-                global.logError(`${UUID}: Failed to read Chrome preferences file`);
+                this._logError(`${UUID}: Failed to read Chrome preferences file`);
                 return;
             }
 
@@ -82,14 +86,14 @@ var ChromeHandler = class ChromeHandler {
             if (prefsText.includes('"exit_type":"Crashed"')) {
                 prefsText = prefsText.replace(/"exit_type":"Crashed"/g, '"exit_type":"Normal"');
                 modified = true;
-                global.log(`${UUID}: Chrome: Set exit_type=Normal`);
+                this._log(`Chrome: Set exit_type=Normal`);
             }
 
             // Handle exited_cleanly
             if (prefsText.includes('"exited_cleanly":false')) {
                 prefsText = prefsText.replace(/"exited_cleanly":false/g, '"exited_cleanly":true');
                 modified = true;
-                global.log(`${UUID}: Chrome: Set exited_cleanly=true`);
+                this._log(`Chrome: Set exited_cleanly=true`);
             }
 
             if (modified) {
@@ -100,11 +104,11 @@ var ChromeHandler = class ChromeHandler {
                     Gio.FileCreateFlags.REPLACE_DESTINATION,
                     null
                 );
-                global.log(`${UUID}: Chrome: Fixed preferences for session restore`);
+                this._log(`Chrome: Fixed preferences for session restore`);
             }
 
         } catch (e) {
-            global.logError(`${UUID}: Chrome: Failed to fix preferences: ${e}`);
+            this._logError(`${UUID}: Chrome: Failed to fix preferences: ${e}`);
         }
     }
 

@@ -28,6 +28,10 @@ var WmClassMigration = class WmClassMigration {
         this._findDesktopFileFn = options.findDesktopFileFn;
         this._findDesktopExecFn = options.findDesktopExecFn;
         this._onWindowChangedFn = options.onWindowChangedFn;
+
+        // Logger injection - no-op until injected
+        this._log = options.log || function() {};
+        this._logError = options.logError || global.logError;
     }
 
     /**
@@ -74,7 +78,7 @@ var WmClassMigration = class WmClassMigration {
 
         if (matchedInstance && oldWmClass) {
             // Found a match! Migrate instance data from oldWmClass to newWmClass
-            global.log(`${UUID}: WM_CLASS changed: "${oldWmClass}" -> "${newWmClass}" (migrating instance data)`);
+            this._log(`WM_CLASS changed: "${oldWmClass}" -> "${newWmClass}" (migrating instance data)`);
 
             // Check if they belong to the same plugin (e.g., LibreOffice plugin handles both "Soffice" and "libreoffice-calc")
             const samePlugin = this._pluginManager &&
@@ -91,7 +95,7 @@ var WmClassMigration = class WmClassMigration {
                     if (oldAppData.instances.length === 0) {
                         // No more instances, remove the app entry entirely
                         this._storage.removeApp(oldWmClass);
-                        global.log(`${UUID}: Removed empty app entry: ${oldWmClass}`);
+                        this._log(`Removed empty app entry: ${oldWmClass}`);
                     } else {
                         this._storage.setApp(oldWmClass, oldAppData);
                     }
@@ -111,7 +115,7 @@ var WmClassMigration = class WmClassMigration {
                 newAppData.instances.push(matchedInstance);
                 this._storage.setApp(newWmClass, newAppData);
 
-                global.log(`${UUID}: Migrated instance from "${oldWmClass}" to "${newWmClass}"`);
+                this._log(`Migrated instance from "${oldWmClass}" to "${newWmClass}"`);
             }
         }
 

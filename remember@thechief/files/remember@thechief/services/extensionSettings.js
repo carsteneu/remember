@@ -24,6 +24,10 @@ var ExtensionSettings = class ExtensionSettings {
         this._settings = null;
         this._fileMonitor = null;
         this._reloadTimeoutId = null;
+
+        // Logger injection - no-op until injected from extension.js
+        this._log = function() {};
+        this._logError = global.logError;
     }
 
     /**
@@ -43,9 +47,9 @@ var ExtensionSettings = class ExtensionSettings {
         if (!dir.query_exists(null)) {
             try {
                 dir.make_directory_with_parents(null);
-                global.log(`${UUID}: Created config directory: ${this._configDir}`);
+                this._log(`Created config directory: ${this._configDir}`);
             } catch (e) {
-                global.logError(`${UUID}: Failed to create config directory: ${e}`);
+                this._logError(`${UUID}: Failed to create config directory: ${e}`);
             }
         }
     }
@@ -59,7 +63,7 @@ var ExtensionSettings = class ExtensionSettings {
         if (!file.query_exists(null)) {
             this._settings = this._createDefaultSettings();
             this._save();
-            global.log(`${UUID}: Created default extension settings`);
+            this._log('Created default extension settings');
             return;
         }
 
@@ -68,10 +72,10 @@ var ExtensionSettings = class ExtensionSettings {
             if (success) {
                 const text = imports.byteArray.toString(contents);
                 this._settings = JSON.parse(text);
-                global.log(`${UUID}: Loaded extension settings`);
+                this._log('Loaded extension settings');
             }
         } catch (e) {
-            global.logError(`${UUID}: Failed to load extension settings: ${e}`);
+            this._logError(`${UUID}: Failed to load extension settings: ${e}`);
             this._settings = this._createDefaultSettings();
         }
     }
@@ -106,9 +110,9 @@ var ExtensionSettings = class ExtensionSettings {
                 Gio.FileCreateFlags.REPLACE_DESTINATION,
                 null
             );
-            global.log(`${UUID}: Saved extension settings`);
+            this._log('Saved extension settings');
         } catch (e) {
-            global.logError(`${UUID}: Failed to save extension settings: ${e}`);
+            this._logError(`${UUID}: Failed to save extension settings: ${e}`);
         }
     }
 
@@ -205,9 +209,9 @@ var ExtensionSettings = class ExtensionSettings {
                 }
             });
 
-            global.log(`${UUID}: File monitor active for extension-settings.json`);
+            this._log('File monitor active for extension-settings.json');
         } catch (e) {
-            global.logError(`${UUID}: Failed to setup file monitor: ${e}`);
+            this._logError(`${UUID}: Failed to setup file monitor: ${e}`);
         }
     }
 
@@ -215,13 +219,13 @@ var ExtensionSettings = class ExtensionSettings {
      * Reload settings from disk
      */
     _reload() {
-        global.log(`${UUID}: Reloading extension settings...`);
+        this._log('Reloading extension settings...');
         const oldSettings = JSON.stringify(this._settings);
         this._load();
         const newSettings = JSON.stringify(this._settings);
 
         if (oldSettings !== newSettings) {
-            global.log(`${UUID}: Extension settings changed`);
+            this._log('Extension settings changed');
         }
     }
 

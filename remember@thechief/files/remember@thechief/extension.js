@@ -14,6 +14,10 @@ const Gettext = imports.gettext;
 
 const UUID = "remember@thechief";
 
+// Logger functions - loaded in enable(), used throughout
+let log = function() {};  // No-op until logger loaded
+let logError = global.logError.bind(global);  // Fallback to global
+
 // Initialize gettext for translations
 Gettext.bindtextdomain(UUID, GLib.build_filenamev([GLib.get_home_dir(), '.local', 'share', 'locale']));
 
@@ -88,14 +92,16 @@ class WindowRememberExtension {
     enable() {
         if (this._enabled) return;
 
-        global.log(`${UUID}: Enabling extension...`);
+        // Load logger module FIRST (used by other modules)
+        const loggerModule = getExtensionModule('services/logger');
+        log = loggerModule.log;
+        logError = loggerModule.logError;
+        this._logger = new loggerModule.Logger();
+
+        log('Enabling extension...');
 
         // Reset shutdown flag
         this._isShuttingDown = false;
-
-        // Load logger module FIRST (used by other modules)
-        const { Logger } = getExtensionModule('services/logger');
-        this._logger = new Logger();
 
         // Load modules dynamically
         const { Storage } = getExtensionModule('services/storage');
@@ -123,32 +129,42 @@ class WindowRememberExtension {
 
         // Initialize storage (inject logger)
         this._storage = new Storage();
+        this._storage._log = log;
+        this._storage._logError = logError;
         this._storage._logger = this._logger; // Inject logger for sanitized logging
         this._storage.init();
 
         // Initialize preferences (for window tracking behavior)
         this._preferences = new Preferences();
+        this._preferences._log = log;
+        this._preferences._logError = logError;
         this._preferences.init();
 
         // Initialize extension settings (for launch flags, etc.)
         this._extensionSettings = new ExtensionSettings();
+        this._extensionSettings._log = log;
+        this._extensionSettings._logError = logError;
         this._extensionSettings.init();
 
         // Initialize plugin manager for app-specific launch handling
-        this._pluginManager = new PluginManager(this._extPath, this._extensionSettings, this._storage);
+        this._pluginManager = new PluginManager(this._extPath, this._extensionSettings, this._storage, log, logError);
         this._pluginManager.loadPlugins();
-        global.log(`${UUID}: PluginManager initialized with ${this._pluginManager.getLoadedPlugins().length} plugins`);
+        log(`PluginManager initialized with ${this._pluginManager.getLoadedPlugins().length} plugins`);
 
         // BLOCK ALL SAVES until restore completes
         this._storage.blockSaves();
 
         // Initialize monitor manager
         this._monitorManager = new MonitorManager(this._storage);
+        this._monitorManager._log = log;
+        this._monitorManager._logError = logError;
         this._monitorManager.enable();
 
         // Initialize window tracker (with preferences for conditional behavior)
         // Pass extensionMeta for loading core modules via modules.js
         this._tracker = new WindowTracker(this._storage, this._monitorManager, this._preferences, this._meta);
+        this._tracker._log = log;
+        this._tracker._logError = logError;
         this._tracker._logger = this._logger; // Inject logger for sanitized logging
         this._tracker.resetAssignments();
 
@@ -165,7 +181,9 @@ class WindowRememberExtension {
             this._extensionSettings,
             this._pluginManager,
             this._sessionConfig,
-            this._singleInstanceConfig
+            this._singleInstanceConfig,
+            log,
+            logError
         );
         this._launcher._logger = this._logger; // Inject logger for sanitized logging
         this._tracker.setSessionLauncher(this._launcher);
@@ -194,7 +212,7 @@ class WindowRememberExtension {
         };
 
         this._enabled = true;
-        global.log(`${UUID}: Extension enabled`);
+        log('Extension enabled');
 
         // Schedule auto-restore after startup delay
         this._autoRestore.scheduleAutoRestore();
@@ -206,7 +224,7 @@ class WindowRememberExtension {
     disable() {
         if (!this._enabled) return;
 
-        global.log(`${UUID}: Disabling extension...`);
+        log('Disabling extension...');
 
         // CRITICAL: Set shutdown flag FIRST to stop all saves immediately
         // This prevents saving partial state as windows close during logout
@@ -294,7 +312,7 @@ class WindowRememberExtension {
         }
 
         this._enabled = false;
-        global.log(`${UUID}: Extension disabled`);
+        log('Extension disabled');
     }
 
     /**
@@ -315,7 +333,7 @@ class WindowRememberExtension {
         });
 
         this._storage.save();
-        global.log(`${UUID}: Full save completed - ${savedCount} windows saved`);
+        log(`Full save completed - ${savedCount} windows saved`);
     }
 
     /**
@@ -325,7 +343,7 @@ class WindowRememberExtension {
         if (!this._storage) return;
         this._storage.save();
         const stats = this._getStats();
-        global.log(`${UUID}: Force saved all positions`);
+        log('Force saved all positions');
         const message = _("Saved %d window positions").replace('%d', stats.savedInstances);
         Main.notify(_("Window Remember"), message);
     }
@@ -349,7 +367,7 @@ class WindowRememberExtension {
             }
         });
 
-        global.log(`${UUID}: Restored ${restoredCount} window positions`);
+        log(`Restored ${restoredCount} window positions`);
         const message = _("Restored %d window positions").replace('%d', restoredCount);
         Main.notify(_("Window Remember"), message);
     }
@@ -372,7 +390,7 @@ class WindowRememberExtension {
      */
     _closeWindow(x11WindowId) {
         if (!this._tracker) {
-            global.logError(`${UUID}: Cannot close window - tracker not initialized`);
+            logError('Cannot close window - tracker not initialized');
             return false;
         }
 
@@ -389,7 +407,7 @@ class WindowRememberExtension {
         });
 
         if (!foundWindow) {
-            global.log(`${UUID}: Window ${x11WindowId} not found, may already be closed`);
+            log(`Window ${x11WindowId} not found, may already be closed`);
             return false;
         }
 
@@ -398,10 +416,10 @@ class WindowRememberExtension {
             const wmClass = foundWindow.get_wm_class();
             const title = foundWindow.get_title();
             foundWindow.delete(global.get_current_time());
-            global.log(`${UUID}: Closed window ${wmClass} - ${title} (${x11WindowId})`);
+            log(`Closed window ${wmClass} - ${title} (${x11WindowId})`);
             return true;
         } catch (e) {
-            global.logError(`${UUID}: Failed to close window ${x11WindowId}: ${e}`);
+            logError(`Failed to close window ${x11WindowId}: ${e}`);
             return false;
         }
     }

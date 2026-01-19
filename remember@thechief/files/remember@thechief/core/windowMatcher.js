@@ -18,8 +18,12 @@ var WindowMatcher = class WindowMatcher {
      * Create a new WindowMatcher
      * @param {Function} getX11WindowIdFn - Function to get X11 window ID from metaWindow
      */
-    constructor(getX11WindowIdFn) {
+    constructor(getX11WindowIdFn, log = null, logError = null) {
         this._getX11WindowId = getX11WindowIdFn;
+
+        // Logger injection - no-op until injected
+        this._log = log || function() {};
+        this._logError = logError || global.logError;
     }
 
     /**
@@ -201,20 +205,20 @@ var WindowMatcher = class WindowMatcher {
 
             // Log match details
             if (best.score >= 10000) {
-                global.log(`${UUID}: Matched by X11 ID: ${windowXid} (score=${best.score})`);
+                this._log(`Matched by X11 ID: ${windowXid} (score=${best.score})`);
             } else if (best.score >= 5000) {
-                global.log(`${UUID}: Matched by stable sequence: ${windowSeq} (score=${best.score})`);
+                this._log(`Matched by stable sequence: ${windowSeq} (score=${best.score})`);
             } else if (best.score >= 1000) {
-                global.log(`${UUID}: Matched by exact title: "${windowTitle}" (score=${best.score})`);
+                this._log(`Matched by exact title: "${windowTitle}" (score=${best.score})`);
             } else {
-                global.log(`${UUID}: Best match for ${appData.wm_class}: score=${best.score}, id=${best.instance.id}`);
+                this._log(`Best match for ${appData.wm_class}: score=${best.score}, id=${best.instance.id}`);
             }
 
             // Log runner-up for debugging close matches
             if (candidates.length > 1) {
                 const delta = best.score - candidates[1].score;
                 if (delta < 100) {
-                    global.log(`${UUID}: Close match! Runner-up: score=${candidates[1].score} (delta=${delta})`);
+                    this._log(`Close match! Runner-up: score=${candidates[1].score} (delta=${delta})`);
                 }
             }
 
@@ -229,12 +233,12 @@ var WindowMatcher = class WindowMatcher {
         // Fallback: First unassigned instance
         for (const instance of appData.instances) {
             if (!instance.assigned) {
-                global.log(`${UUID}: No scored match found, using first unassigned instance for ${appData.wm_class}`);
+                this._log(`No scored match found, using first unassigned instance for ${appData.wm_class}`);
                 instance.assigned = true;
                 instance.stable_sequence = windowSeq;
                 instance.x11_window_id = windowXid;
                 instance.title_snapshot = windowTitle;
-                global.log(`${UUID}: Matched by order (fallback)`);
+                this._log(`Matched by order (fallback)`);
                 return instance;
             }
         }
@@ -278,7 +282,7 @@ var WindowMatcher = class WindowMatcher {
         if (windowTitle && windowTitle.length > 4) {
             for (const instance of appData.instances) {
                 if (!instance.assigned && instance.title_snapshot === windowTitle) {
-                    global.log(`${UUID}: Matched instance by title: "${windowTitle}"`);
+                    this._log(`Matched instance by title: "${windowTitle}"`);
                     instance.stable_sequence = windowSeq;
                     instance.x11_window_id = windowXid;
                     instance.assigned = true;
@@ -300,7 +304,7 @@ var WindowMatcher = class WindowMatcher {
                     const savedProject = savedParts.length >= 3 ? savedParts[savedParts.length - 2] : savedParts[0];
 
                     if (windowProject && savedProject && windowProject === savedProject) {
-                        global.log(`${UUID}: Matched instance by project name: "${windowProject}"`);
+                        this._log(`Matched instance by project name: "${windowProject}"`);
                         instance.stable_sequence = windowSeq;
                         instance.x11_window_id = windowXid;
                         instance.assigned = true;
@@ -350,7 +354,7 @@ var WindowMatcher = class WindowMatcher {
         }
 
         if (bestMatch) {
-            global.log(`${UUID}: Best scored match for ${appData.wm_class}: score=${bestScore}, ws=${bestMatch.workspace}, mon=${bestMatch.monitor_index}`);
+            this._log(`Best scored match for ${appData.wm_class}: score=${bestScore}, ws=${bestMatch.workspace}, mon=${bestMatch.monitor_index}`);
             bestMatch.stable_sequence = windowSeq;
             bestMatch.x11_window_id = windowXid;
             bestMatch.assigned = true;
@@ -360,7 +364,7 @@ var WindowMatcher = class WindowMatcher {
         // 5. Fallback: first unassigned instance (only if no scoring possible)
         for (const instance of appData.instances) {
             if (!instance.assigned) {
-                global.log(`${UUID}: Using first unassigned instance for ${appData.wm_class} (no scored match)`);
+                this._log(`Using first unassigned instance for ${appData.wm_class} (no scored match)`);
                 instance.stable_sequence = windowSeq;
                 instance.x11_window_id = windowXid;
                 instance.assigned = true;
@@ -387,7 +391,7 @@ var WindowMatcher = class WindowMatcher {
         };
 
         appData.instances.push(newInstance);
-        global.log(`${UUID}: Created new instance for ${appData.wm_class} (no existing match)`);
+        this._log(`Created new instance for ${appData.wm_class} (no existing match)`);
         return newInstance;
     }
 };

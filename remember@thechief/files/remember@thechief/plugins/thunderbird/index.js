@@ -19,10 +19,14 @@ const UUID = "remember@thechief";
  * Thunderbird Handler Class
  */
 var ThunderbirdHandler = class ThunderbirdHandler {
-    constructor(config, extensionSettings, storage) {
+    constructor(config, extensionSettings, storage, log = null, logError = null) {
         this._config = config;
         this._extensionSettings = extensionSettings;
         this._storage = storage;
+
+        // Logger injection - no-op until injected
+        this._log = log || function() {};
+        this._logError = logError || global.logError;
 
         // Cache the default profile for fallback
         this._defaultProfile = null;
@@ -42,7 +46,7 @@ var ThunderbirdHandler = class ThunderbirdHandler {
      */
     afterLaunch(instance, pid, success) {
         if (success) {
-            global.log(`${UUID}: Thunderbird launched with PID ${pid}`);
+            this._log(`Thunderbird launched with PID ${pid}`);
         }
     }
 
@@ -79,7 +83,7 @@ var ThunderbirdHandler = class ThunderbirdHandler {
 
         for (const pattern of skipPatterns) {
             if (pattern.test(title)) {
-                global.log(`${UUID}: Thunderbird: Skipping transient window "${title.substring(0, 40)}..."`);
+                this._log(`Thunderbird: Skipping transient window "${title.substring(0, 40)}..."`);
                 return true;
             }
         }
@@ -105,26 +109,26 @@ var ThunderbirdHandler = class ThunderbirdHandler {
         const profileFromTitle = title ? this._getProfileFromTitle(title) : null;
 
         if (profileFromTitle) {
-            global.log(`${UUID}: Thunderbird: Using profile "${profileFromTitle}" from title`);
+            this._log(`Thunderbird: Using profile "${profileFromTitle}" from title`);
             return ['-P', profileFromTitle, '--new-instance'];
         }
 
         // 2. Try to find profile from other Thunderbird instances (same session)
         const profileFromSibling = this._getProfileFromSiblingInstances(instance);
         if (profileFromSibling) {
-            global.log(`${UUID}: Thunderbird: Using profile "${profileFromSibling}" from sibling instance`);
+            this._log(`Thunderbird: Using profile "${profileFromSibling}" from sibling instance`);
             return ['-P', profileFromSibling, '--new-instance'];
         }
 
         // 3. Fallback: Use default profile from profiles.ini
         const defaultProfile = this._getDefaultProfile();
         if (defaultProfile) {
-            global.log(`${UUID}: Thunderbird: Using default profile "${defaultProfile}"`);
+            this._log(`Thunderbird: Using default profile "${defaultProfile}"`);
             return ['-P', defaultProfile, '--new-instance'];
         }
 
         // 4. Last resort: Profile manager (shouldn't happen normally)
-        global.log(`${UUID}: Thunderbird: No profile found, using profile manager`);
+        this._log(`Thunderbird: No profile found, using profile manager`);
         return ['-p'];
     }
 
@@ -158,7 +162,7 @@ var ThunderbirdHandler = class ThunderbirdHandler {
                     if (emailMatch) {
                         const profile = this._matchEmailToProfile(emailMatch[0].toLowerCase());
                         if (profile) {
-                            global.log(`${UUID}: Thunderbird: Found profile "${profile}" from sibling "${inst.title_snapshot.substring(0, 40)}..."`);
+                            this._log(`Thunderbird: Found profile "${profile}" from sibling "${inst.title_snapshot.substring(0, 40)}..."`);
                             return profile;
                         }
                     }
@@ -190,18 +194,18 @@ var ThunderbirdHandler = class ThunderbirdHandler {
             for (const profile of profiles) {
                 if (profile.isDefault) {
                     this._defaultProfile = profile.name;
-                    global.log(`${UUID}: Thunderbird: Default profile is "${profile.name}"`);
+                    this._log(`Thunderbird: Default profile is "${profile.name}"`);
                     return profile.name;
                 }
             }
 
             // No explicit default, use the first profile
             this._defaultProfile = profiles[0].name;
-            global.log(`${UUID}: Thunderbird: No default set, using first profile "${profiles[0].name}"`);
+            this._log(`Thunderbird: No default set, using first profile "${profiles[0].name}"`);
             return profiles[0].name;
 
         } catch (e) {
-            global.logError(`${UUID}: Thunderbird: Failed to get default profile: ${e}`);
+            this._logError(`${UUID}: Thunderbird: Failed to get default profile: ${e}`);
             this._defaultProfile = '';
             return null;
         }
@@ -288,7 +292,7 @@ var ThunderbirdHandler = class ThunderbirdHandler {
             return this._profilesCache;
 
         } catch (e) {
-            global.logError(`${UUID}: Thunderbird: Failed to load profiles: ${e}`);
+            this._logError(`${UUID}: Thunderbird: Failed to load profiles: ${e}`);
             this._profilesCache = [];
             return [];
         }
@@ -305,12 +309,12 @@ var ThunderbirdHandler = class ThunderbirdHandler {
         // Extract email from title (format: "... - email@domain.com - Mozilla Thunderbird")
         const emailMatch = windowTitle.match(/[\w.-]+@[\w.-]+\.\w+/);
         if (!emailMatch) {
-            global.log(`${UUID}: Thunderbird: No email found in title "${windowTitle}"`);
+            this._log(`Thunderbird: No email found in title "${windowTitle}"`);
             return null;
         }
 
         const email = emailMatch[0].toLowerCase();
-        global.log(`${UUID}: Thunderbird: Extracted email: ${email}`);
+        this._log(`Thunderbird: Extracted email: ${email}`);
 
         return this._matchEmailToProfile(email);
     }

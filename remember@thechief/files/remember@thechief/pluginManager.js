@@ -15,13 +15,17 @@ const UUID = "remember@thechief";
  * Loads and manages app-specific handler plugins
  */
 var PluginManager = class PluginManager {
-    constructor(extensionPath, extensionSettings, storage) {
+    constructor(extensionPath, extensionSettings, storage, log = null, logError = null) {
         this._extensionPath = extensionPath;
         this._extensionSettings = extensionSettings;
         this._storage = storage;
         this._plugins = new Map();   // wmClass -> config
         this._handlers = new Map();  // wmClass -> handler instance
         this._loaded = false;
+
+        // Logger injection - no-op until injected
+        this._log = log || function() {};
+        this._logError = logError || global.logError;
     }
 
     /**
@@ -29,7 +33,7 @@ var PluginManager = class PluginManager {
      */
     loadPlugins() {
         if (this._loaded) {
-            global.log(`${UUID}: Plugins already loaded, skipping`);
+            this._log(`Plugins already loaded, skipping`);
             return;
         }
 
@@ -45,7 +49,7 @@ var PluginManager = class PluginManager {
         }
 
         this._loaded = true;
-        global.log(`${UUID}: PluginManager loaded ${this._plugins.size} plugin configurations`);
+        this._log(`PluginManager loaded ${this._plugins.size} plugin configurations`);
     }
 
     /**
@@ -72,7 +76,7 @@ var PluginManager = class PluginManager {
                 }
             }
         } catch (e) {
-            global.logError(`${UUID}: Failed to enumerate plugins in ${dirPath}: ${e}`);
+            this._logError(`${UUID}: Failed to enumerate plugins in ${dirPath}: ${e}`);
         }
     }
 
@@ -87,13 +91,13 @@ var PluginManager = class PluginManager {
             // 1. Load config.json (required)
             const configFile = Gio.File.new_for_path(configPath);
             if (!configFile.query_exists(null)) {
-                global.log(`${UUID}: Plugin ${pluginName} has no config.json, skipping`);
+                this._log(`Plugin ${pluginName} has no config.json, skipping`);
                 return;
             }
 
             const [success, contents] = configFile.load_contents(null);
             if (!success) {
-                global.logError(`${UUID}: Failed to read config.json for plugin ${pluginName}`);
+                this._logError(`${UUID}: Failed to read config.json for plugin ${pluginName}`);
                 return;
             }
 
@@ -101,7 +105,7 @@ var PluginManager = class PluginManager {
 
             // Validate required fields
             if (!config.name || !config.wmClass || !Array.isArray(config.wmClass)) {
-                global.logError(`${UUID}: Plugin ${pluginName} has invalid config (missing name or wmClass array)`);
+                this._logError(`${UUID}: Plugin ${pluginName} has invalid config (missing name or wmClass array)`);
                 return;
             }
 
@@ -130,10 +134,10 @@ var PluginManager = class PluginManager {
                 this._loadHandler(pluginPath, pluginName, config);
             }
 
-            global.log(`${UUID}: Loaded plugin: ${pluginName} (${config.wmClass.join(', ')})`);
+            this._log(`Loaded plugin: ${pluginName} (${config.wmClass.join(', ')})`);
 
         } catch (e) {
-            global.logError(`${UUID}: Failed to load plugin ${pluginName}: ${e}`);
+            this._logError(`${UUID}: Failed to load plugin ${pluginName}: ${e}`);
         }
     }
 
@@ -147,7 +151,7 @@ var PluginManager = class PluginManager {
             const handlerFile = Gio.File.new_for_path(handlerPath);
 
             if (!handlerFile.query_exists(null)) {
-                global.log(`${UUID}: Plugin ${pluginName} specifies handler ${handlerFileName} but file doesn't exist`);
+                this._log(`Plugin ${pluginName} specifies handler ${handlerFileName} but file doesn't exist`);
                 return;
             }
 
@@ -173,7 +177,7 @@ var PluginManager = class PluginManager {
                 }
 
                 if (!HandlerClass) {
-                    global.logError(`${UUID}: Plugin ${pluginName} handler has no *Handler class`);
+                    this._logError(`${UUID}: Plugin ${pluginName} handler has no *Handler class`);
                     return;
                 }
 
@@ -185,7 +189,7 @@ var PluginManager = class PluginManager {
                     this._handlers.set(wmClass, handler);
                 }
 
-                global.log(`${UUID}: Loaded handler for plugin: ${pluginName}`);
+                this._log(`Loaded handler for plugin: ${pluginName}`);
 
             } finally {
                 // Always restore search path
@@ -193,7 +197,7 @@ var PluginManager = class PluginManager {
             }
 
         } catch (e) {
-            global.logError(`${UUID}: Failed to load handler for plugin ${pluginName}: ${e}`);
+            this._logError(`${UUID}: Failed to load handler for plugin ${pluginName}: ${e}`);
         }
     }
 
@@ -327,7 +331,7 @@ var PluginManager = class PluginManager {
                 try {
                     handler.destroy();
                 } catch (e) {
-                    global.logError(`${UUID}: Error destroying handler: ${e}`);
+                    this._logError(`${UUID}: Error destroying handler: ${e}`);
                 }
             }
         }

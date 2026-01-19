@@ -31,6 +31,10 @@ var Storage = class Storage {
         this._monitorLayout = null;  // Current monitor layout for matching
         this._saveTimeoutId = null;
         this._autoSaveIntervalId = null;
+
+        // Logger injection - no-op until injected from extension.js
+        this._log = function() {};
+        this._logError = global.logError;
     }
 
     /**
@@ -110,7 +114,7 @@ var Storage = class Storage {
      * Also sets shutdown flag to prevent any further saves
      */
     stopAutoSave() {
-        global.log(`${UUID}: Stopping auto-save (shutdown detected)`);
+        this._log('Stopping auto-save (shutdown detected)');
         this._isShuttingDown = true;  // Block ALL future saves
         this._stopAutoSave();
         // Also cancel any pending save
@@ -128,12 +132,12 @@ var Storage = class Storage {
         if (!dir.query_exists(null)) {
             try {
                 dir.make_directory_with_parents(null);
-                global.log(`${UUID}: Created config directory: ${this._configDir}`);
+                this._log(`Created config directory: ${this._configDir}`);
 
                 // Harden permissions: 0700 (user-only access)
                 this._hardenPermissions(this._configDir, true);
             } catch (e) {
-                global.logError(`${UUID}: Failed to create config directory: ${e}`);
+                this._logError(`${UUID}: Failed to create config directory: ${e}`);
             }
         } else {
             // Verify and fix permissions on existing directory
@@ -159,9 +163,9 @@ var Storage = class Storage {
                 GLib.spawn_command_line_sync(`chmod ${modeStr} "${path}"`);
             }
 
-            global.log(`${UUID}: Set permissions ${mode.toString(8)} on ${path}`);
+            this._log(`Set permissions ${mode.toString(8)} on ${path}`);
         } catch (e) {
-            global.logError(`${UUID}: Failed to set permissions on ${path}: ${e}`);
+            this._logError(`${UUID}: Failed to set permissions on ${path}: ${e}`);
         }
     }
 
@@ -173,7 +177,7 @@ var Storage = class Storage {
 
         if (!file.query_exists(null)) {
             this._data = this._createEmptyData();
-            global.log(`${UUID}: No existing data, created empty structure`);
+            this._log('No existing data, created empty structure');
             return;
         }
 
@@ -192,13 +196,13 @@ var Storage = class Storage {
                 // Load monitor layout if present
                 if (this._data.monitor_layout) {
                     this._monitorLayout = this._data.monitor_layout;
-                    global.log(`${UUID}: Loaded monitor layout with ${this._monitorLayout.monitors?.length || 0} monitors`);
+                    this._log(`Loaded monitor layout with ${this._monitorLayout.monitors?.length || 0} monitors`);
                 }
 
-                global.log(`${UUID}: Loaded ${Object.keys(this._data.applications || {}).length} applications`);
+                this._log(`Loaded ${Object.keys(this._data.applications || {}).length} applications`);
             }
         } catch (e) {
-            global.logError(`${UUID}: Failed to load data: ${e}`);
+            this._logError(`${UUID}: Failed to load data: ${e}`);
             this._data = this._createEmptyData();
         }
     }
@@ -219,7 +223,7 @@ var Storage = class Storage {
      */
     _migrateData() {
         const oldVersion = this._data.version || 1;
-        global.log(`${UUID}: Migrating data from version ${oldVersion} to ${CONFIG.DATA_VERSION}`);
+        this._log(`Migrating data from version ${oldVersion} to ${CONFIG.DATA_VERSION}`);
 
         // Ensure all required fields exist
         if (!this._data.monitors) this._data.monitors = {};
@@ -227,7 +231,7 @@ var Storage = class Storage {
 
         // Migration to version 3: Backfill missing instance IDs
         if (oldVersion < 3) {
-            global.log(`${UUID}: Backfilling missing instance IDs`);
+            this._log('Backfilling missing instance IDs');
             let idCounter = 0;
 
             for (const wmClass in this._data.applications) {
@@ -237,7 +241,7 @@ var Storage = class Storage {
                         if (!instance.id) {
                             // Generate deterministic ID based on position
                             instance.id = `${wmClass}-migrated-${idCounter++}`;
-                            global.log(`${UUID}: Assigned ID ${instance.id}`);
+                            this._log(`Assigned ID ${instance.id}`);
                         }
                     }
                 }
@@ -246,7 +250,7 @@ var Storage = class Storage {
 
         // Migration to version 4: Add extended window states
         if (oldVersion < 4) {
-            global.log(`${UUID}: Migrating to v4 - adding extended window states`);
+            this._log('Migrating to v4 - adding extended window states');
             for (const wmClass in this._data.applications) {
                 const app = this._data.applications[wmClass];
                 if (app.instances) {
@@ -298,7 +302,7 @@ var Storage = class Storage {
      */
     blockSaves() {
         this._savesBlocked = true;
-        global.log(`${UUID}: Saves BLOCKED`);
+        this._log('Saves BLOCKED');
     }
 
     /**
@@ -306,7 +310,7 @@ var Storage = class Storage {
      */
     unblockSaves() {
         this._savesBlocked = false;
-        global.log(`${UUID}: Saves UNBLOCKED`);
+        this._log('Saves UNBLOCKED');
     }
 
     /**
@@ -361,9 +365,9 @@ var Storage = class Storage {
             // Harden file permissions after write
             this._hardenPermissions(this._configFile, false);
 
-            global.log(`${UUID}: Saved data to ${this._configFile}`);
+            this._log(`Saved data to ${this._configFile}`);
         } catch (e) {
-            global.logError(`${UUID}: Failed to save data: ${e}`);
+            this._logError(`${UUID}: Failed to save data: ${e}`);
         }
     }
 
@@ -429,7 +433,7 @@ var Storage = class Storage {
         try {
             const sourceFile = Gio.File.new_for_path(this._configFile);
             if (!sourceFile.query_exists(null)) {
-                global.log(`${UUID}: No positions.json to backup`);
+                this._log('No positions.json to backup');
                 return;
             }
 
@@ -458,13 +462,13 @@ var Storage = class Storage {
                 null
             );
 
-            global.log(`${UUID}: Backed up positions.json to ${backupFilename}`);
+            this._log(`Backed up positions.json to ${backupFilename}`);
 
             // Cleanup old backups (keep only last 10)
             this._cleanupOldBackups();
 
         } catch (e) {
-            global.logError(`${UUID}: Failed to backup positions.json: ${e}`);
+            this._logError(`${UUID}: Failed to backup positions.json: ${e}`);
         }
     }
 
@@ -499,13 +503,13 @@ var Storage = class Storage {
                     const oldBackupPath = GLib.build_filenamev([this._configDir, backups[i].name]);
                     const oldBackupFile = Gio.File.new_for_path(oldBackupPath);
                     oldBackupFile.delete(null);
-                    global.log(`${UUID}: Deleted old backup: ${backups[i].name}`);
+                    this._log(`Deleted old backup: ${backups[i].name}`);
                 }
             }
 
         } catch (e) {
             // Non-critical error, just log it
-            global.log(`${UUID}: Failed to cleanup old backups: ${e}`);
+            this._log(`Failed to cleanup old backups: ${e}`);
         }
     }
 

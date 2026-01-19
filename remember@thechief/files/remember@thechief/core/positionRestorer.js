@@ -40,6 +40,10 @@ var PositionRestorer = class PositionRestorer {
         this._sessionLauncher = options.sessionLauncher;
         this._getX11WindowIdFn = options.getX11WindowIdFn;
         this._findInstanceForWindowFn = options.findInstanceForWindowFn;
+
+        // Logger injection - no-op until injected
+        this._log = options.log || function() {};
+        this._logError = options.logError || global.logError;
     }
 
     /**
@@ -76,7 +80,7 @@ var PositionRestorer = class PositionRestorer {
             if (windowXid) {
                 instance.x11_window_id = windowXid;
             }
-            global.log(`${UUID}: Using launched instance ${instance.id} for ${wmClass}`);
+            this._log(`Using launched instance ${instance.id} for ${wmClass}`);
         }
 
         if (!instance) {
@@ -93,7 +97,7 @@ var PositionRestorer = class PositionRestorer {
             const handler = this._pluginManager.getHandler(wmClass);
             if (handler && handler.restoreTimings) {
                 restoreTimings = handler.restoreTimings;
-                global.log(`${UUID}: Using custom restore timings for ${wmClass}: [${restoreTimings}]ms`);
+                this._log(`Using custom restore timings for ${wmClass}: [${restoreTimings}]ms`);
             }
         }
 
@@ -129,7 +133,7 @@ var PositionRestorer = class PositionRestorer {
                     if (!metaWindow || metaWindow.is_on_all_workspaces === undefined) {
                         return false; // Window was destroyed
                     }
-                    global.log(`${UUID}: Restore attempt ${index + 1}/${restoreTimings.length} for ${wmClass} at ${delay}ms`);
+                    this._log(`Restore attempt ${index + 1}/${restoreTimings.length} for ${wmClass} at ${delay}ms`);
                     this.applyPosition(metaWindow, instance);
                     // Notify ready after last attempt
                     if (index === lastIndex) {
@@ -177,7 +181,7 @@ var PositionRestorer = class PositionRestorer {
                 const numWorkspaces = workspaceManager.get_n_workspaces();
                 const targetWsIndex = instance.workspace;
 
-                global.log(`${UUID}: Workspace restore: ${metaWindow.get_wm_class()} -> WS ${targetWsIndex + 1} (${numWorkspaces} available)`);
+                this._log(`Workspace restore: ${metaWindow.get_wm_class()} -> WS ${targetWsIndex + 1} (${numWorkspaces} available)`);
 
                 // Ensure target workspace exists
                 if (targetWsIndex >= 0 && targetWsIndex < numWorkspaces) {
@@ -187,12 +191,12 @@ var PositionRestorer = class PositionRestorer {
 
                     if (targetWs && !metaWindow.is_on_all_workspaces() && currentWsIndex !== targetWsIndex) {
                         metaWindow.change_workspace(targetWs);
-                        global.log(`${UUID}: Moved ${metaWindow.get_wm_class()} from WS ${currentWsIndex + 1} to WS ${targetWsIndex + 1}`);
+                        this._log(`Moved ${metaWindow.get_wm_class()} from WS ${currentWsIndex + 1} to WS ${targetWsIndex + 1}`);
                     } else if (currentWsIndex === targetWsIndex) {
-                        global.log(`${UUID}: ${metaWindow.get_wm_class()} already on correct WS ${targetWsIndex + 1}`);
+                        this._log(`${metaWindow.get_wm_class()} already on correct WS ${targetWsIndex + 1}`);
                     }
                 } else {
-                    global.log(`${UUID}: WARNING: Target workspace ${targetWsIndex + 1} doesn't exist (only ${numWorkspaces} available)`);
+                    this._log(`WARNING: Target workspace ${targetWsIndex + 1} doesn't exist (only ${numWorkspaces} available)`);
                 }
             }
 
@@ -200,7 +204,7 @@ var PositionRestorer = class PositionRestorer {
             if (instance.maximized) {
                 metaWindow.unmaximize(Meta.MaximizeFlags.BOTH); // Unmaximize first if needed
                 metaWindow.maximize(Meta.MaximizeFlags.BOTH);
-                global.log(`${UUID}: Maximized window ${metaWindow.get_wm_class()}`);
+                this._log(`Maximized window ${metaWindow.get_wm_class()}`);
                 return;
             }
 
@@ -227,7 +231,7 @@ var PositionRestorer = class PositionRestorer {
                         index: instance.monitor_index,
                         geometry: global.display.get_monitor_geometry(instance.monitor_index)
                     };
-                    global.log(`${UUID}: Using saved monitor_index ${instance.monitor_index}`);
+                    this._log(`Using saved monitor_index ${instance.monitor_index}`);
                 }
                 // Otherwise fallback to primary (index 0)
                 else {
@@ -235,7 +239,7 @@ var PositionRestorer = class PositionRestorer {
                         index: 0,
                         geometry: global.display.get_monitor_geometry(0)
                     };
-                    global.log(`${UUID}: Saved monitor_index ${instance.monitor_index} doesn't exist, using primary`);
+                    this._log(`Saved monitor_index ${instance.monitor_index} doesn't exist, using primary`);
                 }
             }
 
@@ -328,14 +332,14 @@ var PositionRestorer = class PositionRestorer {
                 metaWindow.minimize();
             }
 
-            global.log(`${UUID}: Restored position for ${metaWindow.get_wm_class()}: ` +
+            this._log(`Restored position for ${metaWindow.get_wm_class()}: ` +
                 `${targetX},${targetY} ${targetWidth}x${targetHeight} on monitor ${instance.monitor_id || instance.monitor_index}`);
 
             // NOTE: 'ready' status is sent by the caller (tryRestorePosition -> notifyReady)
             // to ensure we use the correct instanceId for progress tracking
 
         } catch (e) {
-            global.logError(`${UUID}: Failed to apply position: ${e}`);
+            this._logError(`${UUID}: Failed to apply position: ${e}`);
         }
     }
 };

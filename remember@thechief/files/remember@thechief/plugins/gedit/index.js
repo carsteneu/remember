@@ -14,10 +14,14 @@ const UUID = "remember@thechief";
  * Text Editor Handler Class
  */
 var TextEditorHandler = class TextEditorHandler {
-    constructor(config, extensionSettings, storage) {
+    constructor(config, extensionSettings, storage, log = null, logError = null) {
         this._config = config;
         this._extensionSettings = extensionSettings;
         this._storage = storage;
+
+        // Logger injection - no-op until injected
+        this._log = log || function() {};
+        this._logError = logError || global.logError;
     }
 
     /**
@@ -32,7 +36,7 @@ var TextEditorHandler = class TextEditorHandler {
      */
     afterLaunch(instance, pid, success) {
         if (success) {
-            global.log(`${UUID}: ${this._config.name} launched with PID ${pid}`);
+            this._log(`${this._config.name} launched with PID ${pid}`);
         }
     }
 
@@ -56,7 +60,7 @@ var TextEditorHandler = class TextEditorHandler {
         const titleLower = title.toLowerCase();
         for (const skip of skipPatterns) {
             if (titleLower.includes(skip)) {
-                global.log(`${UUID}: ${this._config.name}: Skipping unsaved document`);
+                this._log(`${this._config.name}: Skipping unsaved document`);
                 return null;
             }
         }
@@ -71,7 +75,7 @@ var TextEditorHandler = class TextEditorHandler {
                 // Verify file exists
                 const file = Gio.File.new_for_path(filePath);
                 if (file.query_exists(null)) {
-                    global.log(`${UUID}: ${this._config.name}: Opening file ${filePath}`);
+                    this._log(`${this._config.name}: Opening file ${filePath}`);
                     return [filePath];
                 }
             }
@@ -82,12 +86,12 @@ var TextEditorHandler = class TextEditorHandler {
 
             if (filenameMatch) {
                 const filename = filenameMatch[1];
-                global.log(`${UUID}: ${this._config.name}: Opening relative file ${filename}`);
+                this._log(`${this._config.name}: Opening relative file ${filename}`);
                 return [filename]; // Let the app try to find it
             }
 
         } catch (e) {
-            global.logError(`${UUID}: ${this._config.name}: Failed to parse title "${title}": ${e}`);
+            this._logError(`${UUID}: ${this._config.name}: Failed to parse title "${title}": ${e}`);
         }
 
         return null;

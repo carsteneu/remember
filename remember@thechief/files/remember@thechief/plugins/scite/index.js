@@ -13,10 +13,14 @@ const UUID = "remember@thechief";
  * SciTE Handler Class
  */
 var SciteHandler = class SciteHandler {
-    constructor(config, extensionSettings, storage) {
+    constructor(config, extensionSettings, storage, log = null, logError = null) {
         this._config = config;
         this._extensionSettings = extensionSettings;
         this._storage = storage;
+
+        // Logger injection - no-op until injected
+        this._log = log || function() {};
+        this._logError = logError || global.logError;
     }
 
     beforeLaunch(instance, launchParams) {
@@ -25,7 +29,7 @@ var SciteHandler = class SciteHandler {
 
     afterLaunch(instance, pid, success) {
         if (success) {
-            global.log(`${UUID}: SciTE launched with PID ${pid}`);
+            this._log(`SciTE launched with PID ${pid}`);
         }
     }
 
@@ -51,7 +55,7 @@ var SciteHandler = class SciteHandler {
                 const filePath = fullPathMatch[1];
                 const file = Gio.File.new_for_path(filePath);
                 if (file.query_exists(null)) {
-                    global.log(`${UUID}: SciTE: Opening file ${filePath}`);
+                    this._log(`SciTE: Opening file ${filePath}`);
                     return [filePath];
                 }
             }
@@ -62,12 +66,12 @@ var SciteHandler = class SciteHandler {
 
             if (filenameMatch) {
                 const filename = filenameMatch[1];
-                global.log(`${UUID}: SciTE: Opening relative file ${filename}`);
+                this._log(`SciTE: Opening relative file ${filename}`);
                 return [filename];
             }
 
         } catch (e) {
-            global.logError(`${UUID}: SciTE: Failed to parse title: ${e}`);
+            this._logError(`${UUID}: SciTE: Failed to parse title: ${e}`);
         }
 
         return null;

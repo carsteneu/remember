@@ -26,6 +26,10 @@ var ProcessCapture = class ProcessCapture {
         this._findDesktopFileFn = options.findDesktopFileFn;
         this._findDesktopExecFn = options.findDesktopExecFn;
         this._findOrCreateInstanceFn = options.findOrCreateInstanceFn;
+
+        // Logger injection - no-op until injected
+        this._log = options.log || function() {};
+        this._logError = options.logError || global.logError;
     }
 
     /**
@@ -52,7 +56,7 @@ var ProcessCapture = class ProcessCapture {
 
         // Skip if already captured (e.g., from restored session data)
         if (instanceData.cmdline && instanceData.cmdline.length > 0) {
-            global.log(`${UUID}: Process info already cached for ${wmClass}`);
+            this._log(`Process info already cached for ${wmClass}`);
             return;
         }
 
@@ -101,10 +105,10 @@ var ProcessCapture = class ProcessCapture {
             }
 
             this._storage.setApp(wmClass, appData);
-            global.log(`${UUID}: Captured initial process info for ${wmClass}`);
+            this._log(`Captured initial process info for ${wmClass}`);
 
         } catch (e) {
-            global.logError(`${UUID}: Failed to capture initial process info: ${e}`);
+            this._logError(`${UUID}: Failed to capture initial process info: ${e}`);
         }
     }
 
@@ -232,7 +236,7 @@ var ProcessCapture = class ProcessCapture {
                             // Verify it's not a temp file
                             if (!target.includes('/tmp/') && !target.includes('/.~lock.')) {
                                 instanceData.document_path = target;
-                                global.log(`${UUID}: Captured document path for ${wmClass}: ${target}`);
+                                this._log(`Captured document path for ${wmClass}: ${target}`);
                                 return; // Use the first matching document
                             }
                         }

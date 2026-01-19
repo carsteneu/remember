@@ -15,10 +15,14 @@ const DEBUG = GLib.getenv('REMEMBER_DEBUG') === '1' || GLib.getenv('REMEMBER_DEB
  * Nemo Handler Class
  */
 var NemoHandler = class NemoHandler {
-    constructor(config, extensionSettings, storage) {
+    constructor(config, extensionSettings, storage, log = null, logError = null) {
         this._config = config;
         this._extensionSettings = extensionSettings;
         this._storage = storage;
+
+        // Logger injection - no-op until injected
+        this._log = log || function() {};
+        this._logError = logError || global.logError;
     }
 
     beforeLaunch(instance, launchParams) {
@@ -27,7 +31,7 @@ var NemoHandler = class NemoHandler {
 
     afterLaunch(instance, pid, success) {
         if (success) {
-            global.log(`${UUID}: Nemo launched with PID ${pid}`);
+            this._log(`Nemo launched with PID ${pid}`);
         }
     }
 
@@ -43,10 +47,10 @@ var NemoHandler = class NemoHandler {
      * @returns {string[]|null} Directory path as argument
      */
     parseTitleData(title) {
-        if (DEBUG) global.log(`${UUID}: Nemo parseTitleData called with: "${title}"`);
+        if (DEBUG) this._log(`Nemo parseTitleData called with: "${title}"`);
 
         if (!title) {
-            if (DEBUG) global.log(`${UUID}: Nemo: No title, using home dir`);
+            if (DEBUG) this._log(`Nemo: No title, using home dir`);
             return [GLib.get_home_dir()];
         }
 
@@ -58,7 +62,7 @@ var NemoHandler = class NemoHandler {
             // Check for home directory keywords
             for (const keyword of homeKeywords) {
                 if (title === keyword || title.startsWith(keyword + separator)) {
-                    if (DEBUG) global.log(`${UUID}: Nemo: Opening home directory`);
+                    if (DEBUG) this._log(`Nemo: Opening home directory`);
                     return [GLib.get_home_dir()];
                 }
             }
@@ -73,18 +77,18 @@ var NemoHandler = class NemoHandler {
                     // Check if directory exists
                     const dir = Gio.File.new_for_path(path);
                     if (dir.query_exists(null)) {
-                        if (DEBUG) global.log(`${UUID}: Nemo: Opening directory ${path}`);
+                        if (DEBUG) this._log(`Nemo: Opening directory ${path}`);
                         return [path];
                     } else {
-                        if (DEBUG) global.log(`${UUID}: Nemo: Directory doesn't exist: ${path}`);
+                        if (DEBUG) this._log(`Nemo: Directory doesn't exist: ${path}`);
                     }
                 }
             }
 
-            if (DEBUG) global.log(`${UUID}: Nemo: Couldn't extract path from title "${title}"`);
+            if (DEBUG) this._log(`Nemo: Couldn't extract path from title "${title}"`);
 
         } catch (e) {
-            global.logError(`${UUID}: Nemo: Failed to parse title: ${e}`);
+            this._logError(`${UUID}: Nemo: Failed to parse title: ${e}`);
         }
 
         // Fallback to home directory

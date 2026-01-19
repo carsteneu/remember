@@ -56,8 +56,12 @@ var WindowFilter = class WindowFilter {
      * Create a new WindowFilter
      * @param {Object} preferences - Preferences object with shouldTrackDialogs() method
      */
-    constructor(preferences) {
+    constructor(preferences, log = null, logError = null) {
         this._preferences = preferences;
+
+        // Logger injection - no-op until injected
+        this._log = log || function() {};
+        this._logError = logError || global.logError;
     }
 
     /**
@@ -93,7 +97,7 @@ var WindowFilter = class WindowFilter {
         const wmClassLower = wmClass.toLowerCase();
         for (const blacklisted of CONFIG.BLACKLIST_WM_CLASS) {
             if (wmClassLower === blacklisted.toLowerCase()) {
-                global.log(`${UUID}: Skipping blacklisted wm_class: ${wmClass}`);
+                this._log(`Skipping blacklisted wm_class: ${wmClass}`);
                 return false;
             }
         }
@@ -101,7 +105,7 @@ var WindowFilter = class WindowFilter {
         // Skip wm_class that starts with blacklisted prefix (e.g., "cinnamon-settings *")
         for (const prefix of CONFIG.BLACKLIST_WM_CLASS_PREFIX) {
             if (wmClassLower.startsWith(prefix.toLowerCase())) {
-                global.log(`${UUID}: Skipping system tool: ${wmClass}`);
+                this._log(`Skipping system tool: ${wmClass}`);
                 return false;
             }
         }
@@ -110,7 +114,7 @@ var WindowFilter = class WindowFilter {
         const title = metaWindow.get_title() || '';
         for (const pattern of CONFIG.BLACKLIST_TITLE_PATTERNS) {
             if (pattern.test(title)) {
-                global.log(`${UUID}: Skipping blacklisted title: ${title}`);
+                this._log(`Skipping blacklisted title: ${title}`);
                 return false;
             }
         }

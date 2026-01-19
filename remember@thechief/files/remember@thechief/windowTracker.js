@@ -39,6 +39,10 @@ var WindowTracker = class WindowTracker {
         this._isShuttingDown = false; // Flag to stop all saves during logout/shutdown
         this._startTime = Date.now(); // Track when tracker was initialized
 
+        // Logger injection - no-op until injected from extension.js
+        this._log = function() {};
+        this._logError = global.logError;
+
         // Initialize modules
         this._initModules(extensionMeta);
 
@@ -105,7 +109,7 @@ var WindowTracker = class WindowTracker {
             WmClassMigration = Modules.load(extensionMeta, 'core', 'wmClassMigration').WmClassMigration;
             InstanceCleanup = Modules.load(extensionMeta, 'core', 'instanceCleanup').InstanceCleanup;
 
-            global.log(`${UUID}: Core modules loaded successfully`);
+            this._log(`Core modules loaded successfully`);
         } finally {
             // Restore the original search path
             imports.searchPath.length = 0;
@@ -175,7 +179,7 @@ var WindowTracker = class WindowTracker {
             return true; // Proceed with save
         });
 
-        global.log(`${UUID}: Window tracking enabled, tracking ${this._trackedWindows.size} windows`);
+        this._log(`Window tracking enabled, tracking ${this._trackedWindows.size} windows`);
     }
 
     /**
@@ -199,7 +203,7 @@ var WindowTracker = class WindowTracker {
         this._pendingRestores.clear();
         this._everTrackedWmClasses.clear();
 
-        global.log(`${UUID}: Window tracking disabled`);
+        this._log(`Window tracking disabled`);
     }
 
     /**
@@ -263,7 +267,7 @@ var WindowTracker = class WindowTracker {
                 title: metaWindow.get_title()
             });
         } else {
-            global.log(`${UUID}: Now tracking window: ${wmClass}`);
+            this._log(`Now tracking window: ${wmClass}`);
         }
 
         // Capture cmdline ONCE at first track (never changes during process lifetime)
@@ -284,7 +288,7 @@ var WindowTracker = class WindowTracker {
             // IMPORTANT: Add extra 500ms to ensure restore happens BEFORE save
             // Restore runs at titleStabilizationDelay, save runs at titleStabilizationDelay + 500
             const saveDelay = titleStabilizationDelay + 500;
-            global.log(`${UUID}: Delaying initial save for ${wmClass} by ${saveDelay}ms (after restore)`);
+            this._log(`Delaying initial save for ${wmClass} by ${saveDelay}ms (after restore)`);
             Mainloop.timeout_add(saveDelay, () => {
                 if (this._trackedWindows.has(metaWindow)) {
                     this._onWindowChanged(metaWindow);
@@ -327,7 +331,7 @@ var WindowTracker = class WindowTracker {
         // 3. User closes window: cleanup happens on next periodic save
         const wmClass = metaWindow.get_wm_class();
         if (wmClass) {
-            global.log(`${UUID}: Window ${wmClass} untracked (cleanup deferred to periodic save)`);
+            this._log(`Window ${wmClass} untracked (cleanup deferred to periodic save)`);
         }
     }
 
@@ -361,14 +365,14 @@ var WindowTracker = class WindowTracker {
                 const plugin = this._pluginManager.getPlugin(wmClass);
                 if (plugin && plugin.features && plugin.features.titleStabilizationDelay) {
                     titleStabilizationDelay = plugin.features.titleStabilizationDelay;
-                    global.log(`${UUID}: ${wmClass} has titleStabilizationDelay: ${titleStabilizationDelay}ms`);
+                    this._log(`${wmClass} has titleStabilizationDelay: ${titleStabilizationDelay}ms`);
                 }
             }
 
             if (titleStabilizationDelay > 0 && !launchedInstance) {
                 // Wait for title to stabilize before matching (for single-instance apps
                 // where VSCode opens additional windows without pendingLaunch)
-                global.log(`${UUID}: Waiting ${titleStabilizationDelay}ms for ${wmClass} title to stabilize`);
+                this._log(`Waiting ${titleStabilizationDelay}ms for ${wmClass} title to stabilize`);
                 Mainloop.timeout_add(titleStabilizationDelay, () => {
                     if (!metaWindow || metaWindow.is_on_all_workspaces === undefined) {
                         return false; // Window was destroyed
@@ -483,7 +487,7 @@ var WindowTracker = class WindowTracker {
      * Handle monitor configuration changes
      */
     _onMonitorsChanged() {
-        global.log(`${UUID}: Monitor configuration changed`);
+        this._log(`Monitor configuration changed`);
         // Could trigger re-evaluation of window positions here
     }
 
@@ -539,7 +543,7 @@ var WindowTracker = class WindowTracker {
                 }
             }
         } catch (e) {
-            global.logError(`${UUID}: Failed to find desktop file: ${e}`);
+            this._logError(`${UUID}: Failed to find desktop file: ${e}`);
         }
         return null;
     }
@@ -580,7 +584,7 @@ var WindowTracker = class WindowTracker {
                 }
             }
         }
-        global.log(`${UUID}: Reset all instance assignments (kept IDs for matching)`);
+        this._log(`Reset all instance assignments (kept IDs for matching)`);
     }
 
     /**
@@ -636,7 +640,7 @@ var WindowTracker = class WindowTracker {
             this._storage.updateMonitorLayout(this._monitorManager);
         }
 
-        global.log(`${UUID}: Saved ${dirtyCount} dirty windows`);
+        this._log(`Saved ${dirtyCount} dirty windows`);
     }
 
     /**

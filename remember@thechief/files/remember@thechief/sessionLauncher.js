@@ -19,11 +19,15 @@ const UUID = "remember@thechief";
  * Handles launching applications for session restore
  */
 var SessionLauncher = class SessionLauncher {
-    constructor(storage, tracker, extensionSettings, pluginManager = null, launchConfig = null, singleInstanceConfig = null) {
+    constructor(storage, tracker, extensionSettings, pluginManager = null, launchConfig = null, singleInstanceConfig = null, log = null, logError = null) {
         this._storage = storage;
         this._tracker = tracker;
         this._extensionSettings = extensionSettings;
         this._pluginManager = pluginManager;
+
+        // Logger injection - no-op until injected from extension.js
+        this._log = log || function() {};
+        this._logError = logError || global.logError;
 
         // Config from config.js (SESSION_LAUNCH_CONFIG) - required, no fallback
         if (!launchConfig) {
@@ -82,7 +86,7 @@ var SessionLauncher = class SessionLauncher {
 
         if (!hasActivePending && !hasActiveExpected && this._launchQueue.length === 0) {
             if (this._onAllLaunchedCallback && this._totalLaunches > 0) {
-                global.log(`${UUID}: All ${this._totalLaunches} launches completed`);
+                this._log(`All ${this._totalLaunches} launches completed`);
                 this._onAllLaunchedCallback();
                 this._onAllLaunchedCallback = null;
             }
@@ -116,7 +120,7 @@ var SessionLauncher = class SessionLauncher {
             ids = this._getProgressIds(instanceIds);
         }
 
-        global.log(`${UUID}: Progress status: ${ids.join(', ')} (${wmClass}) -> ${status}`);
+        this._log(`Progress status: ${ids.join(', ')} (${wmClass}) -> ${status}`);
 
         try {
             const statusFile = GLib.build_filenamev([
@@ -154,7 +158,7 @@ var SessionLauncher = class SessionLauncher {
                 null
             );
         } catch (e) {
-            global.logError(`${UUID}: Failed to write progress status: ${e}`);
+            this._logError(`${UUID}: Failed to write progress status: ${e}`);
         }
     }
 
@@ -198,9 +202,9 @@ var SessionLauncher = class SessionLauncher {
                 GLib.SpawnFlags.SEARCH_PATH | GLib.SpawnFlags.DO_NOT_REAP_CHILD,
                 null   // child setup
             );
-            global.log(`${UUID}: Launched progress window with ${instancesToLaunch.length} apps`);
+            this._log(`Launched progress window with ${instancesToLaunch.length} apps`);
         } catch (e) {
-            global.logError(`${UUID}: Failed to launch progress window: ${e}`);
+            this._logError(`${UUID}: Failed to launch progress window: ${e}`);
         }
     }
 
@@ -226,10 +230,10 @@ var SessionLauncher = class SessionLauncher {
                     Gio.FileCreateFlags.REPLACE_DESTINATION,
                     null
                 );
-                global.log(`${UUID}: Cleared progress status file`);
+                this._log(`Cleared progress status file`);
             }
         } catch (e) {
-            global.logError(`${UUID}: Failed to clear progress status: ${e}`);
+            this._logError(`${UUID}: Failed to clear progress status: ${e}`);
         }
     }
 
@@ -275,7 +279,7 @@ var SessionLauncher = class SessionLauncher {
                 bl => wmClass.toLowerCase().includes(bl.toLowerCase())
             );
             if (isBlacklisted) {
-                global.log(`${UUID}: ${wmClass} is blacklisted, skipping`);
+                this._log(`${wmClass} is blacklisted, skipping`);
                 continue;
             }
 
@@ -302,12 +306,12 @@ var SessionLauncher = class SessionLauncher {
 
             if (needToLaunch <= 0) {
                 if (currentCount > 0) {
-                    global.log(`${UUID}: ${wmClass}: ${currentCount} running, ${assignedCount} assigned - all instances covered, skipping launch`);
+                    this._log(`${wmClass}: ${currentCount} running, ${assignedCount} assigned - all instances covered, skipping launch`);
                 }
                 continue;
             }
 
-            global.log(`${UUID}: ${wmClass}: ${currentCount} running, ${assignedCount}/${appInstances.length} assigned, launching ${needToLaunch} unassigned`);
+            this._log(`${wmClass}: ${currentCount} running, ${assignedCount}/${appInstances.length} assigned, launching ${needToLaunch} unassigned`);
 
             // Add only the unassigned instances we need to launch
             for (let i = 0; i < needToLaunch; i++) {
@@ -327,7 +331,7 @@ var SessionLauncher = class SessionLauncher {
         const filteredInstances = this._filterAndValidateInstances(instances);
 
         if (filteredInstances.length === 0) {
-            global.log(`${UUID}: No instances to launch after filtering`);
+            this._log(`No instances to launch after filtering`);
             return 0;
         }
 
@@ -360,7 +364,7 @@ var SessionLauncher = class SessionLauncher {
             const isBrowser = plugin && plugin.type === 'chromium-browser';
             const useBrowserRestore = this._extensionSettings && this._extensionSettings.useBrowserSessionRestore();
 
-            global.log(`${UUID}: ${wmClass}: isSingleInstance=${isSingleInstance}, isBrowser=${isBrowser}, useBrowserRestore=${useBrowserRestore}, instances=${appInstances.length}`);
+            this._log(`${wmClass}: isSingleInstance=${isSingleInstance}, isBrowser=${isBrowser}, useBrowserRestore=${useBrowserRestore}, instances=${appInstances.length}`);
 
             const baseTime = Date.now();
 
@@ -378,7 +382,7 @@ var SessionLauncher = class SessionLauncher {
 
             if (isSingleInstance) {
                 // Single-instance apps: launch only ONCE, but all instances shown in progress
-                global.log(`${UUID}: ${wmClass} is single-instance app - launching once, showing ${appInstances.length} instances in progress`);
+                this._log(`${wmClass} is single-instance app - launching once, showing ${appInstances.length} instances in progress`);
                 const instance = appInstances[0];
                 const instanceId = instance.id || `${wmClass}-${baseTime}-0`;
                 this._launchQueue.push({
@@ -394,7 +398,7 @@ var SessionLauncher = class SessionLauncher {
                 // Normal multi-instance app: launch all instances
                 const needsSequential = appInstances.length > 1;
                 if (needsSequential) {
-                    global.log(`${UUID}: ${wmClass} has ${appInstances.length} instances - will launch sequentially`);
+                    this._log(`${wmClass} has ${appInstances.length} instances - will launch sequentially`);
                 }
 
                 for (let i = 0; i < appInstances.length; i++) {
@@ -413,7 +417,7 @@ var SessionLauncher = class SessionLauncher {
 
         const totalCount = this._launchQueue.length;
         const displayCount = allInstancesForProgress.length;
-        global.log(`${UUID}: Launch queue built with ${totalCount} launches, ${displayCount} instances to display`);
+        this._log(`Launch queue built with ${totalCount} launches, ${displayCount} instances to display`);
 
         if (this._launchQueue.length > 0) {
             // Launch progress window with ALL instances (not just launches)
@@ -454,7 +458,7 @@ var SessionLauncher = class SessionLauncher {
      */
     _processLaunchQueue() {
         if (this._launchQueue.length === 0) {
-            global.log(`${UUID}: Launch queue completed`);
+            this._log(`Launch queue completed`);
             this._checkAllLaunchesComplete();
             return;
         }
@@ -482,7 +486,7 @@ var SessionLauncher = class SessionLauncher {
             if (hasMoreOfSameApp) {
                 // Use longer delay for same app (wait for window to appear and stabilize)
                 delay = 2000; // 2 seconds between instances of same app
-                global.log(`${UUID}: ${wmClass} needs sequential launch, waiting ${delay}ms for next instance`);
+                this._log(`${wmClass} needs sequential launch, waiting ${delay}ms for next instance`);
             }
         }
 
@@ -508,7 +512,7 @@ var SessionLauncher = class SessionLauncher {
         if (workDir && workDir !== GLib.get_home_dir()) {
             const workDirFile = Gio.File.new_for_path(workDir);
             if (!workDirFile.query_exists(null)) {
-                global.log(`${UUID}: Working dir ${workDir} doesn't exist, using home dir`);
+                this._log(`Working dir ${workDir} doesn't exist, using home dir`);
                 workDir = GLib.get_home_dir();
             }
         }
@@ -539,7 +543,7 @@ var SessionLauncher = class SessionLauncher {
             if (handler && typeof handler.shouldSkipRestore === 'function') {
                 try {
                     if (handler.shouldSkipRestore(instance)) {
-                        global.log(`${UUID}: Skipping ${wmClass} instance "${instance.id}" - plugin requested skip`);
+                        this._log(`Skipping ${wmClass} instance "${instance.id}" - plugin requested skip`);
                         // Mark as complete so it doesn't block restore
                         this._pendingLaunches.delete(instanceId);
                         this._expectedLaunches.delete(instanceId);
@@ -548,7 +552,7 @@ var SessionLauncher = class SessionLauncher {
                         return;
                     }
                 } catch (e) {
-                    global.logError(`${UUID}: Plugin ${plugin.name} shouldSkipRestore failed: ${e}`);
+                    this._logError(`${UUID}: Plugin ${plugin.name} shouldSkipRestore failed: ${e}`);
                 }
             }
 
@@ -589,28 +593,28 @@ var SessionLauncher = class SessionLauncher {
                 try {
                     launchParams = handler.beforeLaunch(instance, launchParams) || launchParams;
                 } catch (e) {
-                    global.logError(`${UUID}: Plugin ${plugin.name} beforeLaunch failed: ${e}`);
+                    this._logError(`${UUID}: Plugin ${plugin.name} beforeLaunch failed: ${e}`);
                 }
             }
 
             // 5. Parse title data if handler supports it
             // Pass both title_snapshot and full instance for document_path access
-            global.log(`${UUID}: DEBUG: handler=${!!handler}, hasParseTitleData=${handler ? typeof handler.parseTitleData : 'N/A'}, title_snapshot="${instance.title_snapshot}", document_path="${instance.document_path || 'none'}"`);
+            this._log(`DEBUG: handler=${!!handler}, hasParseTitleData=${handler ? typeof handler.parseTitleData : 'N/A'}, title_snapshot="${instance.title_snapshot}", document_path="${instance.document_path || 'none'}"`);
             if (handler && typeof handler.parseTitleData === 'function') {
                 try {
-                    global.log(`${UUID}: DEBUG: Calling parseTitleData for ${wmClass}`);
+                    this._log(`DEBUG: Calling parseTitleData for ${wmClass}`);
                     // Pass instance as second parameter for document_path access
                     const parsedArgs = handler.parseTitleData(instance.title_snapshot, instance);
-                    global.log(`${UUID}: DEBUG: parseTitleData returned: ${JSON.stringify(parsedArgs)}`);
+                    this._log(`DEBUG: parseTitleData returned: ${JSON.stringify(parsedArgs)}`);
                     if (parsedArgs && Array.isArray(parsedArgs)) {
                         launchParams.args.push(...parsedArgs);
-                        global.log(`${UUID}: DEBUG: Added args: ${JSON.stringify(launchParams.args)}`);
+                        this._log(`DEBUG: Added args: ${JSON.stringify(launchParams.args)}`);
                     }
                 } catch (e) {
-                    global.logError(`${UUID}: Plugin ${plugin.name} parseTitleData failed: ${e}`);
+                    this._logError(`${UUID}: Plugin ${plugin.name} parseTitleData failed: ${e}`);
                 }
             } else {
-                global.log(`${UUID}: DEBUG: Skipping parseTitleData - no handler or no parseTitleData function`);
+                this._log(`DEBUG: Skipping parseTitleData - no handler or no parseTitleData function`);
             }
 
             // 6. Spawn process
@@ -633,16 +637,16 @@ var SessionLauncher = class SessionLauncher {
                 try {
                     handler.afterLaunch(instance, pid, success);
                 } catch (e) {
-                    global.logError(`${UUID}: Plugin ${plugin.name} afterLaunch failed: ${e}`);
+                    this._logError(`${UUID}: Plugin ${plugin.name} afterLaunch failed: ${e}`);
                 }
             }
 
             const ws = instance.workspace !== undefined ? instance.workspace + 1 : '?';
             const flagsStr = launchParams.args.length > 0 ? ` with [${launchParams.args.join(', ')}]` : '';
-            global.log(`${UUID}: [Plugin:${plugin.name}] Launched ${wmClass} (WS${ws})${isSingleInstance ? ' [single-instance]' : ''}${flagsStr}`);
+            this._log(`[Plugin:${plugin.name}] Launched ${wmClass} (WS${ws})${isSingleInstance ? ' [single-instance]' : ''}${flagsStr}`);
 
         } catch (e) {
-            global.logError(`${UUID}: Plugin launch failed for ${wmClass}: ${e}`);
+            this._logError(`${UUID}: Plugin launch failed for ${wmClass}: ${e}`);
             this._notifyProgress(instanceId, wmClass, 'error');
         }
     }
@@ -686,10 +690,10 @@ var SessionLauncher = class SessionLauncher {
                 appInfo.launch([], null);
 
                 const ws = instance.workspace !== undefined ? instance.workspace + 1 : '?';
-                global.log(`${UUID}: [DesktopFile] Launched ${wmClass} (WS${ws}) via ${desktopFileId}`);
+                this._log(`[DesktopFile] Launched ${wmClass} (WS${ws}) via ${desktopFileId}`);
             }
         } catch (e) {
-            global.logError(`${UUID}: Failed to launch desktop file ${desktopFileId}: ${e}`);
+            this._logError(`${UUID}: Failed to launch desktop file ${desktopFileId}: ${e}`);
             this._notifyProgress(instanceId, wmClass, 'error');
         }
     }
@@ -710,7 +714,7 @@ var SessionLauncher = class SessionLauncher {
         }
 
         if (!argv || argv.length === 0) {
-            global.logError(`${UUID}: No launch method for ${wmClass}`);
+            this._logError(`${UUID}: No launch method for ${wmClass}`);
             this._notifyProgress(instanceId, wmClass, 'error');
             return;
         }
@@ -720,15 +724,15 @@ var SessionLauncher = class SessionLauncher {
         const executableExists = GLib.find_program_in_path(executable) !== null;
 
         if (!executableExists) {
-            global.log(`${UUID}: Executable '${executable}' not found in PATH, trying Flatpak...`);
+            this._log(`Executable '${executable}' not found in PATH, trying Flatpak...`);
 
             // Try common Flatpak name patterns
             const flatpakAppId = this._tryFindFlatpakApp(wmClass);
             if (flatpakAppId) {
-                global.log(`${UUID}: Found Flatpak app: ${flatpakAppId}`);
+                this._log(`Found Flatpak app: ${flatpakAppId}`);
                 argv = ['flatpak', 'run', flatpakAppId];
             } else {
-                global.logError(`${UUID}: Executable '${executable}' not found and no Flatpak alternative found`);
+                this._logError(`${UUID}: Executable '${executable}' not found and no Flatpak alternative found`);
                 this._notifyProgress(instanceId, wmClass, 'error');
                 return;
             }
@@ -739,7 +743,7 @@ var SessionLauncher = class SessionLauncher {
         this._spawnProcess(workDir, argv, instanceId, wmClass, instance, isSingleInstance, timeout, gracePeriod);
 
         const ws = instance.workspace !== undefined ? instance.workspace + 1 : '?';
-        global.log(`${UUID}: [Generic] Launched ${wmClass} (WS${ws})`);
+        this._log(`[Generic] Launched ${wmClass} (WS${ws})`);
     }
 
     /**
@@ -792,10 +796,10 @@ var SessionLauncher = class SessionLauncher {
                     this._onChildProcessExit(instanceId, pid, status);
                 });
 
-                global.log(`${UUID}: Spawned ${wmClass} with PID ${pid}`);
+                this._log(`Spawned ${wmClass} with PID ${pid}`);
             } else {
                 // Spawn failed immediately (executable not found, permission denied, etc.)
-                global.logError(`${UUID}: Failed to spawn ${wmClass}: GLib.spawn_async returned false`);
+                this._logError(`${UUID}: Failed to spawn ${wmClass}: GLib.spawn_async returned false`);
                 this._notifyProgress(instanceId, wmClass, 'error');
                 this._pendingLaunches.delete(instanceId);
                 this._expectedLaunches.delete(instanceId);
@@ -810,7 +814,7 @@ var SessionLauncher = class SessionLauncher {
             return [success, pid];
 
         } catch (e) {
-            global.logError(`${UUID}: Failed to spawn ${wmClass}: ${e}`);
+            this._logError(`${UUID}: Failed to spawn ${wmClass}: ${e}`);
             this._notifyProgress(instanceId, wmClass, 'error');
             this._pendingLaunches.delete(instanceId);
             this._expectedLaunches.delete(instanceId);
@@ -859,14 +863,14 @@ var SessionLauncher = class SessionLauncher {
         // Strategy 1: Search desktop files for StartupWMClass or matching name
         const desktopAppId = this._findFlatpakFromDesktopFiles(wmClassLower);
         if (desktopAppId) {
-            global.log(`${UUID}: Found Flatpak via desktop file: ${desktopAppId}`);
+            this._log(`Found Flatpak via desktop file: ${desktopAppId}`);
             return desktopAppId;
         }
 
         // Strategy 2: Search installed Flatpak apps
         const flatpakListAppId = this._findFlatpakFromList(wmClassLower);
         if (flatpakListAppId) {
-            global.log(`${UUID}: Found Flatpak via flatpak list: ${flatpakListAppId}`);
+            this._log(`Found Flatpak via flatpak list: ${flatpakListAppId}`);
             return flatpakListAppId;
         }
 
@@ -882,7 +886,7 @@ var SessionLauncher = class SessionLauncher {
             try {
                 const [success] = GLib.spawn_command_line_sync(`flatpak info ${appId}`);
                 if (success) {
-                    global.log(`${UUID}: Found Flatpak via pattern: ${appId}`);
+                    this._log(`Found Flatpak via pattern: ${appId}`);
                     return appId;
                 }
             } catch (e) {
@@ -996,7 +1000,7 @@ var SessionLauncher = class SessionLauncher {
                 }
             }
         } catch (e) {
-            global.logError(`${UUID}: Failed to search flatpak list: ${e}`);
+            this._logError(`${UUID}: Failed to search flatpak list: ${e}`);
         }
 
         return null;
@@ -1074,7 +1078,7 @@ var SessionLauncher = class SessionLauncher {
                 return argv;
             }
         } catch (e) {
-            global.logError(`${UUID}: Failed to parse exec line "${exec}": ${e}`);
+            this._logError(`${UUID}: Failed to parse exec line "${exec}": ${e}`);
         }
 
         return cleaned.split(' ').filter(s => s);
@@ -1099,7 +1103,7 @@ var SessionLauncher = class SessionLauncher {
             // 2. Exit status is NON-ZERO (actual error)
             // Exit code 0 with quick exit = DBus activation (normal behavior)
             if (elapsed < 5000 && status !== 0) {
-                global.logError(`${UUID}: ${pending.wmClass} crashed early (PID ${pid}, exit ${status})`);
+                this._logError(`${UUID}: ${pending.wmClass} crashed early (PID ${pid}, exit ${status})`);
                 this._notifyProgress(instanceId, pending.wmClass, 'error');
 
                 this._pendingLaunches.delete(instanceId);
@@ -1117,7 +1121,7 @@ var SessionLauncher = class SessionLauncher {
                 this._checkAllLaunchesComplete();
             } else if (elapsed < 5000 && status === 0) {
                 // Quick exit with code 0 = DBus activation, not a crash
-                global.log(`${UUID}: ${pending.wmClass} launcher exited (DBus activation), waiting for window`);
+                this._log(`${pending.wmClass} launcher exited (DBus activation), waiting for window`);
             }
         }
     }
@@ -1128,7 +1132,7 @@ var SessionLauncher = class SessionLauncher {
     _onLaunchTimeout(instanceId) {
         if (this._pendingLaunches.has(instanceId)) {
             const pending = this._pendingLaunches.get(instanceId);
-            global.log(`${UUID}: Launch timeout for ${pending.wmClass} (${instanceId}) - entering grace period`);
+            this._log(`Launch timeout for ${pending.wmClass} (${instanceId}) - entering grace period`);
             this._notifyProgress(instanceId, pending.wmClass, 'timeout');
 
             this._pendingLaunches.delete(instanceId);
@@ -1142,7 +1146,7 @@ var SessionLauncher = class SessionLauncher {
                 expected.gracePeriod = Date.now() + gracePeriodMs;
 
                 const appType = expected.isSingleInstance ? ' [single-instance]' : '';
-                global.log(`${UUID}: Instance ${instanceId}${appType} in grace period until ${new Date(expected.gracePeriod).toLocaleTimeString()}`);
+                this._log(`Instance ${instanceId}${appType} in grace period until ${new Date(expected.gracePeriod).toLocaleTimeString()}`);
             }
         }
         this._launchTimeouts.delete(instanceId);
@@ -1169,7 +1173,7 @@ var SessionLauncher = class SessionLauncher {
                     this._launchTimeouts.delete(instanceId);
                 }
 
-                global.log(`${UUID}: Window appeared for launched app: ${wmClass} (${instanceId})`);
+                this._log(`Window appeared for launched app: ${wmClass} (${instanceId})`);
                 this._notifyProgress(instanceId, wmClass, 'positioning');
 
                 this._checkAllLaunchesComplete();
@@ -1200,7 +1204,7 @@ var SessionLauncher = class SessionLauncher {
             const pendingPlugin = this._pluginManager.getPlugin(pendingWmClass);
 
             if (windowPlugin && pendingPlugin && windowPlugin.name === pendingPlugin.name) {
-                global.log(`${UUID}: wmClass match via plugin "${windowPlugin.name}": ${windowWmClass} ↔ ${pendingWmClass}`);
+                this._log(`wmClass match via plugin "${windowPlugin.name}": ${windowWmClass} ↔ ${pendingWmClass}`);
                 return true;
             }
         }
@@ -1252,7 +1256,7 @@ var SessionLauncher = class SessionLauncher {
         for (const [instanceId, expected] of this._expectedLaunches.entries()) {
             if (expected.timedOut && expected.gracePeriod && now >= expected.gracePeriod) {
                 toRemove.push(instanceId);
-                global.log(`${UUID}: Grace period expired for ${expected.wmClass} (${instanceId})`);
+                this._log(`Grace period expired for ${expected.wmClass} (${instanceId})`);
             }
         }
 
@@ -1261,7 +1265,7 @@ var SessionLauncher = class SessionLauncher {
         }
 
         if (toRemove.length > 0) {
-            global.log(`${UUID}: Finalized restore, cleaned ${toRemove.length} expired expected launches`);
+            this._log(`Finalized restore, cleaned ${toRemove.length} expired expected launches`);
         }
     }
 

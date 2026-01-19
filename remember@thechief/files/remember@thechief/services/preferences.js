@@ -40,6 +40,10 @@ var Preferences = class Preferences {
         this._prefs = null;
         this._fileMonitor = null;
         this._reloadTimeoutId = null;
+
+        // Logger injection - no-op until injected from extension.js
+        this._log = function() {};
+        this._logError = global.logError;
     }
 
     /**
@@ -59,9 +63,9 @@ var Preferences = class Preferences {
         if (!dir.query_exists(null)) {
             try {
                 dir.make_directory_with_parents(null);
-                global.log(`${UUID}: Created config directory: ${this._configDir}`);
+                this._log(`Created config directory: ${this._configDir}`);
             } catch (e) {
-                global.logError(`${UUID}: Failed to create config directory: ${e}`);
+                this._logError(`${UUID}: Failed to create config directory: ${e}`);
             }
         }
     }
@@ -74,7 +78,7 @@ var Preferences = class Preferences {
 
         if (!file.query_exists(null)) {
             this._prefs = Object.assign({}, DEFAULT_PREFERENCES);
-            global.log(`${UUID}: No preferences.json found, using defaults`);
+            this._log('No preferences.json found, using defaults');
             return;
         }
 
@@ -86,10 +90,10 @@ var Preferences = class Preferences {
 
                 // Merge with defaults (handles missing keys gracefully)
                 this._prefs = Object.assign({}, DEFAULT_PREFERENCES, loaded);
-                global.log(`${UUID}: Loaded preferences from ${this._configFile}`);
+                this._log(`Loaded preferences from ${this._configFile}`);
             }
         } catch (e) {
-            global.logError(`${UUID}: Failed to load preferences: ${e}`);
+            this._logError(`${UUID}: Failed to load preferences: ${e}`);
             this._prefs = Object.assign({}, DEFAULT_PREFERENCES);
         }
     }
@@ -177,9 +181,9 @@ var Preferences = class Preferences {
                 }
             });
 
-            global.log(`${UUID}: File monitor active for preferences.json`);
+            this._log('File monitor active for preferences.json');
         } catch (e) {
-            global.logError(`${UUID}: Failed to setup file monitor: ${e}`);
+            this._logError(`${UUID}: Failed to setup file monitor: ${e}`);
         }
     }
 
@@ -187,13 +191,13 @@ var Preferences = class Preferences {
      * Reload preferences from disk
      */
     _reload() {
-        global.log(`${UUID}: Reloading preferences...`);
+        this._log('Reloading preferences...');
         const oldPrefs = JSON.stringify(this._prefs);
         this._load();
         const newPrefs = JSON.stringify(this._prefs);
 
         if (oldPrefs !== newPrefs) {
-            global.log(`${UUID}: Preferences changed`);
+            this._log('Preferences changed');
         }
     }
 

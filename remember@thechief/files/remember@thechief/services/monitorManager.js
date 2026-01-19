@@ -20,6 +20,10 @@ var MonitorManager = class MonitorManager {
         this._signals = new SignalManager.SignalManager(null);
         this._monitors = new Map();  // index -> monitorInfo
         this._edidCache = null;      // Cached EDID data from xrandr (read once at startup)
+
+        // Logger injection - no-op until injected from extension.js
+        this._log = function() {};
+        this._logError = global.logError;
     }
 
     /**
@@ -38,7 +42,7 @@ var MonitorManager = class MonitorManager {
             this._onMonitorsChanged.bind(this)
         );
 
-        global.log(`${UUID}: Monitor manager enabled with ${this._monitors.size} monitors`);
+        this._log(`Monitor manager enabled with ${this._monitors.size} monitors`);
     }
 
     /**
@@ -71,7 +75,7 @@ var MonitorManager = class MonitorManager {
             });
         }
 
-        global.log(`${UUID}: Updated ${nMonitors} monitors`);
+        this._log(`Updated ${nMonitors} monitors`);
     }
 
     /**
@@ -105,7 +109,7 @@ var MonitorManager = class MonitorManager {
             if (!edid && this._edidCache && connector) {
                 edid = this._edidCache.get(connector);
                 if (edid) {
-                    global.log(`${UUID}: Using cached EDID for ${connector}: ${edid}`);
+                    this._log(`Using cached EDID for ${connector}: ${edid}`);
                 }
             }
 
@@ -114,7 +118,7 @@ var MonitorManager = class MonitorManager {
             }
 
         } catch (e) {
-            global.logError(`${UUID}: Failed to get monitor info: ${e}`);
+            this._logError(`${UUID}: Failed to get monitor info: ${e}`);
         }
 
         return {
@@ -147,7 +151,7 @@ var MonitorManager = class MonitorManager {
             );
 
             if (!success || exitCode !== 0) {
-                global.log(`${UUID}: xrandr not available, EDID caching disabled`);
+                this._log('xrandr not available, EDID caching disabled');
                 return edidMap;
             }
 
@@ -185,16 +189,16 @@ var MonitorManager = class MonitorManager {
                             const fullEdid = edidData.join('');
                             const edidHash = this._hashString(fullEdid).substring(0, 16);
                             edidMap.set(currentConnector, edidHash);
-                            global.log(`${UUID}: Cached EDID for ${currentConnector}: ${edidHash}`);
+                            this._log(`Cached EDID for ${currentConnector}: ${edidHash}`);
                         }
                     }
                 }
             }
 
-            global.log(`${UUID}: Cached ${edidMap.size} EDIDs from xrandr`);
+            this._log(`Cached ${edidMap.size} EDIDs from xrandr`);
 
         } catch (e) {
-            global.logError(`${UUID}: Failed to cache EDIDs: ${e}`);
+            this._logError(`${UUID}: Failed to cache EDIDs: ${e}`);
         }
 
         return edidMap;
@@ -276,7 +280,7 @@ var MonitorManager = class MonitorManager {
      * Handle monitor configuration changes
      */
     _onMonitorsChanged() {
-        global.log(`${UUID}: Monitor configuration changed`);
+        this._log('Monitor configuration changed');
         this._updateMonitors();
     }
 
@@ -378,7 +382,7 @@ var MonitorManager = class MonitorManager {
                 for (const [index, info] of this._monitors) {
                     const currentFingerprint = this._getMonitorFingerprint(info);
                     if (currentFingerprint === savedFingerprint) {
-                        global.log(`${UUID}: Matched monitor via layout fingerprint: ${savedFingerprint}`);
+                        this._log(`Matched monitor via layout fingerprint: ${savedFingerprint}`);
                         return info;
                     }
                 }
@@ -386,7 +390,7 @@ var MonitorManager = class MonitorManager {
         }
 
         // 5. Fallback to primary monitor
-        global.log(`${UUID}: No match for monitor ${savedId}, using primary`);
+        this._log(`No match for monitor ${savedId}, using primary`);
         return this.getPrimaryMonitor();
     }
 

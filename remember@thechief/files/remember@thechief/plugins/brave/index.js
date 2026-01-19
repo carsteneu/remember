@@ -14,10 +14,14 @@ const UUID = "remember@thechief";
  * Brave Handler Class
  */
 var BraveHandler = class BraveHandler {
-    constructor(config, extensionSettings, storage) {
+    constructor(config, extensionSettings, storage, log = null, logError = null) {
         this._config = config;
         this._extensionSettings = extensionSettings;
         this._storage = storage;
+
+        // Logger injection - no-op until injected
+        this._log = log || function() {};
+        this._logError = logError || global.logError;
     }
 
     /**
@@ -46,7 +50,7 @@ var BraveHandler = class BraveHandler {
      */
     afterLaunch(instance, pid, success) {
         if (success) {
-            global.log(`${UUID}: Brave launched with PID ${pid}`);
+            this._log(`Brave launched with PID ${pid}`);
         }
     }
 
@@ -83,14 +87,14 @@ var BraveHandler = class BraveHandler {
 
             const file = Gio.File.new_for_path(configPath);
             if (!file.query_exists(null)) {
-                global.log(`${UUID}: Brave preferences file not found: ${configPath}`);
+                this._log(`Brave preferences file not found: ${configPath}`);
                 return;
             }
 
             // Read current preferences
             const [success, contents] = file.load_contents(null);
             if (!success) {
-                global.logError(`${UUID}: Failed to read Brave preferences file`);
+                this._logError(`${UUID}: Failed to read Brave preferences file`);
                 return;
             }
 
@@ -101,14 +105,14 @@ var BraveHandler = class BraveHandler {
             if (prefsText.includes('"exit_type":"Crashed"')) {
                 prefsText = prefsText.replace(/"exit_type":"Crashed"/g, '"exit_type":"Normal"');
                 modified = true;
-                global.log(`${UUID}: Brave: Set exit_type=Normal (enables session restore)`);
+                this._log(`Brave: Set exit_type=Normal (enables session restore)`);
             }
 
             // Also handle exited_cleanly if present (older versions)
             if (prefsText.includes('"exited_cleanly":false')) {
                 prefsText = prefsText.replace(/"exited_cleanly":false/g, '"exited_cleanly":true');
                 modified = true;
-                global.log(`${UUID}: Brave: Set exited_cleanly=true`);
+                this._log(`Brave: Set exited_cleanly=true`);
             }
 
             if (modified) {
@@ -120,13 +124,13 @@ var BraveHandler = class BraveHandler {
                     Gio.FileCreateFlags.REPLACE_DESTINATION,
                     null
                 );
-                global.log(`${UUID}: Brave: Fixed preferences for session restore`);
+                this._log(`Brave: Fixed preferences for session restore`);
             } else if (prefsText.includes('"exit_type":"Normal"')) {
-                global.log(`${UUID}: Brave: Already set to Normal - session restore ready`);
+                this._log(`Brave: Already set to Normal - session restore ready`);
             }
 
         } catch (e) {
-            global.logError(`${UUID}: Brave: Failed to fix preferences: ${e}`);
+            this._logError(`${UUID}: Brave: Failed to fix preferences: ${e}`);
         }
     }
 

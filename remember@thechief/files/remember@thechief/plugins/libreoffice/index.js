@@ -21,10 +21,14 @@ const UUID = "remember@thechief";
  * LibreOffice Handler Class
  */
 var LibreOfficeHandler = class LibreOfficeHandler {
-    constructor(config, extensionSettings, storage) {
+    constructor(config, extensionSettings, storage, log = null, logError = null) {
         this._config = config;
         this._extensionSettings = extensionSettings;
         this._storage = storage;
+
+        // Logger injection - no-op until injected
+        this._log = log || function() {};
+        this._logError = logError || global.logError;
 
         // Map wmClass to LibreOffice component
         this._componentMap = {
@@ -76,7 +80,7 @@ var LibreOfficeHandler = class LibreOfficeHandler {
         if (componentFlag) {
             // Insert component flag at the beginning of args
             launchParams.args = [componentFlag, ...launchParams.args];
-            global.log(`${UUID}: LibreOffice: Using component ${componentFlag}`);
+            this._log(`LibreOffice: Using component ${componentFlag}`);
         }
 
         return launchParams;
@@ -103,7 +107,7 @@ var LibreOfficeHandler = class LibreOfficeHandler {
      */
     afterLaunch(instance, pid, success) {
         if (success) {
-            global.log(`${UUID}: LibreOffice launched with PID ${pid}`);
+            this._log(`LibreOffice launched with PID ${pid}`);
         }
     }
 
@@ -125,10 +129,10 @@ var LibreOfficeHandler = class LibreOfficeHandler {
             const docPath = instance.document_path;
             const file = Gio.File.new_for_path(docPath);
             if (file.query_exists(null)) {
-                global.log(`${UUID}: LibreOffice: Opening saved document ${docPath}`);
+                this._log(`LibreOffice: Opening saved document ${docPath}`);
                 return [docPath];
             } else {
-                global.log(`${UUID}: LibreOffice: Saved document no longer exists: ${docPath}`);
+                this._log(`LibreOffice: Saved document no longer exists: ${docPath}`);
             }
         }
 
@@ -142,7 +146,7 @@ var LibreOfficeHandler = class LibreOfficeHandler {
         for (const pattern of unsavedPatterns) {
             const regex = new RegExp(pattern, 'i');
             if (regex.test(title)) {
-                global.log(`${UUID}: LibreOffice: Opening new empty document (was unsaved)`);
+                this._log(`LibreOffice: Opening new empty document (was unsaved)`);
                 return [];  // Empty args = open new document
             }
         }
@@ -152,7 +156,7 @@ var LibreOfficeHandler = class LibreOfficeHandler {
             // Format: "DocumentName.ext – LibreOffice Component"
             const suffixIndex = title.indexOf(suffix);
             if (suffixIndex === -1) {
-                global.log(`${UUID}: LibreOffice: No suffix found in title "${title}"`);
+                this._log(`LibreOffice: No suffix found in title "${title}"`);
                 return [];
             }
 
@@ -163,15 +167,15 @@ var LibreOfficeHandler = class LibreOfficeHandler {
             const fullPath = this._findDocumentPath(docName);
 
             if (fullPath) {
-                global.log(`${UUID}: LibreOffice: Opening document ${fullPath}`);
+                this._log(`LibreOffice: Opening document ${fullPath}`);
                 return [fullPath];
             } else {
-                global.log(`${UUID}: LibreOffice: Document "${docName}" not found, opening empty`);
+                this._log(`LibreOffice: Document "${docName}" not found, opening empty`);
                 return [];
             }
 
         } catch (e) {
-            global.logError(`${UUID}: LibreOffice: Failed to parse title "${title}": ${e}`);
+            this._logError(`${UUID}: LibreOffice: Failed to parse title "${title}": ${e}`);
         }
 
         return [];
@@ -339,11 +343,11 @@ var LibreOfficeHandler = class LibreOfficeHandler {
                             instanceId: existing.instance.id
                         });
                         seenDocuments.set(docPath, { wmClass, instance, hasGeometry });
-                        global.log(`${UUID}: LibreOffice dedup: Keeping ${instance.id} over ${existing.instance.id} for ${docPath}`);
+                        this._log(`LibreOffice dedup: Keeping ${instance.id} over ${existing.instance.id} for ${docPath}`);
                     } else {
                         // Existing is better or equal, mark new for removal
                         instancesToRemove.push({ wmClass, instanceId: instance.id });
-                        global.log(`${UUID}: LibreOffice dedup: Removing duplicate ${instance.id} for ${docPath}`);
+                        this._log(`LibreOffice dedup: Removing duplicate ${instance.id} for ${docPath}`);
                     }
                 } else {
                     seenDocuments.set(docPath, { wmClass, instance, hasGeometry });
@@ -366,12 +370,12 @@ var LibreOfficeHandler = class LibreOfficeHandler {
             // Remove empty app entries
             if (appData.instances.length === 0) {
                 delete allApps[toRemove.wmClass];
-                global.log(`${UUID}: LibreOffice dedup: Removed empty app entry ${toRemove.wmClass}`);
+                this._log(`LibreOffice dedup: Removed empty app entry ${toRemove.wmClass}`);
             }
         }
 
         if (removedCount > 0) {
-            global.log(`${UUID}: LibreOffice dedup: Removed ${removedCount} duplicate instances`);
+            this._log(`LibreOffice dedup: Removed ${removedCount} duplicate instances`);
         }
 
         return removedCount;

@@ -14,10 +14,14 @@ const UUID = "remember@thechief";
  * GIMP Handler Class
  */
 var GimpHandler = class GimpHandler {
-    constructor(config, extensionSettings, storage) {
+    constructor(config, extensionSettings, storage, log = null, logError = null) {
         this._config = config;
         this._extensionSettings = extensionSettings;
         this._storage = storage;
+
+        // Logger injection - no-op until injected
+        this._log = log || function() {};
+        this._logError = logError || global.logError;
     }
 
     /**
@@ -33,18 +37,18 @@ var GimpHandler = class GimpHandler {
 
         if (!gimpPath) {
             // Try Flatpak
-            global.log(`${UUID}: GIMP: Native executable not found, trying Flatpak...`);
+            this._log(`GIMP: Native executable not found, trying Flatpak...`);
 
             try {
                 // Check if Flatpak GIMP is installed
                 const [success] = GLib.spawn_command_line_sync('flatpak info org.gimp.GIMP');
                 if (success) {
-                    global.log(`${UUID}: GIMP: Using Flatpak installation`);
+                    this._log(`GIMP: Using Flatpak installation`);
                     launchParams.executable = 'flatpak';
                     launchParams.args = ['run', 'org.gimp.GIMP', ...launchParams.args];
                 }
             } catch (e) {
-                global.logError(`${UUID}: GIMP: Failed to check Flatpak: ${e}`);
+                this._logError(`${UUID}: GIMP: Failed to check Flatpak: ${e}`);
             }
         }
 
@@ -56,7 +60,7 @@ var GimpHandler = class GimpHandler {
      */
     afterLaunch(instance, pid, success) {
         if (success) {
-            global.log(`${UUID}: GIMP launched with PID ${pid}`);
+            this._log(`GIMP launched with PID ${pid}`);
         }
     }
 
@@ -81,7 +85,7 @@ var GimpHandler = class GimpHandler {
         // Skip unsaved/untitled images
         for (const skip of skipPatterns) {
             if (title.includes(skip)) {
-                global.log(`${UUID}: GIMP: Skipping unsaved image`);
+                this._log(`GIMP: Skipping unsaved image`);
                 return null;
             }
         }
@@ -100,10 +104,10 @@ var GimpHandler = class GimpHandler {
                     // Verify file exists
                     const file = Gio.File.new_for_path(filePath);
                     if (file.query_exists(null)) {
-                        global.log(`${UUID}: GIMP: Opening image ${filePath}`);
+                        this._log(`GIMP: Opening image ${filePath}`);
                         return [filePath];
                     } else {
-                        global.log(`${UUID}: GIMP: File not found: ${filePath}`);
+                        this._log(`GIMP: File not found: ${filePath}`);
                     }
                 }
             }
@@ -112,13 +116,13 @@ var GimpHandler = class GimpHandler {
             if (instance && instance.document_path) {
                 const file = Gio.File.new_for_path(instance.document_path);
                 if (file.query_exists(null)) {
-                    global.log(`${UUID}: GIMP: Opening image from saved document_path: ${instance.document_path}`);
+                    this._log(`GIMP: Opening image from saved document_path: ${instance.document_path}`);
                     return [instance.document_path];
                 }
             }
 
         } catch (e) {
-            global.logError(`${UUID}: GIMP: Failed to parse title "${title}": ${e}`);
+            this._logError(`${UUID}: GIMP: Failed to parse title "${title}": ${e}`);
         }
 
         return null;

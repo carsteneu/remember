@@ -14,10 +14,14 @@ const UUID = "remember@thechief";
  * Xed Handler Class
  */
 var XedHandler = class XedHandler {
-    constructor(config, extensionSettings, storage) {
+    constructor(config, extensionSettings, storage, log = null, logError = null) {
         this._config = config;
         this._extensionSettings = extensionSettings;
         this._storage = storage;
+
+        // Logger injection - no-op until injected
+        this._log = log || function() {};
+        this._logError = logError || global.logError;
     }
 
     beforeLaunch(instance, launchParams) {
@@ -26,7 +30,7 @@ var XedHandler = class XedHandler {
 
     afterLaunch(instance, pid, success) {
         if (success) {
-            global.log(`${UUID}: xed launched with PID ${pid}`);
+            this._log(`xed launched with PID ${pid}`);
         }
     }
 
@@ -52,7 +56,7 @@ var XedHandler = class XedHandler {
                 const filePath = fullPathMatch[1];
                 const file = Gio.File.new_for_path(filePath);
                 if (file.query_exists(null)) {
-                    global.log(`${UUID}: xed: Opening file ${filePath}`);
+                    this._log(`xed: Opening file ${filePath}`);
                     return [filePath];
                 }
             }
@@ -63,12 +67,12 @@ var XedHandler = class XedHandler {
 
             if (filenameMatch) {
                 const filename = filenameMatch[1];
-                global.log(`${UUID}: xed: Opening relative file ${filename}`);
+                this._log(`xed: Opening relative file ${filename}`);
                 return [filename];
             }
 
         } catch (e) {
-            global.logError(`${UUID}: xed: Failed to parse title: ${e}`);
+            this._logError(`${UUID}: xed: Failed to parse title: ${e}`);
         }
 
         return null;
