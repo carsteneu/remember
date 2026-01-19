@@ -6,5 +6,6 @@ from .overview import OverviewTab
 from .windows import WindowsTab
 from .apps import AppsSessionTab
 from .preferences import PreferencesTab
+from .about import AboutTab
 
-__all__ = ['OverviewTab', 'WindowsTab', 'AppsSessionTab', 'PreferencesTab']
+__all__ = ['OverviewTab', 'WindowsTab', 'AppsSessionTab', 'PreferencesTab', 'AboutTab']

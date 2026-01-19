@@ -838,3 +838,49 @@ msgstr "Plugin-Konfiguration gespeichert. Starten Sie Cinnamon neu, um die Ände
 
 msgid "Failed to save plugin configuration."
 msgstr "Plugin-Konfiguration konnte nicht gespeichert werden."
+
+# Settings - About Tab
+msgid "settings-about-title"
+msgstr "Über"
+
+msgid "settings-about-info-title"
+msgstr "Erweiterungs-Informationen"
+
+msgid "settings-about-support-title"
+msgstr "Hilfe & Support"
+
+msgid "settings-about-credits-title"
+msgstr "Credits & Sponsoren"
+
+msgid "settings-about-description"
+msgstr "<b>Window Position Remember</b>\n\nSpeichert und stellt Fensterpositionen über Sitzungen und Monitore hinweg automatisch wieder her. Beinhaltet Session-Management und Plugin-Unterstützung für anwendungsspezifische Funktionen.\n\n<b>Hauptfunktionen:</b>\n\n• Automatisches Speichern von Fensterpositionen\n• Sitzungswiederherstellung beim Login\n• Multi-Monitor-Unterstützung\n• Plugin-System für app-spezifische Features\n• Arbeitsflächenverwaltung"
+
+msgid "settings-about-version"
+msgstr "<b>Version:</b> 1.1\n<b>UUID:</b> remember@thechief\n<b>Cinnamon:</b> 6.6+\n<b>Lizenz:</b> GPL v3"
+
+msgid "settings-about-github-btn"
+msgstr "Auf GitHub ansehen"
+
+msgid "settings-about-github-tooltip"
+msgstr "Öffnet das GitHub Repository: https://github.com/carsteneu/remember"
+
+msgid "settings-about-issues-btn"
+msgstr "Problem melden"
+
+msgid "settings-about-issues-tooltip"
+msgstr "Bugs melden oder Features anfragen auf GitHub Issues"
+
+msgid "settings-about-docs-btn"
+msgstr "Dokumentation"
+
+msgid "settings-about-docs-tooltip"
+msgstr "Öffnet das Benutzerhandbuch und die Dokumentation"
+
+msgid "settings-about-author"
+msgstr "<b>Autor:</b> carsteneu\n<b>Copyright:</b> © 2025\n<b>GitHub:</b> <a href='https://github.com/carsteneu'>github.com/carsteneu</a>\n\n<b>Mitwirkende:</b>\n• Community-Tester und Feedback"
+
+msgid "settings-about-sponsor"
+msgstr "<b>Sponsored by:</b>\n\n<span size='large'><a href='https://www.ccm19.de'>CCM19</a></span>\n<i>Cookie Consent Management System / EU Cookie Banner</i>\n\n<i>Vielen Dank für die Unterstützung der Entwicklung dieser Erweiterung!</i>"
+
+msgid "settings-about-license"
+msgstr "<b>Lizenz:</b> GPL v3\n\nDiese Erweiterung ist freie und quelloffene Software.\n\nSie dürfen sie frei verwenden, ändern und weitergeben unter den Bedingungen der GNU General Public License Version 3.\n\n<small>Diese Software wird OHNE JEGLICHE GARANTIE bereitgestellt.</small>"

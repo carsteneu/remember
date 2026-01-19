@@ -1,7 +1,7 @@
 {
     "layout": {
         "type": "layout",
-        "pages": ["general", "behavior", "blacklist"],
+        "pages": ["general", "behavior", "blacklist", "about"],
         "general": {
             "type": "page",
             "title": "General",
@@ -16,6 +16,11 @@
             "type": "page",
             "title": "Blacklist",
             "sections": ["excluded"]
+        },
+        "about": {
+            "type": "page",
+            "title": "settings-about-title",
+            "sections": ["about-info", "about-support", "about-credits"]
         },
         "tracking": {
             "type": "section",
@@ -46,6 +51,21 @@
             "type": "section",
             "title": "Excluded Applications",
             "keys": ["blacklist-info", "blacklist"]
+        },
+        "about-info": {
+            "type": "section",
+            "title": "settings-about-info-title",
+            "keys": ["about-description", "about-version"]
+        },
+        "about-support": {
+            "type": "section",
+            "title": "settings-about-support-title",
+            "keys": ["about-github-btn", "about-issues-btn", "about-docs-btn"]
+        },
+        "about-credits": {
+            "type": "section",
+            "title": "settings-about-credits-title",
+            "keys": ["about-author", "about-sponsor", "about-license"]
         }
     },
 
@@ -173,5 +193,51 @@
         "default": false,
         "description": "Restore windows in minimized state",
         "tooltip": "When enabled, windows that were minimized will be restored minimized (usually not desired)"
+    },
+
+    "about-description": {
+        "type": "label",
+        "description": "settings-about-description"
+    },
+
+    "about-version": {
+        "type": "label",
+        "description": "settings-about-version"
+    },
+
+    "about-github-btn": {
+        "type": "button",
+        "description": "settings-about-github-btn",
+        "callback": "openGitHub",
+        "tooltip": "settings-about-github-tooltip"
+    },
+
+    "about-issues-btn": {
+        "type": "button",
+        "description": "settings-about-issues-btn",
+        "callback": "openIssues",
+        "tooltip": "settings-about-issues-tooltip"
+    },
+
+    "about-docs-btn": {
+        "type": "button",
+        "description": "settings-about-docs-btn",
+        "callback": "openDocs",
+        "tooltip": "settings-about-docs-tooltip"
+    },
+
+    "about-author": {
+        "type": "label",
+        "description": "settings-about-author"
+    },
+
+    "about-sponsor": {
+        "type": "label",
+        "description": "settings-about-sponsor"
+    },
+
+    "about-license": {
+        "type": "label",
+        "description": "settings-about-license"
     }
 }

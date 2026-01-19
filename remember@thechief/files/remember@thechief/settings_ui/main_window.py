@@ -11,7 +11,7 @@ from gi.repository import Gtk, Gdk, GLib
 
 from .css import apply_css
 from .utils import DataManager, CONFIG_FILE
-from .tabs import OverviewTab, WindowsTab, AppsSessionTab, PreferencesTab
+from .tabs import OverviewTab, WindowsTab, AppsSessionTab, PreferencesTab, AboutTab
 from .i18n import _
 
 
@@ -97,6 +97,11 @@ class SettingsWindow(Gtk.Window):
         self.tab_instances['preferences'] = PreferencesTab(self.data_manager, self)
         prefs_page = self.tab_instances['preferences'].create()
         self.notebook.append_page(prefs_page, Gtk.Label(label=_("Preferences")))
+
+        # Tab 5: About
+        self.tab_instances['about'] = AboutTab(self.data_manager, self)
+        about_page = self.tab_instances['about'].create()
+        self.notebook.append_page(about_page, Gtk.Label(label=_("settings-about-title")))
 
     def _create_bottom_bar(self):
         """Create the bottom info bar with buttons."""
