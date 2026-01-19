@@ -18,7 +18,7 @@ A Cinnamon Desktop extension that automatically saves and restores window positi
 
 ## Supported Applications
 
-The extension works with **all applications** out of the box. Some applications with special requirements (multi-window browsers, IDEs with workspace restoration, document-based apps) have dedicated plugins for optimal handling:
+The extension works with **all applications** out of the box. Some applications with special requirements (multi-window browsers, IDEs with workspace restoration, document-based apps) have dedicated plugins for optimal handling. If you need a plugin for another app, feel free to open an issue or PR at the [GitHub repository](https://github.com/carsteneu/remember).
 
 | Application | Features |
 |-------------|----------|

@@ -549,3 +549,49 @@ msgstr "Please install wmctrl: sudo apt install wmctrl"
 
 msgid "Error closing window"
 msgstr "Error closing window"
+
+# Settings - About Tab
+msgid "settings-about-title"
+msgstr "About"
+
+msgid "settings-about-info-title"
+msgstr "Extension Information"
+
+msgid "settings-about-support-title"
+msgstr "Help & Support"
+
+msgid "settings-about-credits-title"
+msgstr "Credits & Sponsors"
+
+msgid "settings-about-description"
+msgstr "<b>Window Position Remember</b>\n\nAutomatically saves and restores window positions across sessions and monitors. Includes session management and plugin support for application-specific features.\n\n<b>Key Features:</b>\n• Automatic window position saving\n• Session restore on login\n• Multi-monitor support\n• Plugin system for app-specific features\n• Workspace management"
+
+msgid "settings-about-version"
+msgstr "<b>Version:</b> 1.1\n<b>UUID:</b> remember@thechief\n<b>Cinnamon:</b> 6.6+\n<b>License:</b> GPL v3"
+
+msgid "settings-about-github-btn"
+msgstr "View on GitHub"
+
+msgid "settings-about-github-tooltip"
+msgstr "Opens the GitHub repository: https://github.com/carsteneu/remember"
+
+msgid "settings-about-issues-btn"
+msgstr "Report Issue"
+
+msgid "settings-about-issues-tooltip"
+msgstr "Report bugs or request features on GitHub Issues"
+
+msgid "settings-about-docs-btn"
+msgstr "Documentation"
+
+msgid "settings-about-docs-tooltip"
+msgstr "Opens the user manual and documentation"
+
+msgid "settings-about-author"
+msgstr "<b>Author:</b> carsteneu\n<b>Copyright:</b> © 2025\n<b>GitHub:</b> <a href='https://github.com/carsteneu'>github.com/carsteneu</a>\n\n<b>Contributors:</b>\n• Community testers and feedback"
+
+msgid "settings-about-sponsor"
+msgstr "<b>Sponsored by:</b>\n<span size='large'><a href='https://www.ccm19.de'>CCM19</a></span>\n<i>Cookie Consent Management System / EU Cookie Banner</i>\n\n<i>Special thanks for supporting the development of this extension!</i>"
+
+msgid "settings-about-license"
+msgstr "<b>License:</b> GPL v3\n\nThis extension is free and open source software.\n\nYou are free to use, modify, and distribute it under the terms of the GNU General Public License version 3.\n\n<small>This software is provided WITHOUT ANY WARRANTY.</small>"
