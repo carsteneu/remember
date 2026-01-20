@@ -2,7 +2,7 @@
 
 All notable changes to this project will be documented in this file.
 
-## [1.2] - 2025-01
+## [1.2] - 2026-01-20
 
 ### Added
 - Comprehensive documentation (User Guide, Developer Guide, API Reference)
@@ -13,7 +13,7 @@ All notable changes to this project will be documented in this file.
 - Production mode only logs errors, debug mode enables verbose logging
 - Updated Cinnamon version requirement to 6.6 (tested version)
 
-## [1.1] - 2025-01
+## [1.1] - 2025-01-18
 
 ### Added
 - Gradia screenshot tool plugin with Flatpak support
@@ -33,7 +33,7 @@ All notable changes to this project will be documented in this file.
 - Remove forbidden icon field from metadata.json
 - Correct locale path in progress window
 
-## [1.0] - 2024-12
+## [1.0] - 2024-01-08
 
 ### Added
 - Plugin system for app-specific launch handling
@@ -61,7 +61,7 @@ All notable changes to this project will be documented in this file.
 - Plugin handler GJS module caching conflict
 - Progress window multi-instance status updates
 
-## [0.9] - 2024-11
+## [0.1] - 2024-11-15
 
 ### Added
 - Multi-monitor support with EDID-based identification
