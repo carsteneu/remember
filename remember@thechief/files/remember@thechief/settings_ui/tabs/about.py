@@ -222,7 +222,7 @@ class AboutTab:
 
     def _on_docs_clicked(self, widget):
         """Handle Documentation button click."""
-        url = "https://github.com/carsteneu/remember#readme"
+        url = "https://carsteneu.github.io/remember/"
         self._open_url(url)
 
     def _on_link_clicked(self, label, uri):
