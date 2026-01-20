@@ -1,68 +1,68 @@
 # Contributing to Remember Extension
 
-Vielen Dank für dein Interesse an Remember! Diese Anleitung hilft dir beim Setup, Development und Contribution-Process.
+Thank you for your interest in Remember! This guide will help you with setup, development, and the contribution process.
 
-## Inhaltsverzeichnis
+## Table of Contents
 
-- [Projekt-Setup](#projekt-setup)
-- [Development-Workflow](#development-workflow)
-- [Code-Style Guidelines](#code-style-guidelines)
+- [Project Setup](#project-setup)
+- [Development Workflow](#development-workflow)
+- [Code Style Guidelines](#code-style-guidelines)
 - [Testing](#testing)
 - [Debugging](#debugging)
-- [Commit-Konventionen](#commit-konventionen)
+- [Commit Conventions](#commit-conventions)
 - [Pull Request Process](#pull-request-process)
-- [Bug-Reports](#bug-reports)
-- [Feature-Requests](#feature-requests)
-- [Community-Guidelines](#community-guidelines)
+- [Bug Reports](#bug-reports)
+- [Feature Requests](#feature-requests)
+- [Community Guidelines](#community-guidelines)
 
 ---
 
-## Projekt-Setup
+## Project Setup
 
-### Voraussetzungen
+### Prerequisites
 
 **System:**
-- Linux Distribution mit Cinnamon Desktop 6.0+
+- Linux Distribution with Cinnamon Desktop 6.0+
 - Git
 - Python 3.8+
-- Node.js (optional, für Linting)
+- Node.js (optional, for linting)
 
-**Empfohlene Distribution:**
-- Linux Mint 22+ mit Cinnamon 6.0+
+**Recommended Distribution:**
+- Linux Mint 22+ with Cinnamon 6.0+
 
-### Repository klonen
+### Clone Repository
 
 ```bash
 # Clone Repository
 git clone https://github.com/yourusername/remember-cinnamon-extension.git
 cd remember-cinnamon-extension
 
-# Oder von Bitbucket
+# Or from Bitbucket
 git clone https://bitbucket.org/yourusername/remember-cinnamon-extension.git
 cd remember-cinnamon-extension
 ```
 
-### Installation für Development
+### Installation for Development
 
 ```bash
-# Installation Script ausführen
+# Run installation script
 chmod +x install.sh
 ./install.sh
 ```
 
-**Was das Script macht:**
-1. Kopiert Extension von `remember@thechief/files/remember@thechief/` nach `~/.local/share/cinnamon/extensions/remember@thechief/`
-2. Kopiert Applet von `remember-applet@thechief/files/remember-applet@thechief/` nach `~/.local/share/cinnamon/applets/remember-applet@thechief/`
-3. Startet Cinnamon neu (mit Cache-Clear)
+**What the script does:**
+1. Copies extension from `remember@thechief/files/remember@thechief/` to `~/.local/share/cinnamon/extensions/remember@thechief/`
+2. Copies applet from `remember-applet@thechief/files/remember-applet@thechief/` to `~/.local/share/cinnamon/applets/remember-applet@thechief/`
+3. Restarts Cinnamon (with cache clear)
 
-**Alternative: Manuelle Symlinks (für Live-Editing)**
+**Alternative: Manual Symlinks (for Live Editing)**
 
 ```bash
-# Entferne alte Installation
+# Remove old installation
 rm -rf ~/.local/share/cinnamon/extensions/remember@thechief
 rm -rf ~/.local/share/cinnamon/applets/remember-applet@thechief
 
-# Erstelle Symlinks
+# Create symlinks
 ln -s "$(pwd)/remember@thechief/files/remember@thechief" \
       ~/.local/share/cinnamon/extensions/remember@thechief
 
@@ -73,9 +73,9 @@ ln -s "$(pwd)/remember-applet@thechief/files/remember-applet@thechief" \
 cinnamon --replace &
 ```
 
-**Vorteil Symlinks:** Änderungen sofort wirksam (nach Cinnamon-Restart).
+**Symlink advantage:** Changes take effect immediately (after Cinnamon restart).
 
-### Verzeichnis-Struktur
+### Directory Structure
 
 ```
 remember-cinnamon-extension/
@@ -104,9 +104,9 @@ remember-cinnamon-extension/
 └── README.md
 ```
 
-### Development-Tools Setup
+### Development Tools Setup
 
-**Optional: ESLint für JavaScript**
+**Optional: ESLint for JavaScript**
 
 ```bash
 npm install -g eslint
@@ -140,7 +140,7 @@ cat > .eslintrc.json <<EOF
 EOF
 ```
 
-**Python Tools (für Settings UI)**
+**Python Tools (for Settings UI)**
 
 ```bash
 # Install Python dev tools
@@ -157,13 +157,13 @@ pylint remember@thechief/files/remember@thechief/settings.py \
 
 ---
 
-## Development-Workflow
+## Development Workflow
 
-### 1. Code ändern
+### 1. Change Code
 
-Edit files im Repository (oder über Symlinks direkt in `.local/share/cinnamon/extensions/`).
+Edit files in the repository (or via symlinks directly in `.local/share/cinnamon/extensions/`).
 
-### 2. Testen
+### 2. Test
 
 **Quick Test (Cinnamon Restart):**
 ```bash
@@ -184,7 +184,7 @@ Alt+F2 → lg
 # Restart extension via UI
 ```
 
-### 3. Logs prüfen
+### 3. Check Logs
 
 ```bash
 # Tail logs
@@ -211,7 +211,7 @@ tail -f ~/.xsession-errors | grep remember@thechief
 ### 5. Iteration
 
 ```bash
-# Nach Code-Änderungen:
+# After code changes:
 
 # 1. Restart Cinnamon
 cinnamon --replace &
@@ -227,7 +227,7 @@ tail -f ~/.xsession-errors | grep remember@thechief
 
 ---
 
-## Code-Style Guidelines
+## Code Style Guidelines
 
 ### JavaScript (GJS/CJS)
 
@@ -243,7 +243,7 @@ tail -f ~/.xsession-errors | grep remember@thechief
   - Constants: `UPPER_SNAKE_CASE`
   - Variables: `camelCase`
 
-**Beispiel:**
+**Example:**
 
 ```javascript
 /**
@@ -284,13 +284,13 @@ const CONFIG = {
 };
 ```
 
-**Kommentare:**
-- JSDoc für alle public methods
-- Einzeiler für kurze Erklärungen
-- Mehrzeiler für komplexe Logik
-- TODO/FIXME/NOTE markers wo sinnvoll
+**Comments:**
+- JSDoc for all public methods
+- Single-line for brief explanations
+- Multi-line for complex logic
+- TODO/FIXME/NOTE markers where appropriate
 
-**Beispiel:**
+**Example:**
 ```javascript
 /**
  * Try to restore window position
@@ -372,7 +372,7 @@ var MY_CONSTANT = 42;
   - Private methods: `_snake_case`
   - Constants: `UPPER_SNAKE_CASE`
 
-**Beispiel:**
+**Example:**
 
 ```python
 """
@@ -431,71 +431,71 @@ def load_data(self, file_path: str) -> dict:
 
 ### Unit Tests
 
-**Aktuell:** Keine automatisierten Unit Tests.
+**Currently:** No automated unit tests.
 
-**TODO:** Jest-Setup für JavaScript, Pytest für Python.
+**TODO:** Jest setup for JavaScript, Pytest for Python.
 
-### Manuelle Tests
+### Manual Tests
 
-**Test-Checkliste:**
+**Test Checklist:**
 
 #### Basic Functionality
 
-- [ ] Extension lädt ohne Errors
-- [ ] Applet erscheint im Panel
-- [ ] Settings Dialog öffnet
-- [ ] Window Tracking funktioniert
-  - [ ] Position-Änderungen werden gespeichert
-  - [ ] Size-Änderungen werden gespeichert
-  - [ ] Workspace-Änderungen werden gespeichert
-  - [ ] Maximized-State wird gespeichert
-- [ ] Auto-Save (alle 30 sec) funktioniert
-- [ ] Manual Save via Applet funktioniert
-- [ ] Manual Restore via Applet funktioniert
+- [ ] Extension loads without errors
+- [ ] Applet appears in panel
+- [ ] Settings dialog opens
+- [ ] Window tracking works
+  - [ ] Position changes are saved
+  - [ ] Size changes are saved
+  - [ ] Workspace changes are saved
+  - [ ] Maximized state is saved
+- [ ] Auto-save (every 30 sec) works
+- [ ] Manual save via applet works
+- [ ] Manual restore via applet works
 
 #### Session Restore
 
-- [ ] Auto-Restore beim Login funktioniert
-- [ ] Apps werden gestartet
-- [ ] Positionen werden restored
-- [ ] Workspaces werden restored
-- [ ] Monitor-Zuordnung funktioniert
-- [ ] Progress Window erscheint
-- [ ] Timeouts funktionieren
-- [ ] Grace Periods funktionieren
+- [ ] Auto-restore on login works
+- [ ] Apps are launched
+- [ ] Positions are restored
+- [ ] Workspaces are restored
+- [ ] Monitor assignment works
+- [ ] Progress window appears
+- [ ] Timeouts work
+- [ ] Grace periods work
 
 #### Plugin System
 
-- [ ] Built-in Plugins laden
-- [ ] User Plugins laden (aus ~/.config/)
-- [ ] Plugin-Handlers funktionieren
-- [ ] Conditional Flags funktionieren
-- [ ] Single-Instance Apps funktionieren
-- [ ] Title Stabilization funktioniert
+- [ ] Built-in plugins load
+- [ ] User plugins load (from ~/.config/)
+- [ ] Plugin handlers work
+- [ ] Conditional flags work
+- [ ] Single-instance apps work
+- [ ] Title stabilization works
 
 #### Multi-Monitor
 
-- [ ] Monitor-Erkennung via EDID funktioniert
-- [ ] Position-Restore auf richtigem Monitor
-- [ ] Monitor-Change wird erkannt
-- [ ] Percentage-based Restore funktioniert
-- [ ] Absolute Fallback funktioniert
+- [ ] Monitor detection via EDID works
+- [ ] Position restore on correct monitor
+- [ ] Monitor change is detected
+- [ ] Percentage-based restore works
+- [ ] Absolute fallback works
 
 #### Edge Cases
 
-- [ ] Cinnamon Restart (Alt+F2 r) - keine Datenverluste
-- [ ] Logout/Shutdown - Backup wird erstellt
-- [ ] Sehr viele Fenster (50+) - keine Performance-Probleme
-- [ ] Sehr große Fenster - Positionen korrekt
-- [ ] Sehr kleine Fenster - werden gefiltert
-- [ ] Apps mit Unicode-Titles - funktionieren
-- [ ] Apps mit langen Command-Lines - funktionieren
+- [ ] Cinnamon restart (Alt+F2 r) - no data loss
+- [ ] Logout/shutdown - backup is created
+- [ ] Very many windows (50+) - no performance issues
+- [ ] Very large windows - positions correct
+- [ ] Very small windows - are filtered
+- [ ] Apps with Unicode titles - work
+- [ ] Apps with long command lines - work
 
 #### Cinnamon Version
 
-Test auf der aktuellen Cinnamon-Version:
+Test on current Cinnamon version:
 
-- [ ] Cinnamon 6.0+ (empfohlen: aktuelle stabile Version)
+- [ ] Cinnamon 6.0+ (recommended: current stable version)
 
 ### Performance Tests
 
@@ -538,14 +538,14 @@ iotop -p $(pgrep -f cinnamon)
 
 ### Looking Glass
 
-Cinnamon's eingebautes Debug-Tool.
+Cinnamon's built-in debug tool.
 
-**Öffnen:**
+**Open:**
 ```bash
 Alt+F2 → lg → Enter
 ```
 
-**Nützliche Commands:**
+**Useful Commands:**
 
 ```javascript
 // Check Extension State
@@ -575,12 +575,12 @@ global.get_window_actors().map(a => {
 ```
 
 **Errors/Warnings Tab:**
-- Zeigt alle JavaScript-Exceptions
-- Sehr nützlich für Syntax-Errors
+- Shows all JavaScript exceptions
+- Very useful for syntax errors
 
 **Log Tab:**
-- Zeigt alle `global.log()` Ausgaben
-- Filter möglich
+- Shows all `global.log()` outputs
+- Filtering available
 
 ### Log Files
 
@@ -614,10 +614,10 @@ export REMEMBER_DEBUG=1
 cinnamon --replace &
 ```
 
-**Was es macht:**
-- Alle `log()` calls werden ausgegeben
-- `logSensitive()` zeigt full data
-- `logDebug()` wird aktiviert
+**What it does:**
+- All `log()` calls are output
+- `logSensitive()` shows full data
+- `logDebug()` is activated
 
 **Disable:**
 ```bash
@@ -655,9 +655,9 @@ cat ~/.config/remember@thechief/preferences.json | jq
 cat ~/.config/remember@thechief/extension-settings.json | jq
 ```
 
-### Breakpoint-Debugging (Limited)
+### Breakpoint Debugging (Limited)
 
-GJS hat kein echtes Debugger-Support, aber:
+GJS doesn't have true debugger support, but:
 
 **Console Logging:**
 ```javascript
@@ -686,7 +686,7 @@ function myFunction(param) {
 
 ---
 
-## Commit-Konventionen
+## Commit Conventions
 
 ### Commit Message Format
 
@@ -873,7 +873,7 @@ Fixes #456
 ## Testing
 
 Tested on:
-- [ ] Cinnamon 6.0+ (aktuelle stabile Version)
+- [ ] Cinnamon 6.0+ (current stable version)
 
 Test Cases:
 - [ ] Manual window tracking
@@ -947,17 +947,17 @@ git push origin --delete feature/my-awesome-feature
 
 ---
 
-## Bug-Reports
+## Bug Reports
 
-### Gute Bug-Reports enthalten:
+### Good Bug Reports Include:
 
-1. **Beschreibung**
-   - Was ist passiert?
-   - Was sollte passieren?
+1. **Description**
+   - What happened?
+   - What should happen?
 
-2. **Reproduktionsschritte**
-   - Schritt-für-Schritt Anleitung
-   - Minimal reproduzierbares Beispiel
+2. **Reproduction Steps**
+   - Step-by-step instructions
+   - Minimal reproducible example
 
 3. **Environment**
    - Distribution & Version
@@ -965,12 +965,12 @@ git push origin --delete feature/my-awesome-feature
    - Extension Version
 
 4. **Logs**
-   - Relevante Log-Ausgaben
-   - Screenshots (falls sinnvoll)
+   - Relevant log outputs
+   - Screenshots (if applicable)
 
 5. **Expected vs. Actual Behavior**
 
-### Bug-Report Template
+### Bug Report Template
 
 ```markdown
 ## Bug Description
@@ -1021,22 +1021,22 @@ I think the issue might be in positionRestorer.js line 234 where we check...
 
 ---
 
-## Feature-Requests
+## Feature Requests
 
-### Gute Feature-Requests enthalten:
+### Good Feature Requests Include:
 
 1. **Use Case**
-   - Warum brauchst du das?
-   - Welches Problem löst es?
+   - Why do you need this?
+   - What problem does it solve?
 
-2. **Vorgeschlagene Lösung**
-   - Wie sollte es funktionieren?
-   - Alternative Ansätze?
+2. **Proposed Solution**
+   - How should it work?
+   - Alternative approaches?
 
-3. **Beispiele**
-   - Konkrete Beispiele aus anderen Apps/Extensions
+3. **Examples**
+   - Concrete examples from other apps/extensions
 
-### Feature-Request Template
+### Feature Request Template
 
 ```markdown
 ## Feature Description
@@ -1082,7 +1082,7 @@ I'm willing to help implement this if you can point me to the right modules.
 
 ---
 
-## Community-Guidelines
+## Community Guidelines
 
 ### Code of Conduct
 
@@ -1392,24 +1392,24 @@ git push origin v1.3.0
 
 ## License
 
-Dieses Projekt ist unter der GPL-3.0 License lizenziert. Contributions werden unter derselben License akzeptiert.
+This project is licensed under the GPL-3.0 License. Contributions are accepted under the same license.
 
-Siehe [LICENSE](../../LICENSE) für Details.
+See [LICENSE](../../LICENSE) for details.
 
 ---
 
-## Kontakt
+## Contact
 
 **Maintainer:** [Your Name]
 
 **Issues:** https://github.com/yourname/remember-cinnamon-extension/issues
 
-**Email:** your.email@example.com (für Security-Vulnerabilities)
+**Email:** your.email@example.com (for security vulnerabilities)
 
 ---
 
-## Danke!
+## Thank You!
 
-Vielen Dank für dein Interest an Remember! Jeder Contribution - ob Code, Dokumentation, Bug-Reports oder Feature-Requests - hilft das Projekt zu verbessern.
+Thank you for your interest in Remember! Every contribution - whether code, documentation, bug reports, or feature requests - helps improve the project.
 
 Happy Coding!

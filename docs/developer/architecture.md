@@ -1,46 +1,46 @@
-# Remember Extension - System-Architektur
+# Remember Extension - System Architecture
 
-## Übersicht
+## Overview
 
-Remember ist eine Cinnamon Desktop Extension, die Fensterpositionen speichert und über Sessions hinweg wiederherstellt. Das System verwendet eine modular aufgebaute Architektur mit klarer Trennung der Verantwortlichkeiten.
+Remember is a Cinnamon Desktop Extension that saves window positions and restores them across sessions. The system uses a modular architecture with clear separation of responsibilities.
 
-**Kernfunktionen:**
-- Automatisches Tracking von Fensterpositionen in Echtzeit
-- Session-Restore beim Login mit intelligentem App-Launching
-- Multi-Monitor-Support mit EDID-basierter Identifikation
-- Plugin-System für app-spezifisches Verhalten
-- Smart Window Matching über mehrere Strategien
+**Core Features:**
+- Automatic tracking of window positions in real-time
+- Session restore on login with intelligent app launching
+- Multi-monitor support with EDID-based identification
+- Plugin system for app-specific behavior
+- Smart Window Matching using multiple strategies
 
-**Technologie:**
-- Sprache: JavaScript (GJS/CJS - Cinnamon JavaScript)
+**Technology:**
+- Language: JavaScript (GJS/CJS - Cinnamon JavaScript)
 - Platform: Cinnamon Desktop 6.0+
 - Settings UI: Python 3 + GTK 3
-- Storage: JSON-Dateien in `~/.config/remember@thechief/`
+- Storage: JSON files in `~/.config/remember@thechief/`
 
-## Design-Prinzipien
+## Design Principles
 
-### 1. Modularität
-Jedes Modul hat eine klar definierte Verantwortung. Core-Module sind in `core/` organisiert, Services in `services/`, Plugins in `plugins/`.
+### 1. Modularity
+Each module has a clearly defined responsibility. Core modules are organized in `core/`, services in `services/`, plugins in `plugins/`.
 
-### 2. Robustheit
-- Dirty-Flag-System verhindert unnötige I/O-Operationen
-- Shutdown-Detection verhindert Datenverlust beim Logout
-- Backup-Mechanismus vor Shutdown
-- Grace Periods für langsame Apps
+### 2. Robustness
+- Dirty-flag system prevents unnecessary I/O operations
+- Shutdown detection prevents data loss on logout
+- Backup mechanism before shutdown
+- Grace periods for slow apps
 
-### 3. Erweiterbarkeit
-Das Plugin-System ermöglicht app-spezifische Anpassungen ohne Änderung des Core-Codes.
+### 3. Extensibility
+The plugin system allows app-specific customizations without changing core code.
 
 ### 4. Performance
-- Nur geänderte Fenster werden gespeichert (Dirty-Flag-System)
-- Auto-Save alle 30 Sekunden statt bei jeder Änderung
-- Module werden lazy geladen
+- Only changed windows are saved (dirty-flag system)
+- Auto-save every 30 seconds instead of on every change
+- Modules are lazy loaded
 
 ## Extension Lifecycle
 
-### 1. Initialisierung (`init(meta)`)
+### 1. Initialization (`init(meta)`)
 
-**Wird einmal beim Laden der Extension aufgerufen.**
+**Called once when the extension is loaded.**
 
 ```javascript
 function init(meta) {
@@ -49,18 +49,18 @@ function init(meta) {
 }
 ```
 
-**Aufgaben:**
-- Speichern der Extension-Metadaten (`meta.path`)
-- Installation des Companion Applets falls benötigt
-- Keine aktive Logik, nur Setup
+**Tasks:**
+- Save extension metadata (`meta.path`)
+- Install companion applet if needed
+- No active logic, only setup
 
-**Module geladen:**
-- `modules.js` - Für dynamisches Laden von Core-Modulen
-- `core/appletManager.js` - Für Applet-Installation
+**Modules loaded:**
+- `modules.js` - For dynamic loading of core modules
+- `core/appletManager.js` - For applet installation
 
-### 2. Aktivierung (`enable()`)
+### 2. Activation (`enable()`)
 
-**Wird beim Start von Cinnamon oder bei manueller Aktivierung aufgerufen.**
+**Called at Cinnamon startup or manual activation.**
 
 ```javascript
 function enable() {
@@ -70,9 +70,9 @@ function enable() {
 }
 ```
 
-**Aufgaben:**
+**Tasks:**
 
-1. **Logger initialisieren** (als erstes!)
+1. **Initialize logger** (first!)
    ```javascript
    const loggerModule = getExtensionModule('services/logger');
    log = loggerModule.log;
@@ -80,12 +80,12 @@ function enable() {
    this._logger = new loggerModule.Logger();
    ```
 
-2. **Shutdown-Flag zurücksetzen**
+2. **Reset shutdown flag**
    ```javascript
    this._isShuttingDown = false;
    ```
 
-3. **Module laden** (in dieser Reihenfolge!)
+3. **Load modules** (in this order!)
    ```javascript
    // Services
    const { Storage } = getExtensionModule('services/storage');
@@ -103,7 +103,7 @@ function enable() {
    const { AutoRestore } = Modules.load(this._meta, 'core', 'autoRestore');
    ```
 
-4. **Config laden**
+4. **Load config**
    ```javascript
    const configModule = getExtensionModule('config');
    this._sessionConfig = configModule.SESSION_LAUNCH_CONFIG;
@@ -114,48 +114,48 @@ function enable() {
    };
    ```
 
-5. **Services initialisieren**
+5. **Initialize services**
    ```javascript
    this._storage.init();
    this._preferences.init();
    this._extensionSettings.init();
    ```
 
-6. **Saves blockieren bis Restore fertig**
+6. **Block saves until restore is complete**
    ```javascript
    this._storage.blockSaves();
    ```
 
-7. **Plugin-Manager laden**
+7. **Load plugin manager**
    ```javascript
    this._pluginManager.loadPlugins();
    ```
 
-8. **Monitor-Manager aktivieren**
+8. **Activate monitor manager**
    ```javascript
    this._monitorManager.enable();
    ```
 
-9. **Window-Tracker initialisieren**
+9. **Initialize window tracker**
    ```javascript
    this._tracker = new WindowTracker(...);
-   this._tracker._isRestoringSession = true; // Verhindert Saves während Restore
-   this._tracker.enable(); // Startet Tracking
+   this._tracker._isRestoringSession = true; // Prevents saves during restore
+   this._tracker.enable(); // Starts tracking
    ```
 
-10. **Session-Launcher initialisieren**
+10. **Initialize session launcher**
     ```javascript
     this._launcher = new SessionLauncher(...);
     this._tracker.setSessionLauncher(this._launcher);
     this._tracker.setPluginManager(this._pluginManager);
     ```
 
-11. **AutoRestore initialisieren**
+11. **Initialize AutoRestore**
     ```javascript
     this._autoRestore = new AutoRestore({...});
     ```
 
-12. **Globale API exposen**
+12. **Expose global API**
     ```javascript
     Main.windowRemember = {
         saveAll: () => this._saveAll(),
@@ -169,14 +169,14 @@ function enable() {
     };
     ```
 
-13. **Auto-Restore planen**
+13. **Schedule auto-restore**
     ```javascript
     this._autoRestore.scheduleAutoRestore();
     ```
 
-### 3. Deaktivierung (`disable()`)
+### 3. Deactivation (`disable()`)
 
-**Wird beim Logout, Shutdown oder manueller Deaktivierung aufgerufen.**
+**Called on logout, shutdown or manual deactivation.**
 
 ```javascript
 function disable() {
@@ -186,9 +186,9 @@ function disable() {
 }
 ```
 
-**Kritische Reihenfolge der Aufgaben:**
+**Critical order of tasks:**
 
-1. **SOFORT Shutdown-Flag setzen** (verhindert weitere Saves!)
+1. **IMMEDIATELY set shutdown flag** (prevents further saves!)
    ```javascript
    this._isShuttingDown = true;
    if (this._tracker) {
@@ -196,14 +196,14 @@ function disable() {
    }
    ```
 
-2. **Backup erstellen** (vor Cleanup!)
+2. **Create backup** (before cleanup!)
    ```javascript
    if (this._storage) {
        this._storage.backupPositions();
    }
    ```
 
-3. **Auto-Save stoppen**
+3. **Stop auto-save**
    ```javascript
    if (this._storage) {
        this._storage.stopAutoSave();
@@ -217,28 +217,28 @@ function disable() {
    }
    ```
 
-5. **Applet entfernen**
+5. **Remove applet**
    ```javascript
    if (this._appletManager) {
        this._appletManager.deactivate();
    }
    ```
 
-6. **Globale API entfernen**
+6. **Remove global API**
    ```javascript
    if (Main.windowRemember) {
        delete Main.windowRemember;
    }
    ```
 
-7. **Tracker deaktivieren** (disconnected Signals!)
+7. **Deactivate tracker** (disconnect signals!)
    ```javascript
    if (this._tracker) {
        this._tracker.disable();
    }
    ```
 
-8. **Komponenten cleanup** (in umgekehrter Reihenfolge!)
+8. **Component cleanup** (in reverse order!)
    ```javascript
    if (this._launcher) this._launcher.destroy();
    if (this._monitorManager) this._monitorManager.disable();
@@ -248,17 +248,17 @@ function disable() {
    if (this._pluginManager) this._pluginManager.destroy();
    ```
 
-**WICHTIG:** Kein finales Save in `disable()`! Das würde den Partial State während des Shutdowns speichern.
+**IMPORTANT:** No final save in `disable()`! This would save the partial state during shutdown.
 
-## Modul-System und GJS-Caching
+## Module System and GJS Caching
 
 ### Problem: GJS Module Caching
 
-GJS (GNOME JavaScript) cached Module global nach ihrem Namen. Das bedeutet:
-- Alle `index.js` Dateien würden denselben Cache-Eintrag teilen
-- Module aus Subdirectories können nicht normal geladen werden
+GJS (GNOME JavaScript) caches modules globally by their name. This means:
+- All `index.js` files would share the same cache entry
+- Modules from subdirectories cannot be loaded normally
 
-### Lösung: modules.js
+### Solution: modules.js
 
 **File:** `modules.js`
 
@@ -286,10 +286,10 @@ var Modules = {
 };
 ```
 
-**Verwendung:**
+**Usage:**
 
 ```javascript
-// Core Module laden
+// Load core module
 const modulesModule = getExtensionModule('modules');
 const Modules = modulesModule.Modules;
 
@@ -297,21 +297,21 @@ const { WindowFilter } = Modules.load(meta, 'core', 'windowFilter');
 const { PositionRestorer } = Modules.load(meta, 'core', 'positionRestorer');
 ```
 
-**Plugin Handler laden:**
+**Loading plugin handlers:**
 
-Plugins verwenden eine spezielle Technik um Cache-Konflikte zu vermeiden:
+Plugins use a special technique to avoid cache conflicts:
 
 ```javascript
-// Parent-Directory zum Search-Path
+// Parent directory to search path
 const parentDir = GLib.path_get_dirname(pluginPath);
 imports.searchPath.unshift(parentDir);
 
-// Import als: imports.<pluginName>.<moduleName>
-// z.B. imports.thunderbird.index
+// Import as: imports.<pluginName>.<moduleName>
+// e.g. imports.thunderbird.index
 const module = imports[pluginName][moduleName];
 ```
 
-So hat jedes Plugin einen unique Namespace.
+This gives each plugin a unique namespace.
 
 ## Core Components
 
@@ -319,23 +319,23 @@ So hat jedes Plugin einen unique Namespace.
 
 **File:** `windowTracker.js`
 
-**Verantwortung:** Überwacht Fenster-Events und speichert Position-Änderungen.
+**Responsibility:** Monitors window events and saves position changes.
 
-**Hauptmerkmale:**
+**Main features:**
 
-1. **Dirty-Flag-System**
+1. **Dirty-flag system**
    ```javascript
-   _dirtyWindows = new Set(); // Fenster mit ungespeicherten Änderungen
+   _dirtyWindows = new Set(); // Windows with unsaved changes
 
    _onWindowChanged(metaWindow) {
        if (this._isRestoringSession || this._isShuttingDown) {
-           return; // Keine Saves während Restore/Shutdown
+           return; // No saves during restore/shutdown
        }
-       this._dirtyWindows.add(metaWindow); // Nur markieren
+       this._dirtyWindows.add(metaWindow); // Just mark
    }
 
    _saveAllOpenWindows() {
-       // Nur dirty windows speichern
+       // Only save dirty windows
        for (const metaWindow of this._dirtyWindows) {
            this._saveWindowStateInternal(metaWindow);
        }
@@ -343,7 +343,7 @@ So hat jedes Plugin einen unique Namespace.
    }
    ```
 
-2. **Window Signals**
+2. **Window signals**
    ```javascript
    // Position/Size
    metaWindow.connect('position-changed', () => this._onWindowChanged(metaWindow));
@@ -352,7 +352,7 @@ So hat jedes Plugin einen unique Namespace.
    // Workspace
    metaWindow.connect('workspace-changed', () => this._onWindowChanged(metaWindow));
 
-   // Title (für Dokument-Apps)
+   // Title (for document apps)
    metaWindow.connect('notify::title', () => this._onTitleChanged(metaWindow));
 
    // WM_CLASS Migration (LibreOffice: Soffice → libreoffice-calc)
@@ -365,50 +365,50 @@ So hat jedes Plugin einen unique Namespace.
    metaWindow.connect('unmanaging', () => this._untrackWindow(metaWindow));
    ```
 
-3. **Auto-Save Callback**
+3. **Auto-save callback**
    ```javascript
    this._storage.setAutoSaveCallback(() => {
        if (this._isRestoringSession || this._isShuttingDown) {
            return false; // Skip save
        }
        this._instanceCleanup.cleanupOrphanedInstances();
-       this._saveAllOpenWindows(); // Saves nur dirty windows
+       this._saveAllOpenWindows(); // Saves only dirty windows
        return true;
    });
    ```
 
 **Injected Dependencies:**
-- `_log`, `_logError` - Logging-Funktionen
-- `_logger` - Logger-Instanz für sanitized logging
-- `storage` - Storage-Service
-- `monitorManager` - Monitor-Management
-- `preferences` - User-Präferenzen
-- `sessionLauncher` - Session-Restore-Logik
-- `pluginManager` - Plugin-System
+- `_log`, `_logError` - Logging functions
+- `_logger` - Logger instance for sanitized logging
+- `storage` - Storage service
+- `monitorManager` - Monitor management
+- `preferences` - User preferences
+- `sessionLauncher` - Session restore logic
+- `pluginManager` - Plugin system
 
 ### SessionLauncher
 
 **File:** `sessionLauncher.js`
 
-**Verantwortung:** Startet Apps beim Session-Restore und tracked pending launches.
+**Responsibility:** Launches apps during session restore and tracks pending launches.
 
-**Hauptmerkmale:**
+**Main features:**
 
-1. **Launch Queue**
+1. **Launch queue**
    ```javascript
-   _launchQueue = []; // Queue von zu startenden Apps
+   _launchQueue = []; // Queue of apps to launch
    _pendingLaunches = new Map(); // instanceId → pending data
    _expectedLaunches = new Map(); // instanceId → expected data (grace period)
    ```
 
-2. **Single-Instance Handling**
+2. **Single-instance handling**
    ```javascript
    launchInstances(instances) {
        for (const [wmClass, data] of instancesByApp.entries()) {
            const isSingleInstance = this._isSingleInstance(wmClass);
 
            if (isSingleInstance) {
-               // Nur EINMAL starten, aber alle Instances in Progress zeigen
+               // Only launch ONCE, but show all instances as in progress
                this._launchQueue.push({
                    wmClass: wmClass,
                    instance: appInstances[0],
@@ -416,7 +416,7 @@ So hat jedes Plugin einen unique Namespace.
                    coveredInstanceIds: appInstances.map(inst => inst.id)
                });
            } else {
-               // Multi-Instance: Alle starten
+               // Multi-instance: Launch all
                for (const instance of appInstances) {
                    this._launchQueue.push({...});
                }
@@ -425,16 +425,16 @@ So hat jedes Plugin einen unique Namespace.
    }
    ```
 
-3. **Plugin-based Launch**
+3. **Plugin-based launch**
    ```javascript
    _launchWithPlugin(plugin, handler, wmClass, appData, instance, workDir, instanceId) {
-       // 1. Executable auflösen
+       // 1. Resolve executable
        let executable = this._resolveExecutable(plugin.launch.executables);
 
-       // 2. Args aus Plugin config
+       // 2. Args from plugin config
        let args = [...(plugin.launch.flags || [])];
 
-       // 3. Conditional Flags
+       // 3. Conditional flags
        if (plugin.launch.conditionalFlags) {
            for (const [settingKey, flags] of Object.entries(plugin.launch.conditionalFlags)) {
                if (this._extensionSettings.get(settingKey) !== false) {
@@ -443,12 +443,12 @@ So hat jedes Plugin einen unique Namespace.
            }
        }
 
-       // 4. Handler beforeLaunch Hook
+       // 4. Handler beforeLaunch hook
        if (handler && handler.beforeLaunch) {
            launchParams = handler.beforeLaunch(instance, launchParams);
        }
 
-       // 5. Parse Title Data (für Dokument-Apps)
+       // 5. Parse title data (for document apps)
        if (handler && handler.parseTitleData) {
            const parsedArgs = handler.parseTitleData(instance.title_snapshot, instance);
            if (parsedArgs) {
@@ -456,20 +456,20 @@ So hat jedes Plugin einen unique Namespace.
            }
        }
 
-       // 6. Spawn Process
+       // 6. Spawn process
        const [success, pid] = this._spawnProcess(workDir, argv, instanceId, ...);
 
-       // 7. Handler afterLaunch Hook
+       // 7. Handler afterLaunch hook
        if (handler && handler.afterLaunch) {
            handler.afterLaunch(instance, pid, success);
        }
    }
    ```
 
-4. **Timeout & Grace Period**
+4. **Timeout & grace period**
    ```javascript
    _getTimeouts(wmClass, plugin = null) {
-       // 1. Plugin-spezifisch
+       // 1. Plugin-specific
        if (plugin && plugin.features) {
            return {
                timeout: plugin.features.timeout || 45000,
@@ -478,7 +478,7 @@ So hat jedes Plugin einen unique Namespace.
            };
        }
 
-       // 2. Single-Instance Apps
+       // 2. Single-instance apps
        if (this._isSingleInstance(wmClass)) {
            return {
                timeout: 120000,  // 2 min
@@ -496,7 +496,7 @@ So hat jedes Plugin einen unique Namespace.
    }
    ```
 
-5. **Flatpak Detection**
+5. **Flatpak detection**
    ```javascript
    _tryFindFlatpakApp(wmClass) {
        // 1. Desktop file lookup
@@ -518,11 +518,11 @@ So hat jedes Plugin einen unique Namespace.
 
 **File:** `pluginManager.js`
 
-**Verantwortung:** Lädt und verwaltet App-spezifische Plugins.
+**Responsibility:** Loads and manages app-specific plugins.
 
-**Hauptmerkmale:**
+**Main features:**
 
-1. **Plugin Directories**
+1. **Plugin directories**
    ```javascript
    const pluginDirs = [
        // Built-in
@@ -532,45 +532,45 @@ So hat jedes Plugin einen unique Namespace.
    ];
    ```
 
-2. **Plugin Laden**
+2. **Plugin loading**
    ```javascript
    _loadPlugin(dirPath, pluginName) {
-       // 1. config.json laden (required)
+       // 1. Load config.json (required)
        const config = JSON.parse(configFile.load_contents());
 
-       // 2. Validierung
+       // 2. Validation
        if (!config.name || !config.wmClass || !Array.isArray(config.wmClass)) {
            return;
        }
 
-       // 3. Defaults setzen
+       // 3. Set defaults
        config.launch = config.launch || {};
        config.features = config.features || {};
        config.features.isSingleInstance = config.features.isSingleInstance || false;
 
-       // 4. Für alle wmClasses registrieren
+       // 4. Register for all wmClasses
        for (const wmClass of config.wmClass) {
            this._plugins.set(wmClass, config);
        }
 
-       // 5. Handler laden (optional)
+       // 5. Load handler (optional)
        if (config.handler) {
            this._loadHandler(pluginPath, pluginName, config);
        }
    }
    ```
 
-3. **Handler Laden**
+3. **Handler loading**
    ```javascript
    _loadHandler(pluginPath, pluginName, config) {
-       // Unique Import Path: imports.<pluginName>.<moduleName>
+       // Unique import path: imports.<pluginName>.<moduleName>
        const parentDir = GLib.path_get_dirname(pluginPath);
        imports.searchPath.unshift(parentDir);
 
        const moduleName = config.handler.replace(/\.js$/, '');
        const module = imports[pluginName][moduleName];
 
-       // Handler-Klasse finden (convention: *Handler)
+       // Find handler class (convention: *Handler)
        let HandlerClass = null;
        for (const key in module) {
            if (key.endsWith('Handler')) {
@@ -579,17 +579,17 @@ So hat jedes Plugin einen unique Namespace.
            }
        }
 
-       // Instanziieren
+       // Instantiate
        const handler = new HandlerClass(config, this._extensionSettings, this._storage);
 
-       // Für alle wmClasses registrieren
+       // Register for all wmClasses
        for (const wmClass of config.wmClass) {
            this._handlers.set(wmClass, handler);
        }
    }
    ```
 
-4. **API Methods**
+4. **API methods**
    ```javascript
    getPlugin(wmClass) → config || null
    getHandler(wmClass) → handler || null
@@ -605,9 +605,9 @@ So hat jedes Plugin einen unique Namespace.
 
 **File:** `services/storage.js`
 
-**Verantwortung:** Persistierung von Fensterpositionen und Monitor-Layout.
+**Responsibility:** Persistence of window positions and monitor layout.
 
-**Datenstruktur:**
+**Data structure:**
 
 ```json
 {
@@ -660,9 +660,9 @@ So hat jedes Plugin einen unique Namespace.
 }
 ```
 
-**Hauptmerkmale:**
+**Main features:**
 
-1. **Auto-Save (alle 30 Sekunden)**
+1. **Auto-save (every 30 seconds)**
    ```javascript
    _startAutoSave() {
        this._autoSaveIntervalId = Mainloop.timeout_add_seconds(30, () => {
@@ -677,7 +677,7 @@ So hat jedes Plugin einen unique Namespace.
    }
    ```
 
-2. **Shutdown Protection**
+2. **Shutdown protection**
    ```javascript
    stopAutoSave() {
        this._isShuttingDown = true; // Block ALL future saves
@@ -688,7 +688,7 @@ So hat jedes Plugin einen unique Namespace.
    }
    ```
 
-3. **Backup Mechanism**
+3. **Backup mechanism**
    ```javascript
    backupPositions() {
        const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
@@ -702,7 +702,7 @@ So hat jedes Plugin einen unique Namespace.
    }
    ```
 
-4. **Permission Hardening**
+4. **Permission hardening**
    ```javascript
    _hardenPermissions(path, isDirectory) {
        const mode = isDirectory ? 0o700 : 0o600;
@@ -710,7 +710,7 @@ So hat jedes Plugin einen unique Namespace.
    }
    ```
 
-**API Methods:**
+**API methods:**
 ```javascript
 init() → void
 save() → void
@@ -725,7 +725,7 @@ updateMonitorLayout(monitorManager) → void
 destroy() → void
 ```
 
-## Datenfluss
+## Data Flow
 
 ### 1. Window Tracking → Storage
 
@@ -883,7 +883,7 @@ SessionLauncher.launchInstances(instances)
 
 ## Smart Window Matching
 
-### Matching Strategien (Priorität)
+### Matching Strategies (Priority)
 
 **File:** `core/windowMatcher.js`
 
@@ -974,7 +974,7 @@ Check if instance matches any running window
 
 **File:** `services/monitorManager.js`
 
-**Strategie (Priorität):**
+**Strategy (Priority):**
 
 1. **EDID Hash** (best - hardware-unique)
    ```javascript
@@ -1027,7 +1027,7 @@ Check if instance matches any running window
 }
 ```
 
-### Position Restoration mit Monitor-Matching
+### Position Restoration with Monitor Matching
 
 ```javascript
 tryRestorePosition(metaWindow, isNewWindow, launchedInstance, instanceId) {
@@ -1070,9 +1070,9 @@ tryRestorePosition(metaWindow, isNewWindow, launchedInstance, instanceId) {
 
 **File:** `settings-schema.json`
 
-**Zweck:** User-visible settings in Cinnamon's native settings interface.
+**Purpose:** User-visible settings in Cinnamon's native settings interface.
 
-**Beispiel:**
+**Example:**
 ```json
 {
   "autoRestoreOnStartup": {
@@ -1084,7 +1084,7 @@ tryRestorePosition(metaWindow, isNewWindow, launchedInstance, instanceId) {
 }
 ```
 
-**Zugriff im Code:**
+**Access in code:**
 ```javascript
 // NOT USED in this extension
 // We use custom JSON files instead for more flexibility
@@ -1094,11 +1094,11 @@ tryRestorePosition(metaWindow, isNewWindow, launchedInstance, instanceId) {
 
 **File:** `~/.config/remember@thechief/preferences.json`
 
-**Zweck:** UI-spezifische Einstellungen (managed by Python Settings Dialog).
+**Purpose:** UI-specific settings (managed by Python Settings Dialog).
 
 **Service:** `services/preferences.js`
 
-**Beispiel:**
+**Example:**
 ```json
 {
   "trackAllWorkspaces": true,
@@ -1129,11 +1129,11 @@ if (preferences.shouldRememberSticky()) {
 
 **File:** `~/.config/remember@thechief/extension-settings.json`
 
-**Zweck:** Launch-spezifische Einstellungen (managed by Python Settings Dialog).
+**Purpose:** Launch-specific settings (managed by Python Settings Dialog).
 
 **Service:** `services/extensionSettings.js`
 
-**Beispiel:**
+**Example:**
 ```json
 {
   "launchFlags": {
@@ -1164,9 +1164,9 @@ if (extensionSettings.useBrowserSessionRestore()) {
 
 **File:** `config.js`
 
-**Zweck:** Konstanten und globale Konfiguration.
+**Purpose:** Constants and global configuration.
 
-**Beispiele:**
+**Examples:**
 
 ```javascript
 // Session Launch Config
@@ -1197,13 +1197,13 @@ const SINGLE_INSTANCE_GRACE_PERIOD = 60000; // 1 min
 
 ### Debug Mode
 
-**Aktivierung:**
+**Activation:**
 ```bash
 export REMEMBER_DEBUG=1
 cinnamon --replace &
 ```
 
-**Im Code:**
+**In code:**
 ```javascript
 // services/logger.js
 const _debugMode = GLib.getenv('REMEMBER_DEBUG') === '1';
@@ -1222,7 +1222,7 @@ var log = function(message) {
 ```javascript
 const logger = new Logger();
 
-// Standard log (nur in Debug-Mode)
+// Standard log (only in Debug mode)
 logger.log('Window tracking enabled');
 
 // Sensitive data (sanitized in Production, full in Debug)
@@ -1234,7 +1234,7 @@ logger.logSensitive('Now tracking window', {
 // Debug-only
 logger.logDebug('Restore timing', { delay: 500 });
 
-// Error (immer geloggt)
+// Error (always logged)
 logger.error('Failed to load plugin', error);
 ```
 
@@ -1244,7 +1244,7 @@ logger.error('Failed to load plugin', error);
 "Now tracking window: title="Private Document.pdf" cmdline=[/usr/bin/firefox /home/user/private/file.html]"
 
 // Production Mode:
-// (nichts geloggt)
+// (nothing logged)
 ```
 
 ### Log Locations
@@ -1257,13 +1257,13 @@ tail -f ~/.xsession-errors
 Alt+F2 → lg → Click "Log" tab
 ```
 
-## Performance Optimierungen
+## Performance Optimizations
 
-### 1. Dirty-Flag-System
+### 1. Dirty-Flag System
 
-**Problem:** Speichern bei jedem Window-Event ist zu teuer.
+**Problem:** Saving on every window event is too expensive.
 
-**Lösung:** Nur markieren, batch-save alle 30 Sekunden.
+**Solution:** Only mark, batch-save every 30 seconds.
 
 ```javascript
 // Mark as dirty (fast)
@@ -1304,24 +1304,24 @@ load: function(extensionMeta, subdir, moduleName) {
 
 ### 3. Lazy Process Scanning
 
-**Problem:** `/proc/PID/cmdline` lesen ist teuer.
+**Problem:** Reading `/proc/PID/cmdline` is expensive.
 
-**Lösung:** Nur einmal beim ersten Track, niemals erneut (cmdline ändert sich nie).
+**Solution:** Only once at first track, never again (cmdline never changes).
 
 ```javascript
 _trackWindow(metaWindow) {
     // Capture cmdline ONCE at first track
     this._processCapture.captureInitialProcessInfo(metaWindow);
 
-    // cmdline ist jetzt gecached, wird nie neu gelesen
+    // cmdline is now cached, never read again
 }
 ```
 
-### 4. Orphan Cleanup nur bei Auto-Save
+### 4. Orphan Cleanup only at Auto-Save
 
-**Problem:** Cleanup bei jedem Window-Close ist teuer.
+**Problem:** Cleanup on every window close is expensive.
 
-**Lösung:** Cleanup nur alle 30 Sekunden beim Auto-Save.
+**Solution:** Cleanup only every 30 seconds at auto-save.
 
 ```javascript
 this._storage.setAutoSaveCallback(() => {
@@ -1333,7 +1333,7 @@ this._storage.setAutoSaveCallback(() => {
 });
 ```
 
-## Error Handling & Robustheit
+## Error Handling & Robustness
 
 ### 1. Shutdown Protection
 
@@ -1359,9 +1359,9 @@ disable() {
 
 ### 2. Cinnamon Restart Protection
 
-**Problem:** Bei `Alt+F2 r` werden Fenster kurz "unmanaged" aber kommen sofort zurück.
+**Problem:** With `Alt+F2 r` windows are briefly "unmanaged" but come back immediately.
 
-**Lösung:** Keine sofortigen Deletes in `_untrackWindow()`, nur deferred Cleanup.
+**Solution:** No immediate deletes in `_untrackWindow()`, only deferred cleanup.
 
 ```javascript
 _untrackWindow(metaWindow) {
@@ -1378,7 +1378,7 @@ cleanupOrphanedInstances() {
 }
 ```
 
-### 3. Grace Periods für langsame Apps
+### 3. Grace Periods for Slow Apps
 
 ```javascript
 _onLaunchTimeout(instanceId) {
@@ -1394,9 +1394,9 @@ _onLaunchTimeout(instanceId) {
 
 ### 4. Aggressive App Handling
 
-**Problem:** Apps wie VS Code positionieren sich selbst aggressiv.
+**Problem:** Apps like VS Code position themselves aggressively.
 
-**Lösung:** Multiple Restore-Versuche mit steigenden Delays.
+**Solution:** Multiple restore attempts with increasing delays.
 
 ```javascript
 // vscode/index.js
@@ -1506,7 +1506,7 @@ cinnamon --replace &
 tail -f ~/.xsession-errors | grep -i plugin
 ```
 
-## Weitere Dokumentation
+## Further Documentation
 
 - **Plugin Development:** `plugin-development.md`
 - **API Reference:** `api-reference.md`

@@ -1,60 +1,60 @@
 # FAQ & Troubleshooting - Window Position Remember
 
-Häufig gestellte Fragen und Lösungen für Probleme mit der **Window Position Remember** Extension.
+Frequently asked questions and solutions to problems with the **Window Position Remember** extension.
 
 ---
 
-## Häufig gestellte Fragen (FAQ)
+## Frequently Asked Questions (FAQ)
 
-### Allgemeine Fragen
+### General Questions
 
-#### Wo werden die Daten gespeichert?
+#### Where is the data stored?
 
-Alle Daten werden lokal in Ihrem Home-Verzeichnis gespeichert:
+All data is stored locally in your home directory:
 
 ```bash
 ~/.config/remember@thechief/
-├── positions.json                      # Fensterpositionen & Monitor-Daten
-├── preferences.json                    # UI-Einstellungen (Python Settings)
-├── extension-settings.json             # Launch-Flags für Session Restore
-├── positions_backup_20260119_143000.json  # Automatische Backups
+├── positions.json                      # Window positions & monitor data
+├── preferences.json                    # UI settings (Python Settings)
+├── extension-settings.json             # Launch flags for Session Restore
+├── positions_backup_20260119_143000.json  # Automatic backups
 ├── positions_backup_20260119_150000.json
-└── positions_backup_latest.json        # Letztes Backup
+└── positions_backup_latest.json        # Latest backup
 ```
 
-**Hauptdatei ansehen**:
+**View main file**:
 ```bash
 cat ~/.config/remember@thechief/positions.json | jq
 ```
 
-**Dateigröße prüfen**:
+**Check file size**:
 ```bash
 ls -lh ~/.config/remember@thechief/positions.json
 ```
 
-Typische Größe: **50-200 KB** (abhängig von Anzahl der verfolgten Fenster).
+Typical size: **50-200 KB** (depending on number of tracked windows).
 
 ---
 
-#### Wie funktioniert Multi-Monitor-Unterstützung?
+#### How does multi-monitor support work?
 
-Die Extension verwendet **EDID-Identifikation** für zuverlässige Monitor-Erkennung:
+The extension uses **EDID identification** for reliable monitor detection:
 
-**1. EDID-Hash (Primäre Methode)**
+**1. EDID Hash (Primary Method)**
 
-Jeder Monitor hat eine eindeutige **Hardware-ID** (EDID):
+Each monitor has a unique **hardware ID** (EDID):
 
 ```bash
-# EDID auslesen
+# Read EDID
 xrandr --verbose | grep -A 10 "connected"
 ```
 
-**Vorteile**:
-- Funktioniert auch nach **Monitor-Neuanordnung**
-- Unabhängig von **Connector-Namen** (HDMI-1, DP-2)
-- Erkennt denselben Monitor an verschiedenen Ports
+**Advantages**:
+- Works even after **monitor rearrangement**
+- Independent of **connector names** (HDMI-1, DP-2)
+- Recognizes the same monitor on different ports
 
-**Beispiel**:
+**Example**:
 ```json
 {
   "monitor": "edid:abc123def456...",
@@ -63,44 +63,44 @@ xrandr --verbose | grep -A 10 "connected"
 }
 ```
 
-**2. Fallback-Mechanismen**
+**2. Fallback Mechanisms**
 
-Falls EDID nicht verfügbar:
+If EDID is not available:
 - **Connector + Resolution**: `"HDMI-1_1920x1080"`
-- **Monitor-Index**: `"monitor_0"`, `"monitor_1"`
+- **Monitor Index**: `"monitor_0"`, `"monitor_1"`
 
-**3. Auflösungsunabhängig**
+**3. Resolution Independent**
 
-Positionen werden **prozentual** gespeichert:
+Positions are stored **as percentages**:
 ```
-50% Breite auf 1920x1080 = 960px
-50% Breite auf 2560x1440 = 1280px
-→ Fenster passt sich automatisch an
+50% width at 1920x1080 = 960px
+50% width at 2560x1440 = 1280px
+→ Window adapts automatically
 ```
 
 ---
 
-#### Wie oft werden Positionen gespeichert?
+#### How often are positions saved?
 
-**Auto-Save-Mechanismus**:
+**Auto-Save Mechanism**:
 
-- **Intervall**: Alle **30 Sekunden**
-- **Dirty-Flag-System**: Nur **geänderte** Fenster werden gespeichert
-- **Automatisch**: Keine manuelle Aktion erforderlich
+- **Interval**: Every **30 seconds**
+- **Dirty-Flag System**: Only **changed** windows are saved
+- **Automatic**: No manual action required
 
-**Zusätzlich gespeichert**:
-- Bei **Cinnamon-Neustart**
-- Bei **Logout/Shutdown** (mit Backup)
-- Bei manuellem **"Save All"** über Applet
+**Additionally saved**:
+- On **Cinnamon restart**
+- On **Logout/Shutdown** (with backup)
+- On manual **"Save All"** via applet
 
-**Sofort speichern**:
+**Save immediately**:
 ```
 Applet → Save All
 ```
 
-Oder via Terminal:
+Or via terminal:
 ```bash
-# Extension-API aufrufen (nur wenn Applet installiert)
+# Call extension API (only if applet is installed)
 dbus-send --session --dest=org.Cinnamon \
   --type=method_call /org/Cinnamon \
   org.Cinnamon.SaveWindowPositions
@@ -108,19 +108,19 @@ dbus-send --session --dest=org.Cinnamon \
 
 ---
 
-#### Werden meine Passwörter oder sensiblen Daten gespeichert?
+#### Are my passwords or sensitive data saved?
 
-**Nein**, die Extension speichert **keine sensiblen Daten**.
+**No**, the extension does **not save sensitive data**.
 
-**Gespeicherte Informationen**:
-- Fensterposition (X, Y, Breite, Höhe)
-- Fenstertitel (z.B. "Document1.odt - LibreOffice")
-- WM_CLASS (z.B. "firefox")
-- Command-Line (optional, siehe unten)
+**Stored information**:
+- Window position (X, Y, Width, Height)
+- Window title (e.g., "Document1.odt - LibreOffice")
+- WM_CLASS (e.g., "firefox")
+- Command-line (optional, see below)
 
-**Command-Line-Argumente**:
+**Command-Line Arguments**:
 
-Falls `capture-cmdline` aktiviert ist, werden **Start-Befehle** gespeichert:
+If `capture-cmdline` is enabled, **start commands** are saved:
 
 ```json
 {
@@ -128,28 +128,28 @@ Falls `capture-cmdline` aktiviert ist, werden **Start-Befehle** gespeichert:
 }
 ```
 
-**Datenschutz-Hinweise**:
-- Command-Lines können **Datei-Pfade** enthalten (z.B. `/home/user/private/document.odt`)
-- Deaktivieren Sie `capture-cmdline`, wenn Sie Session Restore nicht nutzen
-- Die Datei `positions.json` hat **Benutzer-Berechtigungen** (chmod 600)
+**Privacy Notes**:
+- Command-lines may contain **file paths** (e.g., `/home/user/private/document.odt`)
+- Disable `capture-cmdline` if you don't use Session Restore
+- The file `positions.json` has **user permissions** (chmod 600)
 
-**Prüfen Sie gespeicherte Command-Lines**:
+**Check saved command-lines**:
 ```bash
 cat ~/.config/remember@thechief/positions.json | jq '.applications[] | .instances[]? | .cmdline[]?'
 ```
 
 ---
 
-#### Funktioniert die Extension mit Flatpak/Snap/AppImage?
+#### Does the extension work with Flatpak/Snap/AppImage?
 
-**Ja**, die Extension unterstützt alle Paketformate:
+**Yes**, the extension supports all package formats:
 
 **Flatpak**:
 ```bash
-# Beispiel: Firefox Flatpak
+# Example: Firefox Flatpak
 flatpak run org.mozilla.firefox
 
-# Gespeichert als
+# Saved as
 {
   "cmdline": "flatpak run org.mozilla.firefox",
   "exe": "/usr/bin/flatpak"
@@ -158,81 +158,81 @@ flatpak run org.mozilla.firefox
 
 **Snap**:
 ```bash
-# Beispiel: Chromium Snap
+# Example: Chromium Snap
 /snap/bin/chromium
 
-# Automatisch erkannt
+# Automatically detected
 ```
 
 **AppImage**:
 ```bash
-# Beispiel: VS Code AppImage
+# Example: VS Code AppImage
 ~/Applications/code-1.80.0.AppImage
 
-# Gespeichert mit vollständigem Pfad
+# Saved with full path
 ```
 
-**Wichtig**: Aktivieren Sie `capture-cmdline` für beste Ergebnisse.
+**Important**: Enable `capture-cmdline` for best results.
 
 ---
 
-#### Kann ich Backups erstellen?
+#### Can I create backups?
 
-**Automatische Backups**:
+**Automatic Backups**:
 
-Die Extension erstellt **automatisch** Backups:
-- Bei jedem **Cinnamon-Neustart**
-- Bei **Logout/Shutdown**
-- Aufbewahrung: **7 Tage**
+The extension creates **automatic** backups:
+- On every **Cinnamon restart**
+- On **Logout/Shutdown**
+- Retention: **7 days**
 
-**Backup-Dateien auflisten**:
+**List backup files**:
 ```bash
 ls -lh ~/.config/remember@thechief/positions_backup_*.json
 ```
 
-**Manuelles Backup erstellen**:
+**Create manual backup**:
 ```bash
-# Backup mit Datum
+# Backup with date
 cp ~/.config/remember@thechief/positions.json \
    ~/remember_backup_$(date +%Y-%m-%d).json
 ```
 
-**Backup wiederherstellen**:
+**Restore backup**:
 ```bash
-# 1. Extension deaktivieren
+# 1. Disable extension
 cinnamon-settings extensions remember@thechief
-# → Extension-Schalter ausschalten
+# → Turn extension switch off
 
-# 2. Backup kopieren
+# 2. Copy backup
 cp ~/remember_backup_2026-01-19.json \
    ~/.config/remember@thechief/positions.json
 
-# 3. Extension neu aktivieren
+# 3. Re-enable extension
 ```
 
-**Empfehlung**: Nutzen Sie Ihr reguläres Backup-System für `~/.config/remember@thechief/`.
+**Recommendation**: Use your regular backup system for `~/.config/remember@thechief/`.
 
 ---
 
-### Konfiguration
+### Configuration
 
-#### Wie füge ich eine Anwendung zur Blacklist hinzu?
+#### How do I add an application to the blacklist?
 
-**Methode 1: Cinnamon Settings (einfach)**
+**Method 1: Cinnamon Settings (simple)**
 
-1. Öffnen Sie **Systemeinstellungen → Extensions → Remember**
-2. Klicken Sie auf **Configure** (⚙️)
-3. Gehen Sie zum Tab **Blacklist**
-4. Fügen Sie den **WM_CLASS-Namen** hinzu (eine Zeile pro App)
+1. Open **System Settings → Extensions → Remember**
+2. Click **Configure** (⚙️)
+3. Go to the **Blacklist** tab
+4. Add the **WM_CLASS name** (one line per app)
 
-**Beispiel**:
+**Example**:
 ```
 cinnamon-settings
 gnome-calculator
 nemo-desktop
 ```
 
-**Methode 2: Python Settings UI (grafisch)**
+**Method 2: Python Settings UI (graphical)**
 
 ```bash
 python3 ~/.local/share/cinnamon/extensions/remember@thechief/settings.py
@@ -240,44 +240,44 @@ python3 ~/.local/share/cinnamon/extensions/remember@thechief/settings.py
 
 → **Apps Tab** → **Blacklist Management** → **Add Application**
 
-**WM_CLASS herausfinden**:
+**Find WM_CLASS**:
 
 ```bash
-# Methode 1: xprop (interaktiv)
+# Method 1: xprop (interactive)
 xprop WM_CLASS
-# Klicken Sie auf das Fenster
+# Click on the window
 
-# Ausgabe (Beispiel)
+# Output (example)
 WM_CLASS(STRING) = "firefox", "Firefox"
                       ^          ^
                    Instance    Class
 
-# Methode 2: wmctrl
+# Method 2: wmctrl
 wmctrl -lx | grep "firefox"
 
-# Methode 3: Alle laufenden Fenster
+# Method 3: All running windows
 wmctrl -lx
 ```
 
-**Welchen Namen verwenden?**
-- Nutzen Sie den **zweiten Wert** (Class): `"Firefox"`
-- Bei Kleinbuchstaben: `"firefox"` funktioniert ebenfalls
-- Groß-/Kleinschreibung wird oft ignoriert
+**Which name to use?**
+- Use the **second value** (Class): `"Firefox"`
+- With lowercase: `"firefox"` also works
+- Case is often ignored
 
 ---
 
-#### Wie ändere ich Launch-Flags für Session Restore?
+#### How do I change launch flags for Session Restore?
 
-**Launch-Flags** steuern, wie Anwendungen beim Session Restore gestartet werden.
+**Launch flags** control how applications are started during Session Restore.
 
-**Python Settings UI öffnen**:
+**Open Python Settings UI**:
 ```bash
 python3 ~/.local/share/cinnamon/extensions/remember@thechief/settings.py
 ```
 
-**Apps Tab → Application auswählen**:
+**Apps Tab → Select Application**:
 
-**Firefox Beispiel**:
+**Firefox Example**:
 ```
 ┌─────────────────────────────────────┐
 │ Firefox                              │
@@ -290,19 +290,19 @@ python3 ~/.local/share/cinnamon/extensions/remember@thechief/settings.py
 └─────────────────────────────────────┘
 ```
 
-**Verfügbare Flags**:
+**Available Flags**:
 
-| App | Flag | Beschreibung |
+| App | Flag | Description |
 |-----|------|--------------|
-| **Firefox** | `--restore-session` | Stellt Browser-Tabs wieder her |
-| **Chrome** | `--restore-last-session` | Öffnet letzte Sitzung |
-| **Brave** | `--restore-last-session` | Öffnet letzte Sitzung |
-| **VS Code** | `--reuse-window` | Nutzt bestehendes Fenster |
-| **LibreOffice** | `/path/to/file.odt` | Öffnet spezifisches Dokument |
+| **Firefox** | `--restore-session` | Restores browser tabs |
+| **Chrome** | `--restore-last-session` | Opens last session |
+| **Brave** | `--restore-last-session` | Opens last session |
+| **VS Code** | `--reuse-window` | Uses existing window |
+| **LibreOffice** | `/path/to/file.odt` | Opens specific document |
 
-**Custom Flags hinzufügen**:
+**Add custom flags**:
 
-Bearbeiten Sie `~/.config/remember@thechief/extension-settings.json`:
+Edit `~/.config/remember@thechief/extension-settings.json`:
 
 ```json
 {
@@ -315,22 +315,22 @@ Bearbeiten Sie `~/.config/remember@thechief/extension-settings.json`:
 
 ---
 
-#### Wie deaktiviere ich Session Restore für eine bestimmte App?
+#### How do I disable Session Restore for a specific app?
 
 **Python Settings UI**:
 
-1. Öffnen Sie Settings: `python3 ~/.local/share/cinnamon/extensions/remember@thechief/settings.py`
-2. Gehen Sie zu **Apps Tab**
-3. Wählen Sie die Anwendung aus
-4. Deaktivieren Sie **"Enable Autostart"**
+1. Open Settings: `python3 ~/.local/share/cinnamon/extensions/remember@thechief/settings.py`
+2. Go to **Apps Tab**
+3. Select the application
+4. Disable **"Enable Autostart"**
 
-**Oder manuell** in `extension-settings.json`:
+**Or manually** in `extension-settings.json`:
 
 ```json
 {
   "autostart": {
     "firefox": true,
-    "thunderbird": false,  ← Deaktiviert
+    "thunderbird": false,  ← Disabled
     "code": true
   }
 }
@@ -338,232 +338,232 @@ Bearbeiten Sie `~/.config/remember@thechief/extension-settings.json`:
 
 ---
 
-### Probleme & Lösungen
+### Problems & Solutions
 
-#### Extension startet nicht
+#### Extension does not start
 
-**Symptome**:
-- Extension erscheint nicht in der Liste
-- Fehlermeldungen beim Aktivieren
-- Extension schaltet sich sofort wieder aus
+**Symptoms**:
+- Extension does not appear in the list
+- Error messages when enabling
+- Extension immediately turns off again
 
-**Lösungsschritte**:
+**Solution Steps**:
 
-**1. Logs prüfen**:
+**1. Check logs**:
 ```bash
 tail -f ~/.xsession-errors | grep "remember@thechief"
 ```
 
-**2. Extension neu installieren**:
+**2. Reinstall extension**:
 ```bash
-# Alte Version entfernen
+# Remove old version
 rm -rf ~/.local/share/cinnamon/extensions/remember@thechief/
 
-# Neu installieren über Cinnamon Spices
-# Systemeinstellungen → Extensions → Download → Remember
+# Reinstall via Cinnamon Spices
+# System Settings → Extensions → Download → Remember
 ```
 
-**3. Cinnamon neu starten**:
+**3. Restart Cinnamon**:
 ```bash
-# Methode 1: Tastenkombination
+# Method 1: Keyboard shortcut
 Ctrl + Alt + Esc
 
-# Methode 2: Terminal
+# Method 2: Terminal
 cinnamon --replace &
 
-# Methode 3: Ausloggen und neu einloggen
+# Method 3: Logout and login again
 ```
 
-**4. Berechtigungen prüfen**:
+**4. Check permissions**:
 ```bash
-# Extension-Verzeichnis
+# Extension directory
 ls -la ~/.local/share/cinnamon/extensions/remember@thechief/
 
-# Config-Verzeichnis
+# Config directory
 ls -la ~/.config/remember@thechief/
 ```
 
-Alle Dateien sollten **Ihrem Benutzer** gehören.
+All files should **belong to your user**.
 
-**5. Abhängigkeiten prüfen**:
+**5. Check dependencies**:
 ```bash
-# Python 3 (für Settings UI)
+# Python 3 (for Settings UI)
 python3 --version
 
-# GTK 3 (für Settings UI)
+# GTK 3 (for Settings UI)
 dpkg -l | grep python3-gi
 ```
 
 ---
 
-#### Fenster wird nicht wiederhergestellt
+#### Window is not restored
 
-**Symptome**:
-- Fenster öffnet an Standard-Position statt gespeicherter Position
-- Nur manche Fenster werden wiederhergestellt
+**Symptoms**:
+- Window opens at default position instead of saved position
+- Only some windows are restored
 
-**Checkliste**:
+**Checklist**:
 
-**1. Extension aktiviert?**
+**1. Extension enabled?**
 ```bash
-# Prüfen
+# Check
 cinnamon-settings extensions
 
-# → "Window Position Remember" muss aktiviert sein
+# → "Window Position Remember" must be enabled
 ```
 
-**2. Auto-Restore aktiviert?**
+**2. Auto-Restore enabled?**
 ```
-Systemeinstellungen → Extensions → Remember → Configure
+System Settings → Extensions → Remember → Configure
 → "Auto-restore positions on window open" ✅
 ```
 
-**3. Wurde das Fenster gespeichert?**
+**3. Was the window saved?**
 
-Warten Sie **30 Sekunden** nach dem Positionieren, oder:
+Wait **30 seconds** after positioning, or:
 ```
 Applet → Save All
 ```
 
-**4. Blacklist prüfen**:
+**4. Check blacklist**:
 ```bash
-# Einstellungen öffnen
+# Open settings
 cinnamon-settings extensions remember@thechief
 
 # → Blacklist Tab
-# → Prüfen, ob App ausgeschlossen ist
+# → Check if app is excluded
 ```
 
-**5. Logs prüfen**:
+**5. Check logs**:
 ```bash
 tail -f ~/.xsession-errors | grep "remember@thechief"
 ```
 
-Suchen Sie nach:
+Look for:
 - `Restoring window: [App-Name]`
-- Fehlermeldungen
+- Error messages
 
-**6. Gespeicherte Daten prüfen**:
+**6. Check saved data**:
 ```bash
 cat ~/.config/remember@thechief/positions.json | jq '.applications["Firefox"] // .applications["firefox"]'
 ```
 
-Falls **leer** oder **null**: Fenster wurde nicht gespeichert (siehe Punkt 3).
+If **empty** or **null**: Window was not saved (see point 3).
 
 ---
 
-#### Fenster wird an falscher Position wiederhergestellt
+#### Window is restored at wrong position
 
-**Symptome**:
-- Fenster erscheint teilweise außerhalb des Bildschirms
-- Fenster auf falschem Monitor
-- Fenster zu groß oder zu klein
+**Symptoms**:
+- Window appears partially off-screen
+- Window on wrong monitor
+- Window too large or too small
 
-**Mögliche Ursachen & Lösungen**:
+**Possible Causes & Solutions**:
 
-**1. Monitor-Layout geändert**
-
-```
-Problem: Monitor entfernt/hinzugefügt/neu angeordnet
-Lösung: clamp-to-screen aktivieren
-```
+**1. Monitor layout changed**
 
 ```
-Systemeinstellungen → Extensions → Remember → Behavior
+Problem: Monitor removed/added/rearranged
+Solution: Enable clamp-to-screen
+```
+
+```
+System Settings → Extensions → Remember → Behavior
 → "Clamp windows to screen bounds" ✅
 ```
 
-**2. Auflösung geändert**
+**2. Resolution changed**
 
 ```
-Problem: Monitor-Auflösung geändert (z.B. 1920x1080 → 2560x1440)
-Lösung: use-percentage aktivieren (Standard)
+Problem: Monitor resolution changed (e.g., 1920x1080 → 2560x1440)
+Solution: Enable use-percentage (default)
 ```
 
 ```
-Systemeinstellungen → Extensions → Remember → Behavior
+System Settings → Extensions → Remember → Behavior
 → "Use percentage-based positioning" ✅
 ```
 
-**3. Fenster wurde manuell verschoben**
+**3. Window was manually moved**
 
 ```
-Problem: Fenster wurde nach dem Speichern verschoben
-Lösung: Neue Position speichern
+Problem: Window was moved after saving
+Solution: Save new position
 ```
 
-1. Fenster neu positionieren
-2. Warten Sie 30 Sekunden oder klicken Sie **"Save All"**
-3. Test: Fenster schließen und neu öffnen
+1. Reposition window
+2. Wait 30 seconds or click **"Save All"**
+3. Test: Close window and reopen
 
-**4. Restore-Delay zu kurz**
-
-```
-Problem: Fenster ist noch nicht bereit
-Lösung: Restore-Delay erhöhen
-```
+**4. Restore delay too short**
 
 ```
-Systemeinstellungen → Extensions → Remember → Behavior
-→ Restore delay: 800ms (statt 500ms)
+Problem: Window is not ready yet
+Solution: Increase restore delay
 ```
 
-Besonders wichtig für **langsame Apps** (LibreOffice, GIMP).
+```
+System Settings → Extensions → Remember → Behavior
+→ Restore delay: 800ms (instead of 500ms)
+```
 
-**5. Backup wiederherstellen**
+Especially important for **slow apps** (LibreOffice, GIMP).
+
+**5. Restore backup**
 
 ```
-Falls nichts hilft: Altes Backup verwenden
+If nothing helps: Use old backup
 ```
 
 ```bash
-# Backup ansehen
+# View backups
 ls -lh ~/.config/remember@thechief/positions_backup_*.json
 
-# Wiederherstellen (Extension vorher deaktivieren!)
+# Restore (disable extension first!)
 cp ~/.config/remember@thechief/positions_backup_20260119_143000.json \
    ~/.config/remember@thechief/positions.json
 ```
 
 ---
 
-#### Session Restore funktioniert nicht
+#### Session Restore does not work
 
-**Symptome**:
-- Anwendungen starten nicht beim Login
-- Nur manche Apps werden gestartet
-- Apps starten, aber ohne Fenster
+**Symptoms**:
+- Applications do not start at login
+- Only some apps are started
+- Apps start, but without windows
 
-**Checkliste**:
+**Checklist**:
 
-**1. Auto-Launch aktiviert?**
+**1. Auto-Launch enabled?**
 ```
-Systemeinstellungen → Extensions → Remember → General
+System Settings → Extensions → Remember → General
 → "Auto-launch session on login" ✅
 ```
 
-**2. Capture-Cmdline aktiviert?**
+**2. Capture-Cmdline enabled?**
 ```
-Systemeinstellungen → Extensions → Remember → General
+System Settings → Extensions → Remember → General
 → "Capture command line arguments" ✅
 ```
 
-**3. Per-App Autostart aktiviert?**
+**3. Per-App Autostart enabled?**
 
 ```bash
 python3 ~/.local/share/cinnamon/extensions/remember@thechief/settings.py
 ```
 
-→ **Apps Tab** → Anwendung auswählen → **"Enable Autostart"** ✅
+→ **Apps Tab** → Select application → **"Enable Autostart"** ✅
 
-**4. Launch Command korrekt?**
+**4. Launch Command correct?**
 
-Prüfen Sie `extension-settings.json`:
+Check `extension-settings.json`:
 ```bash
 cat ~/.config/remember@thechief/extension-settings.json | jq
 ```
 
-**Beispiel**:
+**Example**:
 ```json
 {
   "autostart": {
@@ -573,126 +573,126 @@ cat ~/.config/remember@thechief/extension-settings.json | jq
 }
 ```
 
-**5. Timeouts prüfen**
+**5. Check timeouts**
 
-**Browser/IDEs** haben längere Timeouts (2 Min):
-- Firefox: 120 Sekunden
-- VS Code: 90 Sekunden
-- Thunderbird: 120 Sekunden
+**Browsers/IDEs** have longer timeouts (2 min):
+- Firefox: 120 seconds
+- VS Code: 90 seconds
+- Thunderbird: 120 seconds
 
-Warten Sie nach dem Login **2-3 Minuten**, bevor Sie Probleme melden.
+Wait **2-3 minutes** after login before reporting problems.
 
-**6. Logs prüfen**:
+**6. Check logs**:
 ```bash
 tail -f ~/.xsession-errors | grep "remember@thechief"
 ```
 
-Suchen Sie nach:
+Look for:
 - `Launching application: [App]`
 - `Timeout waiting for window: [App]`
-- Fehlermeldungen
+- Error messages
 
-**7. Flatpak-Probleme**
+**7. Flatpak problems**
 
 ```
-Problem: Flatpak-Apps starten nicht
-Lösung: Prüfen Sie Flatpak-Installation
+Problem: Flatpak apps do not start
+Solution: Check Flatpak installation
 ```
 
 ```bash
-# Flatpak-Apps auflisten
+# List Flatpak apps
 flatpak list
 
-# Beispiel: Firefox
+# Example: Firefox
 flatpak run org.mozilla.firefox
 ```
 
-**Korrekte Command-Line**:
+**Correct command-line**:
 ```json
 {
   "cmdline": "flatpak run org.mozilla.firefox"
 }
 ```
 
-**Falsch**:
+**Wrong**:
 ```json
 {
-  "cmdline": "/usr/bin/firefox"  ← Funktioniert nicht für Flatpak
+  "cmdline": "/usr/bin/firefox"  ← Does not work for Flatpak
 }
 ```
 
 ---
 
-#### Applet zeigt keine Daten / reagiert nicht
+#### Applet shows no data / does not respond
 
-**Symptome**:
-- Applet zeigt "0 windows tracked"
-- Clicks auf Applet funktionieren nicht
-- Applet erscheint leer
+**Symptoms**:
+- Applet shows "0 windows tracked"
+- Clicks on applet do not work
+- Applet appears empty
 
-**Lösungsschritte**:
+**Solution Steps**:
 
-**1. Extension aktiviert?**
+**1. Extension enabled?**
 ```
-Systemeinstellungen → Extensions
-→ "Window Position Remember" muss aktiviert sein
+System Settings → Extensions
+→ "Window Position Remember" must be enabled
 ```
 
-**2. Applet neu starten**:
+**2. Restart applet**:
 ```bash
-# Methode 1: Panel neu starten
-Rechtsklick auf Panel → "Troubleshoot" → "Restart Cinnamon"
+# Method 1: Restart panel
+Right-click on Panel → "Troubleshoot" → "Restart Cinnamon"
 
-# Methode 2: Applet entfernen und neu hinzufügen
-Rechtsklick auf Panel → "Applets to the panel"
-→ Remember entfernen → Neu hinzufügen
+# Method 2: Remove and re-add applet
+Right-click on Panel → "Applets to the panel"
+→ Remove Remember → Re-add
 ```
 
-**3. Extension-API prüfen**:
+**3. Check extension API**:
 
-Öffnen Sie **Looking Glass** (`Alt+F2` → `lg`):
+Open **Looking Glass** (`Alt+F2` → `lg`):
 ```javascript
-// Im "Evaluator" Tab
+// In "Evaluator" tab
 global.log(Main.windowRemember);
 
-// Sollte ausgeben: [object Object]
-// Falls undefined: Extension nicht korrekt geladen
+// Should output: [object Object]
+// If undefined: Extension not loaded correctly
 ```
 
-**4. Logs prüfen**:
+**4. Check logs**:
 ```bash
 tail -f ~/.xsession-errors | grep -E "(remember@thechief|remember-applet)"
 ```
 
 ---
 
-#### Zu viele Daten / Performance-Probleme
+#### Too much data / performance problems
 
-**Symptome**:
-- `positions.json` wird sehr groß (> 1 MB)
-- Auto-Save verlangsamt System
-- Cinnamon-Start verzögert
+**Symptoms**:
+- `positions.json` becomes very large (> 1 MB)
+- Auto-Save slows down system
+- Cinnamon startup delayed
 
-**Lösungsschritte**:
+**Solution Steps**:
 
-**1. Dialoge ausschließen**:
+**1. Exclude dialogs**:
 ```
-Systemeinstellungen → Extensions → Remember → General
-→ "Track dialog windows" ❌ (deaktivieren)
+System Settings → Extensions → Remember → General
+→ "Track dialog windows" ❌ (disable)
 ```
 
-**2. Alte Daten löschen**:
+**2. Delete old data**:
 
 ```bash
 # Python Settings UI
 python3 ~/.local/share/cinnamon/extensions/remember@thechief/settings.py
 ```
 
-→ **Windows Tab** → Alte/unbenutzte Fenster löschen
+→ **Windows Tab** → Delete old/unused windows
 
-**3. Blacklist erweitern**:
+**3. Extend blacklist**:
 
-Fügen Sie **temporäre Apps** zur Blacklist hinzu:
+Add **temporary apps** to the blacklist:
 ```
 nemo-desktop
 cinnamon-settings-*
@@ -700,52 +700,52 @@ gnome-calculator
 xfce4-appfinder
 ```
 
-**4. Daten komplett löschen**:
+**4. Delete all data**:
 
 ```bash
-# WARNUNG: Löscht alle gespeicherten Positionen!
+# WARNING: Deletes all saved positions!
 rm ~/.config/remember@thechief/positions.json
 
-# Cinnamon neu starten
+# Restart Cinnamon
 cinnamon --replace &
 ```
 
-**5. Save-Delay erhöhen**:
+**5. Increase save delay**:
 ```
-Systemeinstellungen → Extensions → Remember → Behavior
-→ Save delay: 2000ms (statt 1000ms)
+System Settings → Extensions → Remember → Behavior
+→ Save delay: 2000ms (instead of 1000ms)
 ```
 
-Reduziert I/O-Last auf langsameren Systemen.
+Reduces I/O load on slower systems.
 
 ---
 
-### Erweiterte Themen
+### Advanced Topics
 
-#### Wie kann ich Daten zwischen Rechnern synchronisieren?
+#### How can I synchronize data between computers?
 
-**Methode 1: Cloud-Sync (Dropbox, Nextcloud, etc.)**
+**Method 1: Cloud Sync (Dropbox, Nextcloud, etc.)**
 
 ```bash
-# Original-Verzeichnis in Cloud verschieben
+# Move original directory to cloud
 mv ~/.config/remember@thechief ~/Dropbox/remember-config
 
-# Symlink erstellen
+# Create symlink
 ln -s ~/Dropbox/remember-config ~/.config/remember@thechief
 ```
 
-**Auf zweitem Rechner**:
+**On second computer**:
 ```bash
-# Symlink erstellen
+# Create symlink
 ln -s ~/Dropbox/remember-config ~/.config/remember@thechief
 ```
 
-**⚠️ Warnung**:
-- **Monitor-EDIDs** sind unterschiedlich zwischen Rechnern
-- Nur sinnvoll bei **identischem Hardware-Setup**
-- Kann zu **Konflikten** führen (Auto-Save auf beiden Rechnern)
+**⚠️ Warning**:
+- **Monitor EDIDs** are different between computers
+- Only useful with **identical hardware setup**
+- Can lead to **conflicts** (auto-save on both computers)
 
-**Methode 2: Git-Repository (für Entwickler)**
+**Method 2: Git Repository (for developers)**
 
 ```bash
 cd ~/.config/remember@thechief/
@@ -753,12 +753,12 @@ git init
 git add positions.json extension-settings.json
 git commit -m "Initial commit"
 
-# Remote hinzufügen
+# Add remote
 git remote add origin https://github.com/user/remember-config.git
 git push -u origin main
 ```
 
-**Auf zweitem Rechner**:
+**On second computer**:
 ```bash
 cd ~/.config/
 git clone https://github.com/user/remember-config.git remember@thechief
@@ -767,15 +767,15 @@ git clone https://github.com/user/remember-config.git remember@thechief
 **Sync**:
 ```bash
 cd ~/.config/remember@thechief/
-git pull  # Änderungen holen
+git pull  # Fetch changes
 git add .
 git commit -m "Update"
-git push  # Änderungen hochladen
+git push  # Upload changes
 ```
 
 ---
 
-#### Wie debugge ich Extension-Probleme?
+#### How do I debug extension problems?
 
 **1. Looking Glass (Cinnamon Debugger)**
 
@@ -784,131 +784,131 @@ Alt + F2 → lg → Enter
 ```
 
 **Tabs**:
-- **Evaluator**: JavaScript-Code ausführen
-- **Log**: Extension-Logs anzeigen
-- **Windows**: Alle Fenster inspizieren
+- **Evaluator**: Execute JavaScript code
+- **Log**: Show extension logs
+- **Windows**: Inspect all windows
 
-**Nützliche Commands** (Evaluator Tab):
+**Useful Commands** (Evaluator Tab):
 ```javascript
-// Extension-Objekt anzeigen
+// Show extension object
 global.log(Main.windowRemember);
 
-// Alle verfolgten Fenster
+// All tracked windows
 global.log(Main.windowRemember.tracker.windows);
 
-// Stats abrufen
+// Get stats
 global.log(Main.windowRemember.getStats());
 
-// Save All auslösen
+// Trigger Save All
 Main.windowRemember.saveAll();
 
-// Restore All auslösen
+// Trigger Restore All
 Main.windowRemember.restoreAll();
 ```
 
-**2. Extension-Logs filtern**
+**2. Filter extension logs**
 
 ```bash
-# Nur Extension-Logs
+# Only extension logs
 tail -f ~/.xsession-errors | grep "remember@thechief"
 
-# Mit Farben (falls grc installiert)
+# With colors (if grc is installed)
 tail -f ~/.xsession-errors | grep --color=always "remember@thechief"
 
-# In Datei speichern
+# Save to file
 tail -f ~/.xsession-errors | grep "remember@thechief" > ~/remember-debug.log
 ```
 
-**3. Verbose Logging aktivieren**
+**3. Enable verbose logging**
 
-Bearbeiten Sie `extension.js`:
+Edit `extension.js`:
 ```javascript
-const DEBUG = true;  // Zeile am Anfang der Datei
+const DEBUG = true;  // Line at the beginning of the file
 
-// Dann neu starten
+// Then restart
 cinnamon --replace &
 ```
 
-**4. Gespeicherte Daten inspizieren**
+**4. Inspect saved data**
 
 ```bash
-# Schön formatiert
+# Formatted nicely
 cat ~/.config/remember@thechief/positions.json | jq
 
-# Nur Firefox-Fenster
+# Only Firefox windows
 cat ~/.config/remember@thechief/positions.json | jq '.applications["Firefox"] // .applications["firefox"]'
 
-# Nur Monitor-Daten
+# Only monitor data
 cat ~/.config/remember@thechief/positions.json | jq '.monitors'
 
-# Anzahl verfolgter Anwendungen
+# Number of tracked applications
 cat ~/.config/remember@thechief/positions.json | jq '.applications | length'
 ```
 
 ---
 
-#### Wie erstelle ich einen Bug-Report?
+#### How do I create a bug report?
 
 **GitHub Issues**: https://github.com/carsteneu/remember/issues
 
-**Bitte folgende Informationen angeben**:
+**Please provide the following information**:
 
-**1. System-Informationen**:
+**1. System information**:
 ```bash
-# Cinnamon-Version
+# Cinnamon version
 cinnamon --version
 
-# Linux-Distribution
+# Linux distribution
 lsb_release -a
 
-# Kernel-Version
+# Kernel version
 uname -r
 
-# Monitor-Setup
+# Monitor setup
 xrandr --verbose | grep -A 5 "connected"
 ```
 
-**2. Extension-Version**:
+**2. Extension version**:
 ```bash
 cat ~/.local/share/cinnamon/extensions/remember@thechief/metadata.json | jq '.version'
 ```
 
 **3. Logs**:
 ```bash
-# Relevante Logs extrahieren
+# Extract relevant logs
 grep "remember@thechief" ~/.xsession-errors | tail -n 50 > ~/remember-logs.txt
 ```
 
-**4. Config-Dateien** (optional):
+**4. Config files** (optional):
 ```bash
-# positions.json (falls relevant)
+# positions.json (if relevant)
 cat ~/.config/remember@thechief/positions.json | jq > ~/positions-debug.json
 ```
 
-**⚠️ Datenschutz**: Entfernen Sie **sensible Pfade** und **Command-Lines** vor dem Hochladen!
+**⚠️ Privacy**: Remove **sensitive paths** and **command-lines** before uploading!
 
-**5. Schritte zur Reproduktion**:
-- Was haben Sie gemacht?
-- Was war das erwartete Ergebnis?
-- Was ist stattdessen passiert?
-- Tritt das Problem immer auf oder nur manchmal?
+**5. Steps to reproduce**:
+- What did you do?
+- What was the expected result?
+- What happened instead?
+- Does the problem always occur or only sometimes?
 
 ---
 
-## Zusammenfassung
+## Summary
 
-Die **häufigsten Probleme** und ihre Lösungen:
+The **most common problems** and their solutions:
 
-| Problem | Lösung |
+| Problem | Solution |
 |---------|--------|
-| Extension startet nicht | Logs prüfen, neu installieren, Cinnamon neu starten |
-| Fenster nicht wiederhergestellt | `auto-restore` aktivieren, 30s warten, Blacklist prüfen |
-| Falsche Position | `clamp-to-screen` aktivieren, Restore-Delay erhöhen |
-| Session Restore funktioniert nicht | `auto-launch` + `capture-cmdline` aktivieren, Per-App Autostart prüfen |
-| Applet zeigt keine Daten | Extension aktivieren, Applet neu starten |
-| Performance-Probleme | Dialoge ausschließen, alte Daten löschen, Save-Delay erhöhen |
+| Extension does not start | Check logs, reinstall, restart Cinnamon |
+| Window not restored | Enable `auto-restore`, wait 30s, check blacklist |
+| Wrong position | Enable `clamp-to-screen`, increase restore delay |
+| Session Restore does not work | Enable `auto-launch` + `capture-cmdline`, check per-app autostart |
+| Applet shows no data | Enable extension, restart applet |
+| Performance problems | Exclude dialogs, delete old data, increase save delay |
 
-**Weitere Hilfe**:
+**Further help**:
 - [Getting Started](getting-started.md)
 - [Features](features.md)
 - [Configuration](configuration.md)
@@ -916,4 +916,4 @@ Die **häufigsten Probleme** und ihre Lösungen:
 
 ---
 
-**Bei weiteren Fragen**: Erstellen Sie ein **GitHub Issue** mit detaillierten Informationen!
+**For further questions**: Create a **GitHub Issue** with detailed information!

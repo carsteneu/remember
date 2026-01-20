@@ -2,7 +2,7 @@
     "uuid": "remember@thechief",
     "name": "Window Position Remember",
     "description": "Remembers window positions across sessions and monitors. Automatically restores window positions and can restart applications with their original command line arguments.",
-    "version": "1.2",
+    "version": "1.2.1",
     "author": "carsteneu",
     "url": "https://github.com/carsteneu/remember",
     "cinnamon-version": ["6.6"],

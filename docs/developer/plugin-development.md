@@ -1,43 +1,43 @@
-# Plugin-Entwicklung für Remember Extension
+# Plugin Development for Remember Extension
 
-## Übersicht
+## Overview
 
-Das Plugin-System ermöglicht app-spezifische Anpassungen für Window-Launching, Session-Restore und Position-Restaurierung ohne Änderungen am Extension-Core.
+The plugin system enables app-specific customizations for window launching, session restore, and position restoration without modifying the extension core.
 
-**Was Plugins können:**
-- Executable-Pfade und Launch-Flags definieren
-- Conditional Flags basierend auf User-Settings
-- Single-Instance vs. Multi-Instance Verhalten steuern
-- Timeouts und Grace Periods anpassen
-- Title Stabilization Delays für Apps die ihren Titel ändern
-- Session-Restore hooks (beforeLaunch, afterLaunch, parseTitleData)
-- Deduplizierung für Browser-Sessions
-- Custom Restore-Timings für aggressive Self-Positioning
+**What plugins can do:**
+- Define executable paths and launch flags
+- Conditional flags based on user settings
+- Control single-instance vs. multi-instance behavior
+- Customize timeouts and grace periods
+- Title stabilization delays for apps that change their title
+- Session restore hooks (beforeLaunch, afterLaunch, parseTitleData)
+- Deduplication for browser sessions
+- Custom restore timings for aggressive self-positioning
 
-**Plugin-Typen:**
-- **Einfache Plugins:** Nur `config.json` (Launch-Config)
-- **Erweiterte Plugins:** `config.json` + `index.js` (Handler-Klasse)
+**Plugin types:**
+- **Simple plugins:** Only `config.json` (launch config)
+- **Advanced plugins:** `config.json` + `index.js` (handler class)
 
-## Plugin-Struktur
+## Plugin Structure
 
-### Verzeichnis-Layout
+### Directory Layout
 
 ```
 plugins/
 ├── firefox/
-│   └── config.json          # Basic config (keine Handler-Klasse)
+│   └── config.json          # Basic config (no handler class)
 ├── vscode/
-│   ├── config.json          # Config mit handler reference
-│   └── index.js             # VSCodeHandler Klasse
+│   ├── config.json          # Config with handler reference
+│   └── index.js             # VSCodeHandler class
 ├── thunderbird/
 │   ├── config.json
-│   └── index.js             # ThunderbirdHandler mit parseTitleData
+│   └── index.js             # ThunderbirdHandler with parseTitleData
 └── libreoffice/
     ├── config.json
-    └── index.js             # LibreOfficeHandler mit deduplication
+    └── index.js             # LibreOfficeHandler with deduplication
 ```
 
-### Plugin-Pfade
+### Plugin Paths
 
 **Built-in Plugins:**
 ```
@@ -49,26 +49,26 @@ plugins/
 ~/.config/remember@thechief/plugins/
 ```
 
-User-Plugins können Built-in Plugins überschreiben (gleicher Name).
+User plugins can override built-in plugins (same name).
 
-## Plugin erstellen (Schritt-für-Schritt)
+## Creating a Plugin (Step-by-Step)
 
-### Schritt 1: Plugin-Verzeichnis erstellen
+### Step 1: Create Plugin Directory
 
 ```bash
-# User-Plugin
+# User plugin
 mkdir -p ~/.config/remember@thechief/plugins/myapp
 
-# Oder: Built-in Plugin (für Contribution)
+# Or: Built-in plugin (for contribution)
 cd ~/.local/share/cinnamon/extensions/remember@thechief/plugins/
 mkdir myapp
 ```
 
-### Schritt 2: config.json erstellen
+### Step 2: Create config.json
 
-Erstelle eine `config.json` Datei im Plugin-Verzeichnis. Es gibt zwei Varianten:
+Create a `config.json` file in the plugin directory. There are two variants:
 
-**Minimal-Beispiel (ohne Handler):**
+**Minimal example (without handler):**
 
 ```json
 {
@@ -93,7 +93,7 @@ Erstelle eine `config.json` Datei im Plugin-Verzeichnis. Es gibt zwei Varianten:
 }
 ```
 
-**Vollständiges Beispiel (mit Handler):**
+**Complete example (with handler):**
 
 ```json
 {
@@ -160,7 +160,7 @@ Erstelle eine `config.json` Datei im Plugin-Verzeichnis. Es gibt zwei Varianten:
 }
 ```
 
-### Schritt 3: Handler-Klasse erstellen (optional)
+### Step 3: Create Handler Class (optional)
 
 **File:** `index.js`
 
@@ -168,10 +168,10 @@ Erstelle eine `config.json` Datei im Plugin-Verzeichnis. Es gibt zwei Varianten:
 /**
  * MyApp Plugin Handler
  *
- * Handler für erweiterte Launch-Logik und Session-Restore.
+ * Handler for advanced launch logic and session restore.
  */
 
-// Imports (benötigt für File-Operations in parseTitleData)
+// Imports (required for file operations in parseTitleData)
 const Gio = imports.gi.Gio;
 const GLib = imports.gi.GLib;
 
@@ -293,32 +293,32 @@ var MyAppHandler = class MyAppHandler {
 };
 ```
 
-### Schritt 4: Plugin testen
+### Step 4: Test Plugin
 
 ```bash
-# 1. Extension neu laden
-# Drücke Alt+F2, tippe "r" und drücke Enter
-# Oder: Rechtsklick auf Extension → "Reload"
+# 1. Reload extension
+# Press Alt+F2, type "r" and press Enter
+# Or: Right-click on extension → "Reload"
 
-# 2. Debug Mode aktivieren (optional)
+# 2. Enable debug mode (optional)
 export REMEMBER_DEBUG=1
 cinnamon --replace &
 
-# 3. Logs prüfen
+# 3. Check logs
 tail -f ~/.xsession-errors | grep remember@thechief
 
-# 4. Plugin-Loading verifizieren
+# 4. Verify plugin loading
 # Should see: "Loaded plugin: myapp (myapp, MyApp)"
 
-# 5. Test Launch
-# 1. Öffne MyApp
-# 2. Klicke auf "Save All" im Applet
-# 3. Schließe MyApp
-# 4. Klicke auf "Launch Session" im Applet
-# 5. Überprüfe ob MyApp an der richtigen Position geöffnet wird
+# 5. Test launch
+# 1. Open MyApp
+# 2. Click "Save All" in applet
+# 3. Close MyApp
+# 4. Click "Launch Session" in applet
+# 5. Verify MyApp opens at the correct position
 ```
 
-## config.json Referenz
+## config.json Reference
 
 ### Top-Level Fields
 
@@ -356,7 +356,7 @@ tail -f ~/.xsession-errors | grep remember@thechief
 }
 ```
 
-Setting-Key wird in `extension-settings.json` geprüft:
+Setting key is checked in `extension-settings.json`:
 ```javascript
 if (extensionSettings.get('launchFlags.settingKey') !== false) {
     args.push('--flag1', '--flag2');
@@ -374,30 +374,30 @@ if (extensionSettings.get('launchFlags.settingKey') !== false) {
 | `titleStabilizationDelay` | number | 0 | Delay before initial save/restore (for apps that change title) |
 
 **isSingleInstance:**
-- `true`: Launch einmal, erwartet dass die App alle Windows selbst öffnet (Browser, IDEs)
-- `false`: Launch für jede gespeicherte Instance (Text-Editoren, Terminals)
+- `true`: Launch once, expect app to open all windows itself (browsers, IDEs)
+- `false`: Launch for each saved instance (text editors, terminals)
 
 **timeout:**
-- Zeit in ms bis Launch als "timeout" gilt
-- Nach Timeout: Grace Period beginnt
-- Standard: 45000 (45 sec)
-- Single-Instance Apps: 120000 (2 min)
+- Time in ms until launch is considered "timeout"
+- After timeout: Grace period begins
+- Default: 45000 (45 sec)
+- Single-instance apps: 120000 (2 min)
 
 **gracePeriod:**
-- Zusätzliche Wartezeit nach Timeout
-- Window kann noch "late-matched" werden
-- Standard: 30000 (30 sec)
-- Single-Instance Apps: 60000 (1 min)
+- Additional waiting time after timeout
+- Window can still be "late-matched"
+- Default: 30000 (30 sec)
+- Single-instance apps: 60000 (1 min)
 
 **titleStabilizationDelay:**
-- Delay vor initial save/restore
-- Für Apps die Title ändern nach Startup (z.B. VSCode lädt Projekt)
-- Verhindert false Instance-Creation durch unstabilen Title
-- Standard: 0 (kein Delay)
+- Delay before initial save/restore
+- For apps that change title after startup (e.g., VSCode loads project)
+- Prevents false instance creation due to unstable title
+- Default: 0 (no delay)
 - VSCode: 1500ms
 - JetBrains IDEs: 2000ms
 
-### settings Object (für Settings UI)
+### settings Object (for Settings UI)
 
 **Format:**
 ```json
@@ -414,7 +414,7 @@ if (extensionSettings.get('launchFlags.settingKey') !== false) {
 }
 ```
 
-**check Object** (Prüfen ob Setting aktiviert ist):
+**check Object** (Check if setting is enabled):
 
 ```json
 // JSON Key Check
@@ -432,7 +432,7 @@ if (extensionSettings.get('launchFlags.settingKey') !== false) {
 }
 ```
 
-**configure Object** (Setting aktivieren):
+**configure Object** (Enable setting):
 
 ```json
 // JSON Set
@@ -451,16 +451,16 @@ if (extensionSettings.get('launchFlags.settingKey') !== false) {
 }
 ```
 
-**unconfigure Object** (Setting deaktivieren):
+**unconfigure Object** (Disable setting):
 
 ```json
-// Manual (User muss selbst deaktivieren)
+// Manual (User must disable themselves)
 {
   "type": "manual",
   "message": "Please disable in MyApp settings:\n1. Open MyApp\n2. Go to Settings\n3. Disable 'Restore Windows'"
 }
 
-// JSON Set (automatisch)
+// JSON Set (automatic)
 {
   "type": "json_set",
   "path": "~/.config/myapp/config.json",
@@ -469,7 +469,7 @@ if (extensionSettings.get('launchFlags.settingKey') !== false) {
 }
 ```
 
-**openSettings Object** (Settings öffnen):
+**openSettings Object** (Open settings):
 
 ```json
 // URL
@@ -485,98 +485,98 @@ if (extensionSettings.get('launchFlags.settingKey') !== false) {
 }
 ```
 
-## Provider-Typen
+## Provider Types
 
 ### mozilla-browser
 
-Browser mit Mozilla-Technologie (Firefox, Thunderbird).
+Browser with Mozilla technology (Firefox, Thunderbird).
 
-**Merkmale:**
-- Single-Instance
-- Session-Restore via `--restore-session` flag
-- Profile-basierte Konfiguration
+**Characteristics:**
+- Single-instance
+- Session restore via `--restore-session` flag
+- Profile-based configuration
 
-**Beispiel:** `plugins/firefox/`
+**Example:** `plugins/firefox/`
 
 ### chromium-browser
 
-Chromium-based Browser (Chrome, Brave, Edge).
+Chromium-based browser (Chrome, Brave, Edge).
 
-**Merkmale:**
-- Single-Instance (optional Multi-Profile)
-- Session-Restore via `--restore-last-session` flag
-- Deduplizierung von Browser-Sessions
+**Characteristics:**
+- Single-instance (optional multi-profile)
+- Session restore via `--restore-last-session` flag
+- Deduplication of browser sessions
 
-**Beispiel:** `plugins/chrome/`, `plugins/brave/`
+**Example:** `plugins/chrome/`, `plugins/brave/`
 
 ### editor
 
-Text-Editoren und Code-Editoren.
+Text editors and code editors.
 
-**Merkmale:**
-- Multi-Instance (meist)
-- Document-Path-Restoration via parseTitleData
-- Working-Directory Tracking
+**Characteristics:**
+- Multi-instance (mostly)
+- Document path restoration via parseTitleData
+- Working directory tracking
 
-**Beispiel:** `plugins/gedit/`, `plugins/xed/`, `plugins/scite/`
+**Example:** `plugins/gedit/`, `plugins/xed/`, `plugins/scite/`
 
 ### ide
 
-Integrierte Entwicklungsumgebungen.
+Integrated development environments.
 
-**Merkmale:**
-- Single-Instance (meist)
-- Project-Path-Restoration
-- Title Stabilization Delay (Projekt lädt langsam)
-- Aggressive Restore Timings (Self-Positioning)
+**Characteristics:**
+- Single-instance (mostly)
+- Project path restoration
+- Title stabilization delay (project loads slowly)
+- Aggressive restore timings (self-positioning)
 
-**Beispiel:** `plugins/vscode/`, `plugins/jetbrains/`
+**Example:** `plugins/vscode/`, `plugins/jetbrains/`
 
 ### office
 
-Office-Anwendungen.
+Office applications.
 
-**Merkmale:**
-- Multi-Instance
-- Document-Path-Restoration
-- WM_CLASS Migration (LibreOffice: Soffice → libreoffice-calc)
+**Characteristics:**
+- Multi-instance
+- Document path restoration
+- WM_CLASS migration (LibreOffice: Soffice → libreoffice-calc)
 
-**Beispiel:** `plugins/libreoffice/`
+**Example:** `plugins/libreoffice/`
 
 ### file-manager
 
-Datei-Manager.
+File managers.
 
-**Merkmale:**
-- Multi-Instance (verschiedene Tabs/Windows)
-- Path-Restoration
-- Tab-State-Restoration (falls unterstützt)
+**Characteristics:**
+- Multi-instance (different tabs/windows)
+- Path restoration
+- Tab state restoration (if supported)
 
-**Beispiel:** `plugins/nemo/`
+**Example:** `plugins/nemo/`
 
 ### terminal
 
-Terminal-Emulatoren.
+Terminal emulators.
 
-**Merkmale:**
-- Multi-Instance
-- Working-Directory-Restoration
-- Command-History-Restoration (falls unterstützt)
+**Characteristics:**
+- Multi-instance
+- Working directory restoration
+- Command history restoration (if supported)
 
-**Beispiel:** `plugins/wave/`
+**Example:** `plugins/wave/`
 
-## Handler-Klasse Entwickeln
+## Developing Handler Class
 
 ### Naming Convention
 
-**Klassen-Name:** `<Name>Handler`
+**Class Name:** `<Name>Handler`
 
-**Beispiele:**
+**Examples:**
 - `FirefoxHandler`
 - `VSCodeHandler`
 - `ThunderbirdHandler`
 
-**WICHTIG:** Klasse MUSS mit `Handler` enden, sonst wird sie nicht erkannt!
+**IMPORTANT:** Class MUST end with `Handler`, otherwise it won't be recognized!
 
 ### Constructor Signature
 
@@ -584,12 +584,12 @@ Terminal-Emulatoren.
 constructor(config, extensionSettings, storage)
 ```
 
-**Parameter:**
+**Parameters:**
 - `config`: Plugin config from config.json
-- `extensionSettings`: Extension settings service (für launchFlags)
-- `storage`: Storage service (für Deduplizierung, etc.)
+- `extensionSettings`: Extension settings service (for launchFlags)
+- `storage`: Storage service (for deduplication, etc.)
 
-**Beispiel:**
+**Example:**
 ```javascript
 constructor(config, extensionSettings, storage) {
     this._config = config;
@@ -608,7 +608,7 @@ constructor(config, extensionSettings, storage) {
 beforeLaunch(instance, launchParams)
 ```
 
-**Parameter:**
+**Parameters:**
 - `instance`: Saved instance data
 - `launchParams`: `{ executable, args, workDir }`
 
@@ -620,7 +620,7 @@ beforeLaunch(instance, launchParams)
 - Working directory modification
 - Conditional logic based on instance data
 
-**Beispiel:**
+**Example:**
 ```javascript
 beforeLaunch(instance, launchParams) {
     // Add profile flag
@@ -644,9 +644,9 @@ beforeLaunch(instance, launchParams) {
 parseTitleData(titleSnapshot, instance)
 ```
 
-**Parameter:**
+**Parameters:**
 - `titleSnapshot`: Saved window title
-- `instance`: Full instance data (für `document_path`, `open_documents` access)
+- `instance`: Full instance data (for `document_path`, `open_documents` access)
 
 **Return:** `string[]` (arguments) or `null`
 
@@ -655,7 +655,7 @@ parseTitleData(titleSnapshot, instance)
 - Parse project names
 - Extract session identifiers
 
-**Beispiel 1: Document Editor**
+**Example 1: Document Editor**
 ```javascript
 parseTitleData(titleSnapshot, instance) {
     // Title format: "/path/to/document.txt - Gedit"
@@ -683,7 +683,7 @@ parseTitleData(titleSnapshot, instance) {
 }
 ```
 
-**Beispiel 2: IDE (JetBrains)**
+**Example 2: IDE (JetBrains)**
 ```javascript
 parseTitleData(titleSnapshot, instance) {
     // Title format: "ProjectName - [/path/to/file.java] - IntelliJ IDEA"
@@ -706,7 +706,7 @@ parseTitleData(titleSnapshot, instance) {
 }
 ```
 
-**Beispiel 3: LibreOffice**
+**Example 3: LibreOffice**
 ```javascript
 parseTitleData(titleSnapshot, instance) {
     // Title format: "document.odt - LibreOffice Writer"
@@ -746,7 +746,7 @@ parseTitleData(titleSnapshot, instance) {
 afterLaunch(instance, pid, success)
 ```
 
-**Parameter:**
+**Parameters:**
 - `instance`: Saved instance data
 - `pid`: Process ID (or null if launch failed)
 - `success`: Boolean indicating launch success
@@ -759,7 +759,7 @@ afterLaunch(instance, pid, success)
 - Statistics tracking
 - Error handling
 
-**Beispiel:**
+**Example:**
 ```javascript
 afterLaunch(instance, pid, success) {
     if (success) {
@@ -785,7 +785,7 @@ afterLaunch(instance, pid, success) {
 shouldSkipRestore(instance)
 ```
 
-**Parameter:**
+**Parameters:**
 - `instance`: Saved instance data
 
 **Return:** `boolean` (true = skip, false = restore)
@@ -795,7 +795,7 @@ shouldSkipRestore(instance)
 - Skip dialog windows
 - Skip specific window types
 
-**Beispiel 1: Thunderbird (Skip Compose Windows)**
+**Example 1: Thunderbird (Skip Compose Windows)**
 ```javascript
 shouldSkipRestore(instance) {
     const title = instance.title_snapshot || '';
@@ -816,7 +816,7 @@ shouldSkipRestore(instance) {
 }
 ```
 
-**Beispiel 2: IDE (Skip Settings/Dialogs)**
+**Example 2: IDE (Skip Settings/Dialogs)**
 ```javascript
 shouldSkipRestore(instance) {
     const title = instance.title_snapshot || '';
@@ -846,7 +846,7 @@ shouldSkipRestore(instance) {
 
 **Description:** Multiple restore attempts for apps with aggressive self-positioning.
 
-**Beispiel:**
+**Example:**
 ```javascript
 constructor(config, extensionSettings, storage) {
     // VS Code aggressively repositions windows
@@ -882,7 +882,7 @@ destroy()
 
 **Description:** Cleanup when plugin is unloaded.
 
-**Beispiel:**
+**Example:**
 ```javascript
 // (requires: const Mainloop = imports.mainloop;)
 destroy() {
@@ -897,9 +897,9 @@ destroy() {
 }
 ```
 
-## Beispiel-Plugins
+## Example Plugins
 
-### Einfaches Plugin: Firefox
+### Simple Plugin: Firefox
 
 **File:** `plugins/firefox/config.json`
 
@@ -928,9 +928,9 @@ destroy() {
 }
 ```
 
-**Keine Handler-Klasse nötig!** Firefox restored Session selbst via `--restore-session`.
+**No handler class needed!** Firefox restores session itself via `--restore-session`.
 
-### Mittel-komplexes Plugin: VS Code
+### Medium-complexity Plugin: VS Code
 
 **File:** `plugins/vscode/config.json`
 
@@ -982,7 +982,7 @@ var VSCodeHandler = class VSCodeHandler {
 };
 ```
 
-### Komplexes Plugin: Thunderbird
+### Complex Plugin: Thunderbird
 
 **File:** `plugins/thunderbird/config.json`
 
@@ -1068,7 +1068,7 @@ var ThunderbirdHandler = class ThunderbirdHandler {
 };
 ```
 
-### Sehr komplexes Plugin: LibreOffice
+### Very Complex Plugin: LibreOffice
 
 **File:** `plugins/libreoffice/config.json`
 
@@ -1205,13 +1205,13 @@ var LibreOfficeHandler = class LibreOfficeHandler {
 };
 ```
 
-## Launch Flags und Conditional Flags
+## Launch Flags and Conditional Flags
 
 ### Static Flags
 
-Immer beim Launch hinzugefügt.
+Always added at launch.
 
-**Beispiel:**
+**Example:**
 ```json
 {
   "launch": {
@@ -1226,7 +1226,7 @@ Immer beim Launch hinzugefügt.
 
 ### Conditional Flags
 
-Nur hinzugefügt wenn Setting aktiviert ist.
+Only added when setting is enabled.
 
 **In config.json:**
 ```json
@@ -1274,10 +1274,10 @@ myapp --restore-session
 
 ### Single-Instance Apps
 
-**Charakteristik:**
-- App launched EINMAL
-- App öffnet alle Windows selbst (z.B. via Session-Restore)
-- Beispiele: Browser, IDEs, Email-Clients
+**Characteristics:**
+- App launched ONCE
+- App opens all windows itself (e.g., via session restore)
+- Examples: Browsers, IDEs, email clients
 
 **Config:**
 ```json
@@ -1290,7 +1290,7 @@ myapp --restore-session
 }
 ```
 
-**Launch-Verhalten:**
+**Launch Behavior:**
 ```
 Saved Instances: [Window1, Window2, Window3]
     ↓
@@ -1309,10 +1309,10 @@ Positions restored individually
 
 ### Multi-Instance Apps
 
-**Charakteristik:**
-- Jede Instance wird einzeln launched
-- Jede Instance ist ein separater Prozess
-- Beispiele: Text-Editoren, Terminals, File-Manager
+**Characteristics:**
+- Each instance is launched separately
+- Each instance is a separate process
+- Examples: Text editors, terminals, file managers
 
 **Config:**
 ```json
@@ -1325,7 +1325,7 @@ Positions restored individually
 }
 ```
 
-**Launch-Verhalten:**
+**Launch Behavior:**
 ```
 Saved Instances: [Doc1.txt, Doc2.txt, Doc3.txt]
     ↓
@@ -1346,7 +1346,7 @@ Each window matched to launched instance
 Positions restored
 ```
 
-## Timeouts und Grace Periods
+## Timeouts and Grace Periods
 
 ### Standard Timeouts
 
@@ -1377,7 +1377,7 @@ const TIMEOUTS = {
 }
 ```
 
-### Timeout-Flow
+### Timeout Flow
 
 ```
 Launch App
@@ -1398,22 +1398,22 @@ No → Window appeared → Match & Restore
 
 ### Grace Period Use Cases
 
-1. **Langsame Apps** (z.B. LibreOffice mit großen Dokumenten)
-2. **Network-dependent Apps** (z.B. Email-Clients die erst sync müssen)
-3. **Single-Instance Apps** (z.B. Browser der erst existierende Instanz findet)
+1. **Slow apps** (e.g., LibreOffice with large documents)
+2. **Network-dependent apps** (e.g., email clients that need to sync first)
+3. **Single-instance apps** (e.g., browser finding existing instance first)
 
 ## Title Stabilization
 
 ### Problem
 
-Manche Apps ändern ihren Titel nach dem Öffnen:
+Some apps change their title after opening:
 - VSCode: "Visual Studio Code" → "ProjectName - Visual Studio Code"
 - JetBrains IDEs: "IntelliJ IDEA" → "ProjectName - [file.java] - IntelliJ IDEA"
 - Browsers: "New Tab" → "Page Title"
 
-Das führt zu falschen Instance-Matches beim Tracking.
+This leads to incorrect instance matches during tracking.
 
-### Lösung: titleStabilizationDelay
+### Solution: titleStabilizationDelay
 
 **Config:**
 ```json
@@ -1424,30 +1424,30 @@ Das führt zu falschen Instance-Matches beim Tracking.
 }
 ```
 
-**Effekt:**
+**Effect:**
 
-1. **Initial Track (keine Save):**
+1. **Initial Track (no save):**
    ```javascript
    // (requires: const Mainloop = imports.mainloop;)
    _trackWindow(metaWindow) {
-       // Window wird getracked, aber...
+       // Window is tracked, but...
 
        if (titleStabilizationDelay > 0) {
-           // KEIN sofortiges Save!
-           // Warte bis Title stabil ist
+           // NO immediate save!
+           // Wait until title is stable
            Mainloop.timeout_add(titleStabilizationDelay + 500, () => {
-               this._onWindowChanged(metaWindow); // Save NACH Stabilisierung
+               this._onWindowChanged(metaWindow); // Save AFTER stabilization
            });
        }
    }
    ```
 
-2. **Restore (mit Delay):**
+2. **Restore (with delay):**
    ```javascript
    // (requires: const Mainloop = imports.mainloop;)
    _onWindowCreated(metaWindow) {
        if (titleStabilizationDelay > 0) {
-           // Warte auf stabilen Title bevor Matching
+           // Wait for stable title before matching
            Mainloop.timeout_add(titleStabilizationDelay, () => {
                this._positionRestorer.tryRestorePosition(metaWindow, true);
            });
@@ -1455,21 +1455,21 @@ Das führt zu falschen Instance-Matches beim Tracking.
    }
    ```
 
-**Empfohlene Werte:**
+**Recommended values:**
 - VSCode: 1500ms
 - JetBrains IDEs: 2000ms
-- Browsers: 0ms (Title-Änderung ist ok, matchen via X11 ID)
+- Browsers: 0ms (title change is ok, match via X11 ID)
 
-## Testing und Debugging
+## Testing and Debugging
 
-### Debug Mode aktivieren
+### Enable Debug Mode
 
 ```bash
 export REMEMBER_DEBUG=1
 cinnamon --replace &
 ```
 
-### Plugin-Loading prüfen
+### Check Plugin Loading
 
 ```bash
 tail -f ~/.xsession-errors | grep -i "plugin"
@@ -1482,7 +1482,7 @@ remember@thechief: Loaded handler for plugin: myapp
 remember@thechief: PluginManager initialized with 15 plugins
 ```
 
-### Plugin-Config prüfen
+### Check Plugin Config
 
 ```javascript
 // In Looking Glass (Alt+F2 → lg)
@@ -1501,7 +1501,7 @@ global.windowRemember._pluginManager.getPlugin('myapp')
 }
 ```
 
-### Handler-Loading prüfen
+### Check Handler Loading
 
 ```javascript
 // Check if handler loaded
@@ -1551,7 +1551,7 @@ remember@thechief: Restored myapp to workspace 0, monitor 0
 
 ### Test Restore Timings
 
-Für Apps mit aggressive Self-Positioning:
+For apps with aggressive self-positioning:
 
 ```bash
 # Enable debug to see restore attempts
@@ -1590,36 +1590,36 @@ global.log(`Parsed args: ${JSON.stringify(args)}`);
 
 ### Common Issues
 
-#### Plugin nicht geladen
+#### Plugin not loaded
 
 **Symptom:**
 ```
 remember@thechief: PluginManager initialized with 14 plugins
-# myapp fehlt in der Liste
+# myapp missing from list
 ```
 
 **Checks:**
-1. config.json existiert?
+1. config.json exists?
    ```bash
    ls -la ~/.config/remember@thechief/plugins/myapp/config.json
    ```
 
-2. JSON valide?
+2. JSON valid?
    ```bash
    cat ~/.config/remember@thechief/plugins/myapp/config.json | jq
    ```
 
-3. `name` und `wmClass` vorhanden?
+3. `name` and `wmClass` present?
    ```bash
    cat config.json | jq '{name, wmClass}'
    ```
 
-#### Handler nicht geladen
+#### Handler not loaded
 
 **Symptom:**
 ```
 remember@thechief: Loaded plugin: myapp (myapp)
-# Kein "Loaded handler for plugin: myapp"
+# No "Loaded handler for plugin: myapp"
 ```
 
 **Checks:**
@@ -1628,12 +1628,12 @@ remember@thechief: Loaded plugin: myapp (myapp)
    cat config.json | jq .handler
    ```
 
-2. index.js existiert?
+2. index.js exists?
    ```bash
    ls -la ~/.config/remember@thechief/plugins/myapp/index.js
    ```
 
-3. Handler-Klasse endet mit "Handler"?
+3. Handler class ends with "Handler"?
    ```javascript
    // WRONG:
    var MyApp = class MyApp { ... }
@@ -1642,7 +1642,7 @@ remember@thechief: Loaded plugin: myapp (myapp)
    var MyAppHandler = class MyAppHandler { ... }
    ```
 
-#### Launch schlägt fehl
+#### Launch fails
 
 **Symptom:**
 ```
@@ -1665,10 +1665,10 @@ remember@thechief: Failed to spawn myapp: GLib.spawn_async returned false
    ls -la $(which myapp)
    ```
 
-#### Position wird nicht restored
+#### Position not restored
 
 **Symptom:**
-App launched, aber Position falsch.
+App launched, but position is wrong.
 
 **Checks:**
 1. Instance matched?
@@ -1676,7 +1676,7 @@ App launched, aber Position falsch.
    cat ~/.config/remember@thechief/positions.json | jq '.apps.myapp.instances[] | {id, assigned}'
    ```
 
-2. Restore Timings ausreichend?
+2. Restore timings sufficient?
    ```javascript
    // Add more aggressive timings
    this.restoreTimings = [500, 1000, 2000, 4000, 8000];
@@ -1690,11 +1690,11 @@ App launched, aber Position falsch.
 
 ## Best Practices
 
-### 1. wmClass Array vollständig
+### 1. Complete wmClass Array
 
-Manche Apps haben multiple wmClasses (Case-Varianten, Beta-Versionen, etc.).
+Some apps have multiple wmClasses (case variants, beta versions, etc.).
 
-**Beispiel VSCode:**
+**Example VSCode:**
 ```json
 {
   "wmClass": [
@@ -1710,9 +1710,9 @@ Manche Apps haben multiple wmClasses (Case-Varianten, Beta-Versionen, etc.).
 
 ### 2. Executable Fallbacks
 
-Verschiedene Distributionen, Installation-Methoden.
+Different distributions, installation methods.
 
-**Beispiel:**
+**Example:**
 ```json
 {
   "executables": [
@@ -1726,11 +1726,11 @@ Verschiedene Distributionen, Installation-Methoden.
 }
 ```
 
-### 3. Conditional Flags für Features
+### 3. Conditional Flags for Features
 
-Nicht alle User wollen alle Features.
+Not all users want all features.
 
-**Beispiel:**
+**Example:**
 ```json
 {
   "conditionalFlags": {
@@ -1741,13 +1741,13 @@ Nicht alle User wollen alle Features.
 }
 ```
 
-User kann in Settings aktivieren/deaktivieren.
+Users can enable/disable in settings.
 
-### 4. Deduplizierung in beforeLaunch
+### 4. Deduplication in beforeLaunch
 
-Verhindere doppelte Launches.
+Prevent duplicate launches.
 
-**Beispiel:**
+**Example:**
 ```javascript
 beforeLaunch(instance, launchParams) {
     // Check if already open
@@ -1784,9 +1784,9 @@ _isInstanceAlreadyOpen(instance) {
 
 ### 5. Graceful Fallbacks in parseTitleData
 
-Mehrere Strategien versuchen.
+Try multiple strategies.
 
-**Beispiel:**
+**Example:**
 ```javascript
 parseTitleData(titleSnapshot, instance) {
     // 1. Try document_path (most reliable)
@@ -1839,9 +1839,9 @@ _dirExists(dirPath) {
 
 ### 6. Error Handling
 
-Immer defensive programmieren.
+Always program defensively.
 
-**Beispiel:**
+**Example:**
 ```javascript
 parseTitleData(titleSnapshot, instance) {
     // (requires: const Gio = imports.gi.Gio;)
@@ -1853,7 +1853,7 @@ parseTitleData(titleSnapshot, instance) {
         }
     } catch (e) {
         global.logError(`Failed to parse title: ${e}`);
-        // Fallback zu open_documents
+        // Fallback to open_documents
         if (instance.open_documents) {
             return instance.open_documents;
         }
@@ -1862,11 +1862,11 @@ parseTitleData(titleSnapshot, instance) {
 }
 ```
 
-### 7. Logging für Debug
+### 7. Logging for Debug
 
-Hilft bei Troubleshooting.
+Helps with troubleshooting.
 
-**Beispiel:**
+**Example:**
 ```javascript
 beforeLaunch(instance, launchParams) {
     global.log(`MyApp beforeLaunch: executable=${launchParams.executable}, args=[${launchParams.args.join(', ')}]`);
@@ -1881,43 +1881,43 @@ beforeLaunch(instance, launchParams) {
 }
 ```
 
-### 8. Testing auf aktueller Cinnamon-Version
+### 8. Testing on Current Cinnamon Version
 
-Plugins müssen nur auf der aktuellen Cinnamon-Version getestet werden.
+Plugins only need to be tested on the current Cinnamon version.
 
-**Test-Anforderung:**
-- Cinnamon 6.0+ (aktuelle stabile Version)
+**Test requirement:**
+- Cinnamon 6.0+ (current stable version)
 
-**Was testen:**
-- [ ] Executable paths (funktionieren die Pfade in `executables`?)
-- [ ] Config file locations (existieren die Config-Dateien?)
-- [ ] Default flags (funktioniert die App mit den Flags?)
-- [ ] Desktop file names (werden die Apps korrekt erkannt?)
-- [ ] Launch und Restore (funktioniert der gesamte Workflow?)
+**What to test:**
+- [ ] Executable paths (do the paths in `executables` work?)
+- [ ] Config file locations (do the config files exist?)
+- [ ] Default flags (does the app work with the flags?)
+- [ ] Desktop file names (are the apps correctly recognized?)
+- [ ] Launch and restore (does the entire workflow work?)
 
-**Test-Workflow:**
-1. App öffnen und positionieren
-2. "Save All" im Applet klicken
-3. App schließen
-4. "Launch Session" im Applet klicken
-5. Überprüfen ob App an richtiger Position öffnet
+**Test workflow:**
+1. Open app and position it
+2. Click "Save All" in applet
+3. Close app
+4. Click "Launch Session" in applet
+5. Verify app opens at correct position
 
 ## Plugin Contribution
 
-Möchtest du dein Plugin zum Extension-Repository beitragen?
+Want to contribute your plugin to the extension repository?
 
-### 1. Plugin-Qualitäts-Checklist
+### 1. Plugin Quality Checklist
 
-- [ ] `config.json` vollständig und valide
-- [ ] `wmClass` array deckt alle Varianten ab
-- [ ] `executables` hat Fallbacks für verschiedene Distros
-- [ ] Handler-Klasse (falls vorhanden) hat Error-Handling
-- [ ] Plugin auf mind. 2 Distributionen getestet
-- [ ] Logs sauber (keine Spam, nützliche Debug-Infos)
-- [ ] Keine hardcoded User-Pfade
-- [ ] README.md mit Beschreibung und Beispielen
+- [ ] `config.json` complete and valid
+- [ ] `wmClass` array covers all variants
+- [ ] `executables` has fallbacks for different distros
+- [ ] Handler class (if present) has error handling
+- [ ] Plugin tested on at least 2 distributions
+- [ ] Logs clean (no spam, useful debug info)
+- [ ] No hardcoded user paths
+- [ ] README.md with description and examples
 
-### 2. Repository-Struktur
+### 2. Repository Structure
 
 ```
 remember@thechief/
@@ -2002,8 +2002,8 @@ Tested on:
 - [x] Logs clean and useful
 ```
 
-## Weitere Ressourcen
+## Further Resources
 
-- **Architecture:** `architecture.md` - System-Übersicht und Design
-- **API Reference:** `api-reference.md` - Alle APIs mit Beispielen
-- **Contributing:** `contributing.md` - Code-Style, Testing, PR-Process
+- **Architecture:** `architecture.md` - System overview and design
+- **API Reference:** `api-reference.md` - All APIs with examples
+- **Contributing:** `contributing.md` - Code style, testing, PR process

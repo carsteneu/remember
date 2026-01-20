@@ -1,57 +1,57 @@
 # Configuration - Window Position Remember
 
-Diese Anleitung erklärt alle Konfigurationsoptionen der **Window Position Remember** Extension.
+This guide explains all configuration options of the **Window Position Remember** extension.
 
-## Übersicht
+## Overview
 
-Die Extension bietet **zwei Konfigurations-Interfaces**:
+The extension provides **two configuration interfaces**:
 
-1. **Cinnamon Settings** - Grundlegende Einstellungen (Built-in)
-2. **Python Settings UI** - Erweiterte Einstellungen mit GUI
+1. **Cinnamon Settings** - Basic settings (Built-in)
+2. **Python Settings UI** - Advanced settings with GUI
 
 ---
 
 ## Cinnamon Settings (System Settings)
 
-### Zugriff
+### Access
 
 ```
-Systemeinstellungen → Extensions → Window Position Remember → Configure (⚙️)
+System Settings → Extensions → Window Position Remember → Configure (⚙️)
 ```
 
-Oder via Terminal:
+Or via terminal:
 ```bash
 cinnamon-settings extensions remember@thechief
 ```
 
 ---
 
-## Einstellungen-Übersicht
+## Settings Overview
 
-### General (Allgemein)
+### General
 
 #### Window Tracking
 
 **track-all-workspaces**
-- **Typ**: Switch (Ein/Aus)
-- **Standard**: Aktiviert ✅
-- **Beschreibung**: Verfolgt Fenster auf allen Arbeitsflächen
-- **Empfehlung**: Aktiviert für Multi-Workspace-Nutzer
+- **Type**: Switch (On/Off)
+- **Default**: Enabled ✅
+- **Description**: Tracks windows on all workspaces
+- **Recommendation**: Enabled for multi-workspace users
 
 ```
-✅ Aktiviert: Alle Fenster auf allen Workspaces werden verfolgt
-❌ Deaktiviert: Nur Fenster auf der aktuellen Workspace
+✅ Enabled: All windows on all workspaces are tracked
+❌ Disabled: Only windows on the current workspace
 ```
 
 **track-dialogs**
-- **Typ**: Switch
-- **Standard**: Deaktiviert ❌
-- **Beschreibung**: Verfolgt auch Dialog-Fenster
-- **Empfehlung**: Deaktiviert (Dialoge sind temporär)
+- **Type**: Switch
+- **Default**: Disabled ❌
+- **Description**: Also tracks dialog windows
+- **Recommendation**: Disabled (dialogs are temporary)
 
 ```
-⚠️ Warnung: Aktivieren erhöht Datenmenge erheblich
-Nur aktivieren für spezielle Anwendungsfälle
+⚠️ Warning: Enabling increases data volume significantly
+Only enable for special use cases
 ```
 
 ---
@@ -59,40 +59,40 @@ Nur aktivieren für spezielle Anwendungsfälle
 #### Session Management
 
 **auto-restore**
-- **Typ**: Switch
-- **Standard**: Aktiviert ✅
-- **Beschreibung**: Stellt Fensterpositionen automatisch beim Öffnen wieder her
-- **Empfehlung**: Aktiviert (Hauptfunktion der Extension)
+- **Type**: Switch
+- **Default**: Enabled ✅
+- **Description**: Automatically restores window positions on opening
+- **Recommendation**: Enabled (main function of the extension)
 
 ```
-✅ Aktiviert: Fenster werden automatisch positioniert
-❌ Deaktiviert: Manuelle Wiederherstellung über Applet
+✅ Enabled: Windows are automatically positioned
+❌ Disabled: Manual restoration via applet
 ```
 
 **auto-launch**
-- **Typ**: Switch
-- **Standard**: Deaktiviert ❌
-- **Beschreibung**: Startet gespeicherte Anwendungen automatisch beim Login
-- **Empfehlung**: Aktivieren für vollständiges Session Restore
+- **Type**: Switch
+- **Default**: Disabled ❌
+- **Description**: Automatically starts saved applications on login
+- **Recommendation**: Enable for complete session restore
 
 ```
-⚠️ Wichtig: Erfordert "capture-cmdline" für beste Ergebnisse
+⚠️ Important: Requires "capture-cmdline" for best results
 ```
 
-**Aktivierungs-Workflow**:
-1. `auto-launch` aktivieren
-2. `capture-cmdline` aktivieren
-3. Anwendungen öffnen
-4. Bei nächstem Login werden alle Apps automatisch gestartet
+**Activation Workflow**:
+1. Enable `auto-launch`
+2. Enable `capture-cmdline`
+3. Open applications
+4. On next login all apps will start automatically
 
 **capture-cmdline**
-- **Typ**: Switch
-- **Standard**: Aktiviert ✅
-- **Beschreibung**: Speichert Command-Line-Argumente für Session Restore
-- **Empfehlung**: Aktiviert für beste Session-Restore-Qualität
+- **Type**: Switch
+- **Default**: Enabled ✅
+- **Description**: Saves command-line arguments for session restore
+- **Recommendation**: Enabled for best session restore quality
 
 ```javascript
-// Beispiel: Gespeicherte Command-Line (aus positions.json)
+// Example: Saved command-line (from positions.json)
 {
   "cmdline": [
     "/usr/bin/firefox",
@@ -103,52 +103,52 @@ Nur aktivieren für spezielle Anwendungsfälle
 }
 ```
 
-**Datenschutz**: Command-Lines können sensible Pfade enthalten. Prüfen Sie bei Bedarf:
+**Privacy**: Command-lines may contain sensitive paths. Check if needed:
 ```bash
 cat ~/.config/remember@thechief/positions.json | jq '.applications[] | .instances[]? | .cmdline[]?'
 ```
 
 ---
 
-### Behavior (Verhalten)
+### Behavior
 
 #### Timing
 
 **save-delay**
-- **Typ**: Spinbutton (Zahlenfeld)
-- **Standard**: 1000ms (1 Sekunde)
-- **Bereich**: 100ms - 5000ms
-- **Beschreibung**: Verzögerung vor dem Speichern (Debouncing)
-- **Empfehlung**: 1000ms (Standard)
+- **Type**: Spinbutton (Number field)
+- **Default**: 1000ms (1 second)
+- **Range**: 100ms - 5000ms
+- **Description**: Delay before saving (debouncing)
+- **Recommendation**: 1000ms (default)
 
 ```
-Zu kurz (< 500ms):  Viele Schreibvorgänge (I/O-Last)
-Optimal (1000ms):   Balance zwischen Reaktion und Performance
-Zu lang (> 3000ms): Änderungen gehen bei Absturz verloren
+Too short (< 500ms):  Many write operations (I/O load)
+Optimal (1000ms):     Balance between response and performance
+Too long (> 3000ms):  Changes lost on crash
 ```
 
-**Anwendungsfälle**:
-- **Schnelle Systeme**: 500ms
+**Use Cases**:
+- **Fast systems**: 500ms
 - **Standard**: 1000ms
-- **Langsame HDDs**: 2000ms
+- **Slow HDDs**: 2000ms
 
 **restore-delay**
-- **Typ**: Spinbutton
-- **Standard**: 500ms
-- **Bereich**: 100ms - 2000ms
-- **Beschreibung**: Verzögerung vor dem Wiederherstellen der Position
-- **Empfehlung**: 500ms
+- **Type**: Spinbutton
+- **Default**: 500ms
+- **Range**: 100ms - 2000ms
+- **Description**: Delay before restoring position
+- **Recommendation**: 500ms
 
 ```
-Zu kurz (< 200ms):  Fenster ggf. noch nicht bereit
-Optimal (500ms):    Zuverlässige Wiederherstellung
-Zu lang (> 1000ms): Sichtbares "Springen" des Fensters
+Too short (< 200ms):  Window may not be ready yet
+Optimal (500ms):      Reliable restoration
+Too long (> 1000ms):  Visible window "jumping"
 ```
 
-**Anpassung für langsame Apps**:
+**Adjustment for slow apps**:
 ```
 LibreOffice, GIMP: 800-1000ms
-Firefox, Chrome:   500ms (Standard)
+Firefox, Chrome:   500ms (default)
 Gedit, Kate:       300ms
 ```
 
@@ -157,71 +157,71 @@ Gedit, Kate:       300ms
 #### Restore Behavior
 
 **use-percentage**
-- **Typ**: Switch
-- **Standard**: Aktiviert ✅
-- **Beschreibung**: Speichert Positionen prozentual zur Monitor-Größe
-- **Empfehlung**: Aktiviert für Multi-Resolution-Setups
+- **Type**: Switch
+- **Default**: Enabled ✅
+- **Description**: Saves positions as percentage of monitor size
+- **Recommendation**: Enabled for multi-resolution setups
 
 ```
-✅ Prozentual (Standard):
-  - 50% Breite auf 1920x1080 = 960px
-  - 50% Breite auf 2560x1440 = 1280px
-  → Fenster passen sich automatisch an
+✅ Percentage (default):
+  - 50% width on 1920x1080 = 960px
+  - 50% width on 2560x1440 = 1280px
+  → Windows adapt automatically
 
-❌ Absolut (Pixel):
-  - Fenster immer bei exakt denselben Pixel-Koordinaten
-  → Nur für feste Monitor-Setups
+❌ Absolute (pixels):
+  - Windows always at exact same pixel coordinates
+  → Only for fixed monitor setups
 ```
 
-**Beispiel-Berechnung**:
+**Example calculation**:
 ```javascript
-// Prozentual speichern
+// Save as percentage
 percentX = (x / monitorWidth) * 100
 percentY = (y / monitorHeight) * 100
 
-// Wiederherstellen
+// Restore
 x = (percentX / 100) * monitorWidth
 y = (percentY / 100) * monitorHeight
 ```
 
 **clamp-to-screen**
-- **Typ**: Switch
-- **Standard**: Aktiviert ✅
-- **Beschreibung**: Stellt sicher, dass Fenster immer sichtbar sind
-- **Empfehlung**: Aktiviert
+- **Type**: Switch
+- **Default**: Enabled ✅
+- **Description**: Ensures windows are always visible
+- **Recommendation**: Enabled
 
 ```
-✅ Aktiviert:
-  - Fenster werden in sichtbaren Bereich verschoben
-  - Verhindert "verlorene" Fenster bei Monitor-Wechsel
+✅ Enabled:
+  - Windows are moved to visible area
+  - Prevents "lost" windows when monitor changes
 
-❌ Deaktiviert:
-  - Fenster können außerhalb des Bildschirms sein
-  - Nur für Debugging/Entwicklung
+❌ Disabled:
+  - Windows can be outside screen
+  - Only for debugging/development
 ```
 
-**Anwendungsfall - Monitor entfernt**:
+**Use case - Monitor removed**:
 ```
-Vorher: 3 Monitore, Fenster auf Monitor 3
-Nachher: 2 Monitore
-→ Mit clamp-to-screen: Fenster auf Monitor 2
-→ Ohne clamp-to-screen: Fenster unsichtbar
+Before: 3 monitors, window on monitor 3
+After: 2 monitors
+→ With clamp-to-screen: Window on monitor 2
+→ Without clamp-to-screen: Window invisible
 ```
 
 **restore-workspace**
-- **Typ**: Switch
-- **Standard**: Aktiviert ✅
-- **Beschreibung**: Verschiebt Fenster auf ihre ursprüngliche Workspace
-- **Empfehlung**: Aktiviert für Workspace-Organisation
+- **Type**: Switch
+- **Default**: Enabled ✅
+- **Description**: Moves windows to their original workspace
+- **Recommendation**: Enabled for workspace organization
 
 ```
-✅ Aktiviert:
-  - Fenster auf Workspace 2 → Öffnet auf Workspace 2
-  - Erhält Ihre Workspace-Organisation
+✅ Enabled:
+  - Window on workspace 2 → Opens on workspace 2
+  - Maintains your workspace organization
 
-❌ Deaktiviert:
-  - Alle Fenster öffnen auf aktueller Workspace
-  - Nützlich für flexible Workspace-Nutzung
+❌ Disabled:
+  - All windows open on current workspace
+  - Useful for flexible workspace usage
 ```
 
 ---
@@ -229,126 +229,126 @@ Nachher: 2 Monitore
 #### Window States
 
 **remember-sticky**
-- **Typ**: Switch
-- **Standard**: Aktiviert ✅
-- **Beschreibung**: Speichert "Auf allen Arbeitsflächen"-Status
+- **Type**: Switch
+- **Default**: Enabled ✅
+- **Description**: Saves "On all workspaces" status
 
 ```javascript
-// Sticky aktivieren
-Rechtsklick auf Titelleiste → "Auf allen Arbeitsflächen"
+// Enable sticky
+Right-click on titlebar → "On all workspaces"
 
-// Beim nächsten Öffnen
-Fenster ist automatisch auf allen Workspaces sichtbar
+// On next opening
+Window is automatically visible on all workspaces
 ```
 
 **remember-always-on-top**
-- **Typ**: Switch
-- **Standard**: Aktiviert ✅
-- **Beschreibung**: Speichert "Immer im Vordergrund"-Status
+- **Type**: Switch
+- **Default**: Enabled ✅
+- **Description**: Saves "Always on top" status
 
-**Anwendungsfälle**:
-- Notiz-Apps (immer sichtbar)
-- Media Player (über anderen Fenstern)
-- Systemmonitore
+**Use cases**:
+- Note apps (always visible)
+- Media players (above other windows)
+- System monitors
 
 **remember-shaded**
-- **Typ**: Switch
-- **Standard**: Deaktiviert ❌
-- **Beschreibung**: Speichert "Aufgerollt"-Status
+- **Type**: Switch
+- **Default**: Disabled ❌
+- **Description**: Saves "Rolled up" status
 
 ```javascript
-// Aufroll-Modus aktivieren
-Doppelklick auf Titelleiste
+// Enable rolled up mode
+Double-click on titlebar
 
-// Fenster wird nur als Titelleiste angezeigt
+// Window is shown only as titlebar
 ```
 
-**Warum deaktiviert?**
-Die meisten Benutzer möchten Fenster **nicht aufgerollt** beim Session Restore.
+**Why disabled?**
+Most users want windows **not rolled up** on session restore.
 
 **remember-fullscreen**
-- **Typ**: Switch
-- **Standard**: Aktiviert ✅
-- **Beschreibung**: Speichert Vollbildmodus
+- **Type**: Switch
+- **Default**: Enabled ✅
+- **Description**: Saves fullscreen mode
 
 ```
-F11 oder Rechtsklick → "Vollbild"
-→ Fenster wird beim nächsten Öffnen im Vollbild gestartet
+F11 or right-click → "Fullscreen"
+→ Window will start in fullscreen on next opening
 ```
 
 **restore-minimized**
-- **Typ**: Switch
-- **Standard**: Deaktiviert ❌
-- **Beschreibung**: Stellt Fenster minimiert wieder her
+- **Type**: Switch
+- **Default**: Disabled ❌
+- **Description**: Restores windows minimized
 
-**Warum deaktiviert?**
-Session Restore soll Apps **sichtbar** machen, nicht minimiert.
+**Why disabled?**
+Session restore should make apps **visible**, not minimized.
 
 ```
-✅ Deaktiviert (Standard): Minimierte Fenster öffnen normal
-❌ Aktiviert: Fenster öffnen minimiert (meist unerwünscht)
+✅ Disabled (default): Minimized windows open normally
+❌ Enabled: Windows open minimized (usually unwanted)
 ```
 
 ---
 
-### Blacklist (Ausgeschlossene Anwendungen)
+### Blacklist (Excluded Applications)
 
 **blacklist-info**
-- **Typ**: Label (Informationstext)
-- **Beschreibung**: Anleitung für Blacklist-Nutzung
+- **Type**: Label (Information text)
+- **Description**: Instructions for blacklist usage
 
 **blacklist**
-- **Typ**: Textview (Mehrzeiliges Textfeld)
-- **Standard**: Leer
-- **Beschreibung**: WM_CLASS-Namen von ausgeschlossenen Anwendungen
+- **Type**: Textview (Multi-line text field)
+- **Default**: Empty
+- **Description**: WM_CLASS names of excluded applications
 
 **Format**:
 ```
-# Ein WM_CLASS pro Zeile
+# One WM_CLASS per line
 cinnamon-settings
 gnome-calculator
 nemo-desktop
 ```
 
-**WM_CLASS herausfinden**:
+**Find WM_CLASS**:
 ```bash
-# Methode 1: xprop
+# Method 1: xprop
 xprop WM_CLASS
-# Dann auf das Fenster klicken
+# Then click on the window
 
-# Methode 2: wmctrl
-wmctrl -lx | grep "Anwendungsname"
+# Method 2: wmctrl
+wmctrl -lx | grep "ApplicationName"
 
-# Beispiel-Ausgabe
+# Example output
 WM_CLASS(STRING) = "firefox", "Firefox"
                       ^          ^
                    Instance    Class
 ```
 
-**Häufig ausgeschlossene Apps**:
+**Commonly excluded apps**:
 ```
-cinnamon-settings         # System-Einstellungen
-nemo-desktop             # Desktop-Icons
-gnome-calculator         # Taschenrechner
-xfce4-appfinder          # App Finder
+cinnamon-settings         # System settings
+nemo-desktop             # Desktop icons
+gnome-calculator         # Calculator
+xfce4-appfinder          # App finder
 ```
 
-**Automatisch ausgeschlossen**:
-- Extension Settings Dialog (`settings.py`)
-- System-Dialogs (`cinnamon-settings-*`)
+**Automatically excluded**:
+- Extension settings dialog (`settings.py`)
+- System dialogs (`cinnamon-settings-*`)
 
 ---
 
-## Python Settings UI (Erweiterte Einstellungen)
+## Python Settings UI (Advanced Settings)
 
-### Zugriff
+### Access
 
-**Über System Settings**:
+**Via System Settings**:
 ```
-Extensions → Remember → Configure (⚙️-Symbol klicken)
+Extensions → Remember → Configure (click ⚙️ icon)
 ```
 
-**Über Terminal**:
+**Via Terminal**:
 ```bash
 cd ~/.local/share/cinnamon/extensions/remember@thechief/
 python3 settings.py
@@ -356,20 +356,20 @@ python3 settings.py
 
 ---
 
-### Tabs-Übersicht
+### Tabs Overview
 
-Die Python-GUI bietet **4 Tabs**:
+The Python GUI provides **4 tabs**:
 
-1. **Overview** - Dashboard mit Statistiken
-2. **Windows** - Alle gespeicherten Fenster
-3. **Apps** - Anwendungs-Konfiguration
-4. **About** - Über die Extension
+1. **Overview** - Dashboard with statistics
+2. **Windows** - All saved windows
+3. **Apps** - Application configuration
+4. **About** - About the extension
 
 ---
 
-### Tab 1: Overview (Übersicht)
+### Tab 1: Overview
 
-**Dashboard mit Quick Stats**:
+**Dashboard with Quick Stats**:
 
 ```
 ┌─────────────────────────────────────┐
@@ -383,12 +383,12 @@ Die Python-GUI bietet **4 Tabs**:
 ```
 
 **Quick Actions**:
-- **Save All** - Speichert alle Fenster sofort
-- **Restore All** - Stellt alle Positionen wieder her
-- **Clear All Data** - Löscht alle gespeicherten Daten (mit Bestätigung)
-- **Open Backup** - Öffnet Backup-Verzeichnis
+- **Save All** - Saves all windows immediately
+- **Restore All** - Restores all positions
+- **Clear All Data** - Deletes all saved data (with confirmation)
+- **Open Backup** - Opens backup directory
 
-**Monitor-Informationen**:
+**Monitor Information**:
 ```
 Monitor 1: Dell U2720Q (EDID: abc123...)
   Resolution: 3840x2160
@@ -401,33 +401,33 @@ Monitor 2: LG 27UK850 (EDID: def456...)
 
 ---
 
-### Tab 2: Windows (Fenster)
+### Tab 2: Windows
 
-**Konsolidierte Fenster-Übersicht**:
+**Consolidated Window Overview**:
 
-Zeigt alle gespeicherten Fenster mit **allen Instanzen** in einer Ansicht.
+Shows all saved windows with **all instances** in one view.
 
-**Spalten**:
-| Spalte | Beschreibung |
+**Columns**:
+| Column | Description |
 |--------|--------------|
-| **App** | WM_CLASS (z.B. "firefox") |
-| **Title** | Fenstertitel |
-| **Position** | X, Y Koordinaten |
-| **Size** | Breite × Höhe |
-| **Monitor** | Monitor-Name oder EDID |
-| **Workspace** | Workspace-Nummer |
-| **Sticky** | 🔒 wenn sticky |
-| **Top** | 📌 wenn always-on-top |
-| **Fullscreen** | ⛶ wenn fullscreen |
+| **App** | WM_CLASS (e.g. "firefox") |
+| **Title** | Window title |
+| **Position** | X, Y coordinates |
+| **Size** | Width × Height |
+| **Monitor** | Monitor name or EDID |
+| **Workspace** | Workspace number |
+| **Sticky** | 🔒 if sticky |
+| **Top** | 📌 if always-on-top |
+| **Fullscreen** | ⛶ if fullscreen |
 
-**Funktionen**:
-- **Filter nach App**: Dropdown-Auswahl
-- **Suche**: Fenstertitel-Suche
-- **Sortierung**: Nach Spalten sortieren
-- **Löschen**: Einzelne Fenster entfernen
-- **Restore**: Einzelnes Fenster wiederherstellen
+**Features**:
+- **Filter by App**: Dropdown selection
+- **Search**: Window title search
+- **Sorting**: Sort by columns
+- **Delete**: Remove individual windows
+- **Restore**: Restore individual window
 
-**Beispiel-Ansicht**:
+**Example View**:
 ```
 ┌──────────┬─────────────────────┬──────────┬─────────┬──────────┬────────┐
 │ App      │ Title               │ Position │ Size    │ Monitor  │ Sticky │
@@ -440,19 +440,19 @@ Zeigt alle gespeicherten Fenster mit **allen Instanzen** in einer Ansicht.
 
 ---
 
-### Tab 3: Apps (Anwendungen)
+### Tab 3: Apps (Applications)
 
-**Session-Konfiguration pro Anwendung**:
+**Session Configuration per Application**:
 
 #### Application List
 
-Liste aller verfolgten Anwendungen mit:
+List of all tracked applications with:
 - **Name** (WM_CLASS)
-- **Display Name** (lesbarer Name)
-- **Instances** (Anzahl geöffneter Fenster)
-- **Autostart** (Ein/Aus Toggle)
+- **Display Name** (readable name)
+- **Instances** (number of open windows)
+- **Autostart** (On/Off toggle)
 
-**Beispiel**:
+**Example**:
 ```
 ┌─────────────────────────────────────────────────┐
 │ Application          Instances   Autostart      │
@@ -467,7 +467,7 @@ Liste aller verfolgten Anwendungen mit:
 
 #### Launch Flags Configuration
 
-**Per-App-Einstellungen** für Session Restore:
+**Per-app settings** for session restore:
 
 **Firefox**:
 ```
@@ -485,25 +485,25 @@ Liste aller verfolgten Anwendungen mit:
 └─────────────────────────────────────┘
 ```
 
-**Verfügbare Flags pro App**:
+**Available Flags per App**:
 
-| App | Flag | Beschreibung |
+| App | Flag | Description |
 |-----|------|--------------|
-| **Firefox** | `--restore-session` | Stellt Browser-Tabs wieder her |
-| **Chrome** | `--restore-last-session` | Öffnet letzte Sitzung |
-| **Brave** | `--restore-last-session` | Öffnet letzte Sitzung |
-| **VS Code** | `--reuse-window` | Nutzt bestehendes Fenster |
-| **LibreOffice** | `--writer`, `--calc`, etc. | Öffnet spezifische Komponente |
+| **Firefox** | `--restore-session` | Restores browser tabs |
+| **Chrome** | `--restore-last-session` | Opens last session |
+| **Brave** | `--restore-last-session` | Opens last session |
+| **VS Code** | `--reuse-window` | Uses existing window |
+| **LibreOffice** | `--writer`, `--calc`, etc. | Opens specific component |
 
 #### Instance Management
 
-**Pro Instanz konfigurierbar**:
-- **Autostart aktivieren/deaktivieren**
-- **Launch Command bearbeiten**
-- **Custom Flags hinzufügen**
-- **Instanz löschen**
+**Configurable per instance**:
+- **Enable/disable autostart**
+- **Edit launch command**
+- **Add custom flags**
+- **Delete instance**
 
-**Beispiel - Multiple Firefox-Instanzen**:
+**Example - Multiple Firefox instances**:
 ```
 Instance 1:
   Command: firefox --restore-session
@@ -516,7 +516,7 @@ Instance 2:
 
 #### Blacklist Management
 
-**Grafische Blacklist-Verwaltung**:
+**Graphical blacklist management**:
 
 ```
 ┌─────────────────────────────────────┐
@@ -533,43 +533,43 @@ Instance 2:
 ```
 
 **Auto-Suggest**:
-Beim Tippen werden laufende Anwendungen vorgeschlagen.
+While typing, running applications are suggested.
 
 ---
 
-### Tab 4: About (Über)
+### Tab 4: About
 
-**Informationen**:
-- Extension-Version
-- Autor
-- Lizenz (MIT)
-- GitHub-Link
-- Bug-Reports
+**Information**:
+- Extension version
+- Author
+- License (MIT)
+- GitHub link
+- Bug reports
 
 **Buttons**:
-- **Open GitHub** - Öffnet Repository
-- **Report Issue** - Öffnet GitHub Issues
-- **View Documentation** - Öffnet Docs
+- **Open GitHub** - Opens repository
+- **Report Issue** - Opens GitHub issues
+- **View Documentation** - Opens docs
 
 ---
 
-## Datenspeicherung
+## Data Storage
 
-### Datei-Struktur
+### File Structure
 
 ```
 ~/.config/remember@thechief/
-├── positions.json                      # Fensterpositionen & Monitore
-├── preferences.json                    # UI-Präferenzen
-├── extension-settings.json             # Launch-Flags & Autostart
-├── positions_backup_20260119_143000.json  # Automatische Backups
+├── positions.json                      # Window positions & monitors
+├── preferences.json                    # UI preferences
+├── extension-settings.json             # Launch flags & autostart
+├── positions_backup_20260119_143000.json  # Automatic backups
 ├── positions_backup_20260119_150000.json
-└── positions_backup_latest.json        # Letztes Backup
+└── positions_backup_latest.json        # Latest backup
 ```
 
 ### positions.json
 
-**Hauptdatei** mit allen Fensterdaten:
+**Main file** with all window data:
 
 ```json
 {
@@ -632,11 +632,11 @@ Beim Tippen werden laufende Anwendungen vorgeschlagen.
 }
 ```
 
-**Wichtig**: Diese Datei wird von der Extension automatisch bei Fensteränderungen aktualisiert (mit Debouncing-Intervall von save-delay).
+**Important**: This file is automatically updated by the extension on window changes (with debouncing interval of save-delay).
 
 ### preferences.json
 
-**UI-Einstellungen** (von Python Settings UI):
+**UI settings** (from Python Settings UI):
 
 ```json
 {
@@ -655,11 +655,11 @@ Beim Tippen werden laufende Anwendungen vorgeschlagen.
 }
 ```
 
-**Getrennt von Extension** - verhindert Konflikte mit Auto-Save.
+**Separate from extension** - prevents conflicts with auto-save.
 
 ### extension-settings.json
 
-**Launch-Flags** für Session Restore:
+**Launch flags** for session restore:
 
 ```json
 {
@@ -676,145 +676,145 @@ Beim Tippen werden laufende Anwendungen vorgeschlagen.
 }
 ```
 
-**Getrennt von Extension** - wird nur von Apps Tab verwaltet.
+**Separate from extension** - only managed by Apps tab.
 
 ---
 
-## Backup-System
+## Backup System
 
-### Automatische Backups
+### Automatic Backups
 
-**Erstellt bei**:
-- Cinnamon-Neustart
-- Logout/Shutdown
-- Vor großen Änderungen (Clear All Data)
+**Created on**:
+- Cinnamon restart
+- Logout/shutdown
+- Before major changes (Clear All Data)
 
-**Backup-Format**:
+**Backup Format**:
 ```
 positions_backup_YYYYMMDD_HHMMSS.json
-Beispiel: positions_backup_20260119_143000.json
+Example: positions_backup_20260119_143000.json
 ```
 
-**Aufbewahrung**:
-- Letzte **10 Backups**: Werden aufbewahrt
-- **Ältere Backups**: Automatisch gelöscht
-- **Zusätzlich**: `positions_backup_latest.json` (wird immer überschrieben)
+**Retention**:
+- Last **10 backups**: Kept
+- **Older backups**: Automatically deleted
+- **Additionally**: `positions_backup_latest.json` (always overwritten)
 
-### Manuelle Backups
+### Manual Backups
 
-**Backup erstellen**:
+**Create backup**:
 ```bash
 cp ~/.config/remember@thechief/positions.json \
    ~/.config/remember@thechief/positions_backup_manual_$(date +%Y%m%d_%H%M%S).json
 ```
 
-**Backup wiederherstellen**:
+**Restore backup**:
 ```bash
-# Extension stoppen
+# Stop extension
 cinnamon-settings extensions remember@thechief
-# → Extension deaktivieren
+# → Disable extension
 
-# Backup kopieren
+# Copy backup
 cp ~/.config/remember@thechief/positions_backup_20260119_143000.json \
    ~/.config/remember@thechief/positions.json
 
-# Extension neu aktivieren
+# Re-enable extension
 ```
 
 ---
 
 ## Best Practices
 
-### Empfohlene Einstellungen für verschiedene Szenarien
+### Recommended Settings for Different Scenarios
 
-#### Szenario 1: Laptop-Nutzer (wechselnde Monitore)
-
-```
-✅ use-percentage: Aktiviert
-✅ clamp-to-screen: Aktiviert
-✅ auto-restore: Aktiviert
-✅ restore-workspace: Aktiviert
-❌ auto-launch: Deaktiviert (manueller Start bevorzugt)
-```
-
-#### Szenario 2: Desktop mit festem Multi-Monitor-Setup
+#### Scenario 1: Laptop User (changing monitors)
 
 ```
-✅ use-percentage: Aktiviert (oder Deaktiviert für pixelgenau)
-✅ clamp-to-screen: Aktiviert
-✅ auto-restore: Aktiviert
-✅ auto-launch: Aktiviert (vollständiges Session Restore)
-✅ capture-cmdline: Aktiviert
-✅ restore-workspace: Aktiviert
+✅ use-percentage: Enabled
+✅ clamp-to-screen: Enabled
+✅ auto-restore: Enabled
+✅ restore-workspace: Enabled
+❌ auto-launch: Disabled (prefer manual start)
 ```
 
-#### Szenario 3: Minimalist (nur Position-Restore, kein Session-Restore)
+#### Scenario 2: Desktop with fixed multi-monitor setup
 
 ```
-✅ auto-restore: Aktiviert
-❌ auto-launch: Deaktiviert
-❌ capture-cmdline: Deaktiviert (spart Speicher)
-✅ clamp-to-screen: Aktiviert
+✅ use-percentage: Enabled (or Disabled for pixel-perfect)
+✅ clamp-to-screen: Enabled
+✅ auto-restore: Enabled
+✅ auto-launch: Enabled (complete session restore)
+✅ capture-cmdline: Enabled
+✅ restore-workspace: Enabled
 ```
 
-#### Szenario 4: Developer (viele IDEs/Editoren)
+#### Scenario 3: Minimalist (only position restore, no session restore)
 
 ```
-✅ auto-restore: Aktiviert
-✅ auto-launch: Aktiviert
-✅ capture-cmdline: Aktiviert
-✅ use-percentage: Aktiviert
-restore-delay: 800ms (für langsame IDEs)
+✅ auto-restore: Enabled
+❌ auto-launch: Disabled
+❌ capture-cmdline: Disabled (saves memory)
+✅ clamp-to-screen: Enabled
+```
+
+#### Scenario 4: Developer (many IDEs/editors)
+
+```
+✅ auto-restore: Enabled
+✅ auto-launch: Enabled
+✅ capture-cmdline: Enabled
+✅ use-percentage: Enabled
+restore-delay: 800ms (for slow IDEs)
 ```
 
 ---
 
 ## Troubleshooting
 
-### Einstellungen werden nicht gespeichert
+### Settings are not being saved
 
-**Ursache**: Extension überschreibt Änderungen mit Auto-Save
+**Cause**: Extension overwrites changes with auto-save
 
-**Lösung**:
-1. Nutzen Sie **Python Settings UI** für Launch-Flags
-2. Cinnamon Settings nur für Extension-Optionen
+**Solution**:
+1. Use **Python Settings UI** for launch flags
+2. Cinnamon Settings only for extension options
 
-### Session Restore funktioniert nicht
+### Session restore doesn't work
 
-**Checkliste**:
+**Checklist**:
 ```
-✅ auto-launch aktiviert?
-✅ capture-cmdline aktiviert?
-✅ Anwendung in Apps Tab auf Autostart?
-✅ Launch-Flags korrekt konfiguriert?
-✅ Logs prüfen: ~/.xsession-errors
+✅ auto-launch enabled?
+✅ capture-cmdline enabled?
+✅ Application in Apps tab set to autostart?
+✅ Launch flags configured correctly?
+✅ Check logs: ~/.xsession-errors
 ```
 
-### Fenster erscheint an falscher Position
+### Window appears at wrong position
 
-**Prüfen**:
+**Check**:
 ```
-clamp-to-screen: Aktiviert? (verschiebt Fenster in sichtbaren Bereich)
-use-percentage: Korrekt für Ihr Setup?
-Monitor-Layout geändert? (Backups prüfen)
+clamp-to-screen: Enabled? (moves window to visible area)
+use-percentage: Correct for your setup?
+Monitor layout changed? (check backups)
 ```
 
 ---
 
-## Zusammenfassung
+## Summary
 
-**Window Position Remember** bietet umfassende Konfiguration:
+**Window Position Remember** provides comprehensive configuration:
 
-✅ **Cinnamon Settings**: Grundlegende Optionen (Tracking, Timing, Restore)
-✅ **Python Settings UI**: Erweiterte Einstellungen (Apps, Launch-Flags, Blacklist)
-✅ **3 JSON-Dateien**: Getrennte Datenspeicherung (Extension, UI, Launch-Flags)
-✅ **Automatische Backups**: Letzte 10 Backups werden aufbewahrt
+✅ **Cinnamon Settings**: Basic options (tracking, timing, restore)
+✅ **Python Settings UI**: Advanced settings (apps, launch flags, blacklist)
+✅ **3 JSON files**: Separate data storage (extension, UI, launch flags)
+✅ **Automatic backups**: Last 10 backups are kept
 
-Alle Einstellungen sind **dokumentiert**, **konfigurierbar** und **persistent**.
+All settings are **documented**, **configurable**, and **persistent**.
 
 ---
 
-**Weitere Informationen**:
+**More Information**:
 - [Getting Started](getting-started.md)
 - [Features](features.md)
 - [FAQ](faq.md)

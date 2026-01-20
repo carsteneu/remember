@@ -1,63 +1,63 @@
-# Remember - Dokumentation
+# Remember - Documentation
 
-Willkommen zur Dokumentation des **Remember** Cinnamon Extension und Applet Projekts.
+Welcome to the documentation for the **Remember** Cinnamon Extension and Applet project.
 
-## Übersicht
+## Overview
 
-**Remember** ist ein Cinnamon Desktop Extension System, das automatisch Fensterpositionen speichert und wiederherstellt - sogar über Neustarts hinweg. Es unterstützt auch das automatische Starten gespeicherter Sessions mit allen Anwendungen.
+**Remember** is a Cinnamon Desktop Extension system that automatically saves and restores window positions - even across restarts. It also supports automatically launching saved sessions with all applications.
 
-### Komponenten
+### Components
 
-- **Extension (remember@thechief)** - Haupt-Extension für Fensterpositions-Tracking und Session Restore
-- **Applet (remember-applet@thechief)** - Panel-Applet für schnellen Zugriff und Status-Anzeige
+- **Extension (remember@thechief)** - Main extension for window position tracking and session restore
+- **Applet (remember-applet@thechief)** - Panel applet for quick access and status display
 
-## Dokumentations-Bereiche
+## Documentation Sections
 
 ### 📚 [User Guide](user-guide/)
 
-Dokumentation für Endanwender:
-- [Getting Started](user-guide/getting-started.md) - Installation und erste Schritte
-- [Features](user-guide/features.md) - Funktionsübersicht
-- [Configuration](user-guide/configuration.md) - Konfiguration und Anpassung
-- [FAQ](user-guide/faq.md) - Häufig gestellte Fragen und Problemlösungen
+Documentation for end users:
+- [Getting Started](user-guide/getting-started.md) - Installation and first steps
+- [Features](user-guide/features.md) - Feature overview
+- [Configuration](user-guide/configuration.md) - Configuration and customization
+- [FAQ](user-guide/faq.md) - Frequently asked questions and troubleshooting
 
 ### 🔧 [Developer Guide](developer/)
 
-Dokumentation für Entwickler und Plugin-Autoren:
-- [Architecture](developer/architecture.md) - System-Architektur und Design
-- [Plugin Development](developer/plugin-development.md) - Eigene Plugins entwickeln
-- [API Reference](developer/api-reference.md) - API-Dokumentation
-- [Contributing](developer/contributing.md) - Zum Projekt beitragen
+Documentation for developers and plugin authors:
+- [Architecture](developer/architecture.md) - System architecture and design
+- [Plugin Development](developer/plugin-development.md) - Developing custom plugins
+- [API Reference](developer/api-reference.md) - API documentation
+- [Contributing](developer/contributing.md) - Contributing to the project
 
-## Projekt-Links
+## Project Links
 
 - **GitHub Repository:** [carsteneu/remember](https://github.com/carsteneu/remember)
 - **Issue Tracker:** [GitHub Issues](https://github.com/carsteneu/remember/issues)
 
-## Schnelleinstieg
+## Quick Start
 
 ```bash
-# Extension installieren
+# Install extension
 cd ~/.local/share/cinnamon/extensions/
 git clone https://github.com/carsteneu/remember.git remember@thechief
 
-# Cinnamon neu starten
+# Restart Cinnamon
 cinnamon --replace &
 
-# Extension aktivieren
+# Enable extension
 # System Settings → Extensions → Remember → Enable
 ```
 
-## Hauptfunktionen
+## Key Features
 
-- ✅ Automatisches Speichern von Fensterpositionen
-- ✅ Multi-Monitor Support mit EDID-Identifikation
-- ✅ Session Restore - Anwendungen automatisch starten
-- ✅ 15+ vorkonfigurierte Plugins (Firefox, VS Code, LibreOffice, etc.)
-- ✅ Erweiterbares Plugin-System
-- ✅ Auflösungsunabhängige Positionsspeicherung
-- ✅ Smart Window Matching
+- ✅ Automatic window position saving
+- ✅ Multi-monitor support with EDID identification
+- ✅ Session restore - automatically launch applications
+- ✅ 15+ pre-configured plugins (Firefox, VS Code, LibreOffice, etc.)
+- ✅ Extensible plugin system
+- ✅ Resolution-independent position storage
+- ✅ Smart window matching
 
-## Lizenz
+## License
 
-Dieses Projekt steht unter der GPLv3-Lizenz.
+This project is licensed under the GPLv3 License.

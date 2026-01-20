@@ -53,8 +53,8 @@ Then enable the extension in System Settings → Extensions.
 Comprehensive documentation is available:
 
 - **[User Guide](docs/user-guide/README.md)** - Getting started, features, and configuration
-- **[Developer Guide](docs/developer-guide/README.md)** - Architecture, API, and plugin development
-- **[API Reference](docs/api/README.md)** - Complete API documentation
+- **[Developer Guide](docs/developer/README.md)** - Architecture, API, and plugin development
+- **[API Reference](docs/developer/api-reference.md)** - Complete API documentation
 
 ## Configuration
 

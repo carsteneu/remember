@@ -1,243 +1,243 @@
 # Getting Started - Window Position Remember
 
-Willkommen bei **Window Position Remember**, der Cinnamon Extension, die automatisch Ihre Fensterpositionen speichert und wiederherstellt. Diese Anleitung hilft Ihnen bei der ersten Einrichtung.
+Welcome to **Window Position Remember**, the Cinnamon Extension that automatically saves and restores your window positions. This guide will help you with the initial setup.
 
 ## Installation
 
-### Methode 1: Über Cinnamon Spices (empfohlen)
+### Method 1: Via Cinnamon Spices (Recommended)
 
-1. Öffnen Sie die **Systemeinstellungen**
-2. Navigieren Sie zu **Extensions** (Erweiterungen)
-3. Klicken Sie auf **Download** (Herunterladen)
-4. Suchen Sie nach **"Window Position Remember"**
-5. Klicken Sie auf **Install** (Installieren)
-6. Warten Sie, bis die Installation abgeschlossen ist
+1. Open **System Settings**
+2. Navigate to **Extensions**
+3. Click on **Download**
+4. Search for **"Window Position Remember"**
+5. Click **Install**
+6. Wait for the installation to complete
 
-### Methode 2: Manuelle Installation via Git
+### Method 2: Manual Installation via Git
 
-Für Entwickler oder für die neueste Entwicklerversion:
+For developers or for the latest development version:
 
 ```bash
-# Repository klonen
+# Clone repository
 git clone https://github.com/carsteneu/remember.git
 cd remember
 
-# Installation ausführen
+# Run installation
 bash install.sh
 ```
 
-Das Script kopiert die Extension und das Applet in die korrekten Verzeichnisse und startet Cinnamon automatisch neu.
+The script copies the extension and applet to the correct directories and automatically restarts Cinnamon.
 
-## Extension aktivieren
+## Enable Extension
 
-Nach der Installation über Cinnamon Spices müssen Sie die Extension aktivieren:
+After installation via Cinnamon Spices, you need to enable the extension:
 
-1. Öffnen Sie **Systemeinstellungen**
-2. Gehen Sie zu **Extensions** (Erweiterungen)
-3. Suchen Sie **"Window Position Remember"** in der Liste
-4. Aktivieren Sie den Schalter neben der Extension
-5. Die Extension ist jetzt aktiv
+1. Open **System Settings**
+2. Go to **Extensions**
+3. Find **"Window Position Remember"** in the list
+4. Enable the toggle next to the extension
+5. The extension is now active
 
-> **Hinweis**: Bei manueller Installation via `install.sh` wird die Extension automatisch aktiviert.
+> **Note**: When installing manually via `install.sh`, the extension is automatically enabled.
 
-## Applet zum Panel hinzufügen (optional)
+## Add Applet to Panel (Optional)
 
-Das Remember-Applet bietet schnellen Zugriff über Ihr Panel:
+The Remember applet provides quick access via your panel:
 
-1. **Rechtsklick** auf Ihr Panel
-2. Wählen Sie **"Applets to the panel"** (Applets zum Panel hinzufügen)
-3. Suchen Sie nach **"Window Position Remember"**
-4. Klicken Sie auf das **+** Symbol, um es hinzuzufügen
-5. Das Applet erscheint in Ihrem Panel
+1. **Right-click** on your panel
+2. Select **"Applets to the panel"**
+3. Search for **"Window Position Remember"**
+4. Click the **+** icon to add it
+5. The applet appears in your panel
 
-### Applet-Funktionen
+### Applet Features
 
-Das Applet bietet folgende Schnellaktionen:
+The applet offers the following quick actions:
 
-- **Save All** - Speichert sofort alle offenen Fensterpositionen
-- **Restore All** - Stellt alle Fensterpositionen wieder her
-- **Toggle** - Aktiviert/Deaktiviert die automatische Verfolgung
-- **Statistiken** - Zeigt Anzahl der verfolgten Fenster und Anwendungen
+- **Save All** - Immediately saves all open window positions
+- **Restore All** - Restores all window positions
+- **Toggle** - Enables/disables automatic tracking
+- **Statistics** - Shows number of tracked windows and applications
 
-## Erste Schritte
+## First Steps
 
-### Schritt 1: Fenster öffnen
+### Step 1: Open Windows
 
-Nach der Aktivierung beginnt die Extension automatisch mit der Arbeit:
+After activation, the extension automatically starts working:
 
-1. Öffnen Sie eine Anwendung (z.B. **Firefox**, **VS Code**, **LibreOffice**)
-2. Positionieren Sie das Fenster an Ihrer gewünschten Stelle
-3. Ändern Sie ggf. die Fenstergröße
+1. Open an application (e.g., **Firefox**, **VS Code**, **LibreOffice**)
+2. Position the window at your desired location
+3. Resize the window if needed
 
-### Schritt 2: Automatisches Speichern
+### Step 2: Automatic Saving
 
-Die Extension speichert Fensterpositionen automatisch:
+The extension saves window positions automatically:
 
-- **Auto-Save Intervall**: Alle 30 Sekunden
-- **Dirty-Flag-System**: Nur geänderte Fenster werden gespeichert
-- **Gespeichert werden**:
-  - Position (X, Y-Koordinaten)
-  - Größe (Breite, Höhe)
-  - Monitor (bei Multi-Monitor-Setup)
-  - Workspace (Arbeitsfläche)
-  - Fenster-Status (sticky, always-on-top, fullscreen, etc.)
+- **Auto-Save Interval**: Every 30 seconds
+- **Dirty-Flag System**: Only changed windows are saved
+- **What is saved**:
+  - Position (X, Y coordinates)
+  - Size (width, height)
+  - Monitor (in multi-monitor setups)
+  - Workspace
+  - Window state (sticky, always-on-top, fullscreen, etc.)
 
-Sie müssen **nichts manuell tun** - die Extension arbeitet im Hintergrund.
+You don't need to **do anything manually** - the extension works in the background.
 
-### Schritt 3: Test durchführen
+### Step 3: Run a Test
 
-So überprüfen Sie, ob die Extension funktioniert:
+To verify the extension is working:
 
-1. **Öffnen Sie Firefox** (oder eine andere unterstützte Anwendung)
-2. **Positionieren Sie das Fenster** an einer bestimmten Stelle
-3. **Warten Sie 30 Sekunden** (oder klicken Sie im Applet auf "Save All")
-4. **Schließen Sie Firefox komplett**
-5. **Öffnen Sie Firefox erneut**
-6. ✅ Das Fenster sollte **exakt an der gleichen Position** erscheinen
+1. **Open Firefox** (or another supported application)
+2. **Position the window** at a specific location
+3. **Wait 30 seconds** (or click "Save All" in the applet)
+4. **Close Firefox completely**
+5. **Open Firefox again**
+6. ✅ The window should appear **exactly at the same position**
 
-## Datenspeicherung
+## Data Storage
 
-Die Extension speichert alle Daten lokal in Ihrem Home-Verzeichnis:
+The extension stores all data locally in your home directory:
 
 ```
 ~/.config/remember@thechief/
-├── positions.json          # Fensterpositionen und Monitor-Daten
-├── preferences.json        # UI-Einstellungen
-├── extension-settings.json # Launch-Flags für Session Restore
-├── positions_backup_20260119_143000.json  # Automatische Backups
+├── positions.json          # Window positions and monitor data
+├── preferences.json        # UI settings
+├── extension-settings.json # Launch flags for session restore
+├── positions_backup_20260119_143000.json  # Automatic backups
 ├── positions_backup_20260119_150000.json
-└── positions_backup_latest.json           # Neuestes Backup
+└── positions_backup_latest.json           # Latest backup
 ```
 
 ### Backups
 
-Die Extension erstellt **automatisch Backups**:
+The extension creates **automatic backups**:
 
-- Bei jedem Cinnamon-Neustart
-- Bei Logout/Shutdown
-- Die letzten 10 Backups werden aufbewahrt
-- Ältere Backups werden automatisch gelöscht
-- Zusätzlich: `positions_backup_latest.json` (immer das neueste)
+- On every Cinnamon restart
+- On logout/shutdown
+- The last 10 backups are kept
+- Older backups are automatically deleted
+- Additionally: `positions_backup_latest.json` (always the most recent)
 
 ## Multi-Monitor Support
 
-Die Extension unterstützt mehrere Monitore vollständig:
+The extension fully supports multiple monitors:
 
-### EDID-Identifikation
+### EDID Identification
 
-Monitore werden über ihre **EDID-Hash** identifiziert:
+Monitors are identified via their **EDID hash**:
 
-- Jeder Monitor hat eine eindeutige Hardware-ID
-- Fenster werden dem **richtigen Monitor** zugeordnet
-- Funktioniert auch nach Monitorwechsel oder Neuanordnung
+- Each monitor has a unique hardware ID
+- Windows are assigned to the **correct monitor**
+- Works even after monitor changes or rearrangement
 
-### Fallback-Mechanismus
+### Fallback Mechanism
 
-Falls EDID nicht verfügbar:
-1. **Connector-Name + Auflösung** (z.B. "HDMI-1_1920x1080")
-2. **Monitor-Index** (z.B. Monitor 0, 1, 2)
+If EDID is not available:
+1. **Connector name + resolution** (e.g., "HDMI-1_1920x1080")
+2. **Monitor index** (e.g., Monitor 0, 1, 2)
 
-### Auflösungsunabhängig
+### Resolution-Independent
 
-Positionen werden **prozentual** gespeichert:
+Positions are saved **as percentages**:
 
-- **Standard**: Prozent-basierte Positionierung
-- **Vorteil**: Fenster passen sich automatisch an neue Auflösungen an
-- **Fallback**: Absolute Pixel-Koordinaten werden zusätzlich gespeichert
+- **Default**: Percentage-based positioning
+- **Advantage**: Windows automatically adapt to new resolutions
+- **Fallback**: Absolute pixel coordinates are also saved
 
-**Beispiel**: Ein Fenster bei 50% Breite auf einem 1920x1080 Monitor erscheint bei 50% Breite auf einem 2560x1440 Monitor.
+**Example**: A window at 50% width on a 1920x1080 monitor appears at 50% width on a 2560x1440 monitor.
 
-## Unterstützte Anwendungen
+## Supported Applications
 
-Die Extension funktioniert mit **allen Anwendungen**, aber 15+ Plugins bieten erweiterte Funktionen:
+The extension works with **all applications**, but 15+ plugins offer enhanced features:
 
-### Browser
-- **Firefox** - Session Restore mit `--restore-session`
-- **Chrome / Chromium** - Multi-Window Support
-- **Brave** - Session Restore
+### Browsers
+- **Firefox** - Session restore with `--restore-session`
+- **Chrome / Chromium** - Multi-window support
+- **Brave** - Session restore
 
-### Editoren & IDEs
-- **Visual Studio Code** - Workspace-Restore
+### Editors & IDEs
+- **Visual Studio Code** - Workspace restore
 - **JetBrains IDEs** (IntelliJ IDEA, PyCharm, WebStorm, etc.)
-- **gedit, xed, kate, SciTE** - Datei-Restore
+- **gedit, xed, kate, SciTE** - File restore
 
 ### Office & Tools
-- **LibreOffice** - Dokument-Pfad-Restore
-- **Thunderbird** - Multi-Profil Support
-- **GIMP** - Bilddatei-Restore
-- **Nemo** - Dateimanager-Fenster
+- **LibreOffice** - Document path restore
+- **Thunderbird** - Multi-profile support
+- **GIMP** - Image file restore
+- **Nemo** - File manager windows
 
-### Sonstige
-- **Wave Terminal** - Terminal-Session
-- **Gradia** - Screenshot-Tool (Flatpak)
+### Other
+- **Wave Terminal** - Terminal session
+- **Gradia** - Screenshot tool (Flatpak)
 
-## Nächste Schritte
+## Next Steps
 
-### Session Restore aktivieren
+### Enable Session Restore
 
-Um Anwendungen beim Login automatisch zu starten:
+To automatically launch applications on login:
 
-1. Öffnen Sie die **Extension-Einstellungen**:
-   - Systemeinstellungen → Extensions → Remember → **Configure**
-2. Aktivieren Sie **"Auto-launch session on login"**
-3. Beim nächsten Login werden alle offenen Anwendungen automatisch gestartet
+1. Open **Extension Settings**:
+   - System Settings → Extensions → Remember → **Configure**
+2. Enable **"Auto-launch session on login"**
+3. On next login, all open applications will be automatically launched
 
-Details siehe: [Configuration Guide](configuration.md)
+For details, see: [Configuration Guide](configuration.md)
 
 ### Python Settings UI
 
-Für erweiterte Einstellungen verwenden Sie die Python-GUI:
+For advanced settings, use the Python GUI:
 
 ```bash
-# Extension-Einstellungen öffnen
+# Open extension settings
 cd ~/.local/share/cinnamon/extensions/remember@thechief/settings_ui/
 python3 settings.py
 ```
 
-Oder über Systemeinstellungen: **Extensions → Remember → Configure** (Zahnrad-Symbol)
+Or via System Settings: **Extensions → Remember → Configure** (gear icon)
 
 ## Troubleshooting
 
-### Extension startet nicht
+### Extension Won't Start
 
 ```bash
-# Prüfen Sie die Logs
+# Check the logs
 tail -f ~/.xsession-errors
 
-# Filtern nach Remember-Ausgaben
+# Filter for Remember output
 tail -f ~/.xsession-errors | grep remember
 
-# Cinnamon neu starten
+# Restart Cinnamon
 cinnamon --replace &
 ```
 
-### Fenster wird nicht wiederhergestellt
+### Window Not Restored
 
-Prüfen Sie:
-- Ist die Extension aktiviert?
-- Ist `auto-restore` eingeschaltet?
-- Wurde das Fenster mindestens 30 Sekunden geöffnet (Auto-Save)?
-- Prüfen Sie die Blacklist (Einstellungen)
+Check:
+- Is the extension enabled?
+- Is `auto-restore` enabled?
+- Was the window open for at least 30 seconds (auto-save)?
+- Check the blacklist (settings)
 
-### Weitere Hilfe
+### Further Help
 
 - **FAQ**: [FAQ](faq.md)
-- **Konfiguration**: [Configuration Guide](configuration.md)
+- **Configuration**: [Configuration Guide](configuration.md)
 - **Features**: [Features Overview](features.md)
 - **GitHub Issues**: https://github.com/carsteneu/remember/issues
 
-## Zusammenfassung
+## Summary
 
-Nach der Installation haben Sie:
+After installation, you have:
 
-✅ Extension installiert und aktiviert
-✅ Applet zum Panel hinzugefügt (optional)
-✅ Erste Fenster automatisch gespeichert
-✅ Test durchgeführt: Fenster schließen und neu öffnen
+✅ Extension installed and enabled
+✅ Applet added to panel (optional)
+✅ First windows automatically saved
+✅ Test completed: Close and reopen windows
 
-Die Extension arbeitet nun **automatisch im Hintergrund** und speichert alle Fensterpositionen. Keine weitere Konfiguration erforderlich!
+The extension now works **automatically in the background** and saves all window positions. No further configuration required!
 
 ---
 
-**Viel Erfolg mit Window Position Remember!**
-Bei Fragen oder Problemen besuchen Sie: https://github.com/carsteneu/remember
+**Enjoy Window Position Remember!**
+For questions or problems, visit: https://github.com/carsteneu/remember

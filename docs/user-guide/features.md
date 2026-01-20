@@ -1,145 +1,145 @@
 # Features - Window Position Remember
 
-Diese Extension bietet umfassende Funktionen zum Speichern und Wiederherstellen von Fensterpositionen im Cinnamon Desktop.
+This extension offers comprehensive features for saving and restoring window positions in the Cinnamon Desktop.
 
-## Übersicht
+## Overview
 
-**Window Position Remember** ist eine leistungsstarke Cinnamon Extension, die:
+**Window Position Remember** is a powerful Cinnamon Extension that:
 
-- ✅ Fensterpositionen **automatisch** speichert (alle 30 Sekunden)
-- ✅ **Multi-Monitor-Setups** vollständig unterstützt
-- ✅ **Session Restore** mit automatischem Anwendungsstart beim Login
-- ✅ **Smart Window Matching** für zuverlässige Wiederherstellung
-- ✅ **Fenster-Status** speichert (sticky, always-on-top, fullscreen, etc.)
-- ✅ **15 vorkonfigurierte Plugins** für optimale App-Integration
-- ✅ **Blacklist-System** für ausgeschlossene Anwendungen
+- ✅ **Automatically** saves window positions (every 30 seconds)
+- ✅ Fully supports **multi-monitor setups**
+- ✅ **Session restore** with automatic application launch on login
+- ✅ **Smart window matching** for reliable restoration
+- ✅ Saves **window states** (sticky, always-on-top, fullscreen, etc.)
+- ✅ **15 pre-configured plugins** for optimal app integration
+- ✅ **Blacklist system** for excluded applications
 
 ---
 
 ## 1. Window Position Tracking
 
-### Automatisches Speichern
+### Automatic Saving
 
-Die Extension verfolgt Fenster automatisch im Hintergrund:
+The extension tracks windows automatically in the background:
 
-**Auto-Save Mechanismus**:
-- **Intervall**: Alle 30 Sekunden
-- **Dirty-Flag-System**: Nur geänderte Fenster werden gespeichert (reduziert I/O)
-- **Keine manuelle Aktion erforderlich**
+**Auto-Save Mechanism**:
+- **Interval**: Every 30 seconds
+- **Dirty-Flag System**: Only changed windows are saved (reduces I/O)
+- **No manual action required**
 
-**Was wird gespeichert**:
+**What is saved**:
 ```json
 {
-  "x": 100,              // X-Koordinate
-  "y": 50,               // Y-Koordinate
-  "width": 1200,         // Fensterbreite
-  "height": 800,         // Fensterhöhe
-  "monitor": "edid:abc123", // Monitor-Identifikation
-  "workspace": 0,        // Workspace-Nummer
-  "sticky": false,       // Auf allen Workspaces sichtbar
-  "alwaysOnTop": false,  // Immer im Vordergrund
-  "fullscreen": false,   // Vollbildmodus
-  "shaded": false        // Aufgerollt (rolled up)
+  "x": 100,              // X coordinate
+  "y": 50,               // Y coordinate
+  "width": 1200,         // Window width
+  "height": 800,         // Window height
+  "monitor": "edid:abc123", // Monitor identification
+  "workspace": 0,        // Workspace number
+  "sticky": false,       // Visible on all workspaces
+  "alwaysOnTop": false,  // Always in foreground
+  "fullscreen": false,   // Fullscreen mode
+  "shaded": false        // Rolled up
 }
 ```
 
-### Cleanup beim Speichern
+### Cleanup During Save
 
-Beim automatischen Speichern werden bereinigt:
-- **Orphaned Instances**: Fenster, die vom Benutzer geschlossen wurden
-- **Duplikate**: Mehrfache Einträge für dieselbe `x11_window_id`
-- **Ungültige Einträge**: Null-Geometrie oder fehlerhafte Daten
+During automatic saving, these are cleaned up:
+- **Orphaned Instances**: Windows closed by the user
+- **Duplicates**: Multiple entries for the same `x11_window_id`
+- **Invalid Entries**: Null geometry or corrupt data
 
-### Pause-Mechanismus
+### Pause Mechanism
 
-Auto-Save wird pausiert während:
-- **Session Restore**: Verhindert Datenbeschädigung während des Starts
-- **Shutdown**: Sichere Datenrettung beim Herunterfahren
+Auto-save is paused during:
+- **Session Restore**: Prevents data corruption during startup
+- **Shutdown**: Safe data rescue during shutdown
 
 ---
 
 ## 2. Multi-Monitor Support
 
-### EDID-basierte Monitor-Identifikation
+### EDID-based Monitor Identification
 
-**EDID (Extended Display Identification Data)** ist die primäre Identifikationsmethode:
+**EDID (Extended Display Identification Data)** is the primary identification method:
 
 ```bash
-# Monitor-EDID auslesen
+# Read monitor EDID
 xrandr --verbose | grep -A 10 "connected"
 ```
 
-**Vorteile**:
-- Jeder Monitor hat eine **eindeutige Hardware-ID**
-- Funktioniert auch nach **Monitorwechsel**
-- Unabhängig von **Connector-Namen** (HDMI-1, DP-2, etc.)
-- Funktioniert bei **Monitor-Neuanordnung**
+**Advantages**:
+- Each monitor has a **unique hardware ID**
+- Works even after **monitor changes**
+- Independent of **connector names** (HDMI-1, DP-2, etc.)
+- Works with **monitor rearrangement**
 
-### Fallback-Mechanismen
+### Fallback Mechanisms
 
-Falls EDID nicht verfügbar:
+If EDID is not available:
 
 1. **Connector + Resolution**: `"HDMI-1_1920x1080"`
-2. **Monitor-Index**: `"monitor_0"`, `"monitor_1"`, etc.
+2. **Monitor Index**: `"monitor_0"`, `"monitor_1"`, etc.
 
-### Auflösungsunabhängige Positionierung
+### Resolution-Independent Positioning
 
-**Prozent-basiert (Standard)**:
+**Percentage-based (Default)**:
 
-Positionen werden als **Prozentsatz der Monitor-Größe** gespeichert:
+Positions are saved as **percentage of monitor size**:
 
 ```javascript
 percentX = (x / monitorWidth) * 100
 percentY = (y / monitorHeight) * 100
 ```
 
-**Vorteile**:
-- Fenster passen sich **automatisch** an neue Auflösungen an
-- Ideal für **Laptop-Benutzer** (wechselnde Monitor-Konfigurationen)
-- Funktioniert bei **DPI-Änderungen**
+**Advantages**:
+- Windows **automatically** adapt to new resolutions
+- Ideal for **laptop users** (changing monitor configurations)
+- Works with **DPI changes**
 
-**Beispiel**:
-- Monitor 1: 1920x1080 → Fenster bei 50% Breite = 960px
-- Monitor 2: 2560x1440 → Fenster bei 50% Breite = 1280px
+**Example**:
+- Monitor 1: 1920x1080 → Window at 50% width = 960px
+- Monitor 2: 2560x1440 → Window at 50% width = 1280px
 
-**Absolute Positionierung**:
+**Absolute Positioning**:
 
-Deaktivieren Sie `use-percentage` für pixelgenaue Wiederherstellung:
-- Fenster werden **exakt** an denselben Pixel-Koordinaten platziert
-- Nur sinnvoll bei **festen Monitor-Setups**
+Disable `use-percentage` for pixel-perfect restoration:
+- Windows are placed at **exact** pixel coordinates
+- Only makes sense with **fixed monitor setups**
 
 ### Clamp-to-Screen
 
-`clamp-to-screen` stellt sicher, dass Fenster **immer sichtbar** sind:
+`clamp-to-screen` ensures windows are **always visible**:
 
-- Verhindert Fenster **außerhalb des Bildschirms**
-- Passt Position an, wenn Monitor entfernt wurde
-- Empfohlen: **Aktiviert** (Standard)
+- Prevents windows **outside the screen**
+- Adjusts position if monitor was removed
+- Recommended: **Enabled** (default)
 
 ---
 
 ## 3. Session Restore / Auto-Launch
 
-### Funktionsweise
+### How It Works
 
-Mit **Auto-Launch** werden Anwendungen beim Login automatisch gestartet:
+With **Auto-Launch**, applications are automatically started on login:
 
-1. **Cinnamon startet**
-2. Extension wartet **2 Sekunden** (Desktop-Stabilisierung)
-3. **Jede gespeicherte Anwendung** wird nacheinander gestartet
-4. **Verzögerung**: 500ms zwischen Fensterstarts
-5. **Positionen werden automatisch wiederhergestellt**
+1. **Cinnamon starts**
+2. Extension waits **2 seconds** (desktop stabilization)
+3. **Each saved application** is launched sequentially
+4. **Delay**: 500ms between window starts
+5. **Positions are automatically restored**
 
-### Aktivierung
+### Activation
 
 ```
-Systemeinstellungen → Extensions → Remember → Configure
-→ "Auto-launch session on login" aktivieren
+System Settings → Extensions → Remember → Configure
+→ Enable "Auto-launch session on login"
 ```
 
-### Launch-Flags
+### Launch Flags
 
-Erweiterte Konfiguration über **Python Settings UI**:
+Advanced configuration via **Python Settings UI**:
 
 ```bash
 python3 ~/.local/share/cinnamon/extensions/remember@thechief/settings.py
@@ -147,183 +147,183 @@ python3 ~/.local/share/cinnamon/extensions/remember@thechief/settings.py
 
 **Apps Tab → Launch Flags**:
 
-| Anwendung | Flags | Beschreibung |
-|-----------|-------|--------------|
-| Firefox | `--restore-session` | Stellt Browser-Tabs wieder her |
-| Chrome | `--restore-last-session`<br>`--disable-session-crashed-bubble` | Öffnet letzte Sitzung<br>Unterdrückt "Crash"-Dialog |
-| Brave | `--restore-last-session`<br>`--disable-session-crashed-bubble` | Öffnet letzte Sitzung<br>Unterdrückt "Crash"-Dialog |
-| VS Code | - | Keine speziellen Flags |
+| Application | Flags | Description |
+|-------------|-------|-------------|
+| Firefox | `--restore-session` | Restores browser tabs |
+| Chrome | `--restore-last-session`<br>`--disable-session-crashed-bubble` | Opens last session<br>Suppresses "crash" dialog |
+| Brave | `--restore-last-session`<br>`--disable-session-crashed-bubble` | Opens last session<br>Suppresses "crash" dialog |
+| VS Code | - | No special flags |
 
 ### Single-Instance Apps
 
-**Browser und IDEs** haben spezielle Behandlung:
+**Browsers and IDEs** have special handling:
 
-- **Timeout**: 2 Minuten (statt 30 Sekunden)
-- **Grace Period**: 1 Minute nach Timeout
-- **Grund**: Diese Apps stellen **ihre eigenen Fenster** wieder her
+- **Timeout**: 2 minutes (instead of 30 seconds)
+- **Grace Period**: 1 minute after timeout
+- **Reason**: These apps restore **their own windows**
 
-**Konfiguration** (`config.json`):
+**Configuration** (`config.json`):
 
 ```json
 {
   "features": {
     "isSingleInstance": true,
-    "timeout": 120000,      // 2 Minuten
-    "gracePeriod": 60000    // 1 Minute
+    "timeout": 120000,      // 2 minutes
+    "gracePeriod": 60000    // 1 minute
   }
 }
 ```
 
 ### Max Instances
 
-**Sicherheitslimit**: 5 Instanzen pro Anwendung
+**Safety limit**: 5 instances per application
 
-Verhindert **Runaway-Launches**, falls eine App nicht startet.
+Prevents **runaway launches** if an app fails to start.
 
 ---
 
 ## 4. Smart Window Matching
 
-### Matching-Strategien (Priorität)
+### Matching Strategies (Priority)
 
-Die Extension verwendet mehrere Strategien, um Fenster korrekt zuzuordnen:
+The extension uses multiple strategies to correctly match windows:
 
-#### 1. Stable Sequence (höchste Priorität)
+#### 1. Stable Sequence (Highest Priority)
 
-Eindeutige Sequenznummer **innerhalb einer Session**:
+Unique sequence number **within a session**:
 
-- Wird beim ersten Tracking vergeben
-- **Zuverlässigste Methode** während derselben Cinnamon-Session
-- Geht verloren bei Cinnamon-Neustart
+- Assigned on first tracking
+- **Most reliable method** during the same Cinnamon session
+- Lost on Cinnamon restart
 
 #### 2. X11 Window ID
 
-Persistente X11-Window-ID:
+Persistent X11 window ID:
 
-- **Überlebt Cinnamon-Neustarts** (`Alt+F2` → `r`)
-- Geht verloren bei **Re-Login**
-- Zweite Priorität
+- **Survives Cinnamon restarts** (`Alt+F2` → `r`)
+- Lost on **re-login**
+- Second priority
 
 #### 3. Exact Title Match
 
-Exakte Übereinstimmung des **Fenstertitels**:
+Exact match of **window title**:
 
-- Nur für **noch nicht zugeordnete Instanzen**
-- Funktioniert nach **Re-Login**
-- Gut für Apps mit **eindeutigen Titeln**
+- Only for **not yet matched instances**
+- Works after **re-login**
+- Good for apps with **unique titles**
 
-**Beispiel**:
+**Example**:
 - LibreOffice: "Document1.odt - LibreOffice Writer"
 - Firefox: "GitHub - Mozilla Firefox"
 
 #### 4. First Unassigned Instance
 
-**Order-basierter Fallback**:
+**Order-based fallback**:
 
-- Wenn keine andere Strategie passt
-- Nutzt **Reihenfolge** der Fensteröffnung
-- Weniger zuverlässig, aber funktioniert immer
+- When no other strategy matches
+- Uses **order** of window opening
+- Less reliable, but always works
 
 #### 5. Create New Instance
 
-**Neue Instanz anlegen**:
+**Create new instance**:
 
-- Nur wenn **kein Match** gefunden wurde
-- Erstellt neuen Tracking-Eintrag
+- Only when **no match** found
+- Creates new tracking entry
 
 ### Title Stabilization Delay
 
-Manche Apps ändern ihren Titel **nach dem Öffnen**:
+Some apps change their title **after opening**:
 
-**VS Code Beispiel**:
-1. Öffnet mit Titel: "Visual Studio Code"
-2. Nach 1 Sekunde: "ProjectName - Visual Studio Code"
+**VS Code Example**:
+1. Opens with title: "Visual Studio Code"
+2. After 1 second: "ProjectName - Visual Studio Code"
 
-**Lösung**: `titleStabilizationDelay` in `config.json`:
+**Solution**: `titleStabilizationDelay` in `config.json`:
 
 ```json
 {
   "features": {
-    "titleStabilizationDelay": 1500  // 1.5 Sekunden warten
+    "titleStabilizationDelay": 1500  // Wait 1.5 seconds
   }
 }
 ```
 
 ---
 
-## 5. Fenster-Status speichern
+## 5. Window State Saving
 
-### Sticky (Auf allen Workspaces)
+### Sticky (On All Workspaces)
 
-**Einstellung**: `remember-sticky` (Standard: **aktiviert**)
+**Setting**: `remember-sticky` (Default: **enabled**)
 
-Speichert, ob ein Fenster auf **allen Arbeitsflächen** sichtbar ist:
-
-```javascript
-// Sticky aktivieren: Rechtsklick auf Titelleiste → "Auf allen Arbeitsflächen"
-```
-
-**Wiederherstellung**:
-- Fenster wird automatisch auf allen Workspaces angezeigt
-
-### Always-on-Top (Immer im Vordergrund)
-
-**Einstellung**: `remember-always-on-top` (Standard: **aktiviert**)
-
-Speichert "Always on Top"-Status:
+Saves whether a window is visible on **all workspaces**:
 
 ```javascript
-// Aktivieren: Rechtsklick auf Titelleiste → "Immer im Vordergrund"
+// Enable sticky: Right-click title bar → "On all workspaces"
 ```
 
-**Anwendungsfälle**:
-- **Notiz-Apps** (immer sichtbar)
-- **Media Player** (über anderen Fenstern)
+**Restoration**:
+- Window is automatically shown on all workspaces
 
-### Shaded (Aufgerollt)
+### Always-on-Top (Always in Foreground)
 
-**Einstellung**: `remember-shaded` (Standard: **deaktiviert**)
+**Setting**: `remember-always-on-top` (Default: **enabled**)
 
-Speichert, ob ein Fenster **aufgerollt** ist:
+Saves "Always on Top" status:
 
 ```javascript
-// Aufroll-Modus: Doppelklick auf Titelleiste
+// Enable: Right-click title bar → "Always on top"
 ```
 
-**Warum deaktiviert?**
-- Die meisten Benutzer möchten Fenster **nicht aufgerollt** wiederherstellen
-- Kann manuell aktiviert werden
+**Use cases**:
+- **Note apps** (always visible)
+- **Media players** (above other windows)
 
-### Fullscreen (Vollbildmodus)
+### Shaded (Rolled Up)
 
-**Einstellung**: `remember-fullscreen` (Standard: **aktiviert**)
+**Setting**: `remember-shaded` (Default: **disabled**)
 
-Speichert Vollbildmodus-Status:
+Saves whether a window is **rolled up**:
 
 ```javascript
-// Vollbild: F11 oder Rechtsklick → "Vollbild"
+// Roll up mode: Double-click title bar
 ```
 
-**Wiederherstellung**:
-- Fenster wird automatisch im Vollbildmodus geöffnet
+**Why disabled?**
+- Most users don't want windows restored **rolled up**
+- Can be manually enabled
 
-### Minimized (Minimiert)
+### Fullscreen (Fullscreen Mode)
 
-**Einstellung**: `restore-minimized` (Standard: **deaktiviert**)
+**Setting**: `remember-fullscreen` (Default: **enabled**)
 
-**Warum deaktiviert?**
-- Die meisten Benutzer möchten Fenster **sichtbar** nach Session Restore
-- Aktivieren, wenn minimierte Fenster gewünscht sind
+Saves fullscreen mode status:
+
+```javascript
+// Fullscreen: F11 or right-click → "Fullscreen"
+```
+
+**Restoration**:
+- Window is automatically opened in fullscreen mode
+
+### Minimized (Minimized)
+
+**Setting**: `restore-minimized` (Default: **disabled**)
+
+**Why disabled?**
+- Most users want windows **visible** after session restore
+- Enable if minimized windows are desired
 
 ---
 
-## 6. Plugin-System
+## 6. Plugin System
 
-### Übersicht der 15 Plugins
+### Overview of 15 Plugins
 
-Die Extension bietet **vorkonfigurierte Plugins** für optimale App-Integration:
+The extension offers **pre-configured plugins** for optimal app integration:
 
-#### Browser
+#### Browsers
 
 | Plugin | WM_CLASS | Features |
 |--------|----------|----------|
@@ -331,7 +331,7 @@ Die Extension bietet **vorkonfigurierte Plugins** für optimale App-Integration:
 | **Chrome** | `google-chrome`, `Google-chrome`, `chromium` | Multi-Window, `--restore-last-session` |
 | **Brave** | `brave-browser`, `Brave-browser` | Session Restore |
 
-#### Editoren & IDEs
+#### Editors & IDEs
 
 | Plugin | WM_CLASS | Features |
 |--------|----------|----------|
@@ -351,16 +351,16 @@ Die Extension bietet **vorkonfigurierte Plugins** für optimale App-Integration:
 | **GIMP** | `gimp`, `Gimp` | Image File Restore |
 | **Nemo** | `nemo`, `Nemo` | File Manager Paths |
 
-#### Sonstige
+#### Other
 
 | Plugin | WM_CLASS | Features |
 |--------|----------|----------|
 | **Wave** | `wave`, `Wave` | Terminal Session |
 | **Gradia** | `org.gradiapp.Gradia` | Flatpak Screenshot Tool |
 
-### Plugin-Struktur
+### Plugin Structure
 
-Jedes Plugin hat eine `config.json`:
+Each plugin has a `config.json`:
 
 ```json
 {
@@ -395,16 +395,16 @@ Jedes Plugin hat eine `config.json`:
 }
 ```
 
-### Eigene Plugins erstellen
+### Creating Custom Plugins
 
-**User-Plugins** können in `~/.config/remember@thechief/plugins/` erstellt werden:
+**User plugins** can be created in `~/.config/remember@thechief/plugins/`:
 
 ```bash
 mkdir -p ~/.config/remember@thechief/plugins/myapp/
 cd ~/.config/remember@thechief/plugins/myapp/
 ```
 
-**Minimal-Konfiguration** (`config.json`):
+**Minimal configuration** (`config.json`):
 
 ```json
 {
@@ -420,183 +420,183 @@ cd ~/.config/remember@thechief/plugins/myapp/
 }
 ```
 
-Optional: **Handler-Klasse** (`index.js`) für erweiterte Funktionen.
+Optional: **Handler class** (`index.js`) for advanced features.
 
 ---
 
-## 7. Blacklist-System
+## 7. Blacklist System
 
-### Anwendungen ausschließen
+### Excluding Applications
 
-Manche Anwendungen sollten **nicht verfolgt** werden:
+Some applications should **not be tracked**:
 
-**Systemeinstellungen → Extensions → Remember → Blacklist Tab**
+**System Settings → Extensions → Remember → Blacklist Tab**
 
-**Blacklist-Editor**:
+**Blacklist Editor**:
 ```
 cinnamon-settings
 gnome-calculator
 nemo-desktop
 ```
 
-Ein **WM_CLASS-Name pro Zeile**.
+One **WM_CLASS name per line**.
 
-### WM_CLASS herausfinden
+### Finding WM_CLASS
 
 ```bash
-# Methode 1: xprop
+# Method 1: xprop
 xprop WM_CLASS
-# Klicken Sie auf das Fenster
+# Click on the window
 
-# Methode 2: wmctrl
+# Method 2: wmctrl
 wmctrl -lx
 ```
 
-### Automatische Blacklist
+### Automatic Blacklist
 
-Folgende Apps sind **automatisch ausgeschlossen**:
+The following apps are **automatically excluded**:
 
-- **Extension Settings Dialog**: `settings.py` (verhindert Rekursion)
-- **System-Dialogs**: `cinnamon-settings-*`
-- **Desktop-Icons**: `nemo-desktop`
+- **Extension Settings Dialog**: `settings.py` (prevents recursion)
+- **System Dialogs**: `cinnamon-settings-*`
+- **Desktop Icons**: `nemo-desktop`
 
-### Dialoge ausschließen
+### Excluding Dialogs
 
-**Einstellung**: `track-dialogs` (Standard: **deaktiviert**)
+**Setting**: `track-dialogs` (Default: **disabled**)
 
-**Warum deaktiviert?**
-- Dialoge sind **temporär**
-- Dialog-Positionen sind meist unwichtig
-- Reduziert Datenmenge
+**Why disabled?**
+- Dialogs are **temporary**
+- Dialog positions are usually unimportant
+- Reduces data volume
 
-**Aktivieren**, wenn Sie **spezielle Dialoge** tracken möchten.
+**Enable** if you want to track **special dialogs**.
 
 ---
 
-## 8. Workspace-Support
+## 8. Workspace Support
 
 ### Track-All-Workspaces
 
-**Einstellung**: `track-all-workspaces` (Standard: **aktiviert**)
+**Setting**: `track-all-workspaces` (Default: **enabled**)
 
-**Aktiviert**:
-- Fenster auf **allen Arbeitsflächen** werden verfolgt
-- **Empfohlen** für Multi-Workspace-Nutzer
+**Enabled**:
+- Windows on **all workspaces** are tracked
+- **Recommended** for multi-workspace users
 
-**Deaktiviert**:
-- Nur Fenster auf der **aktuellen Workspace** werden verfolgt
-- Spart Ressourcen bei Single-Workspace-Nutzung
+**Disabled**:
+- Only windows on the **current workspace** are tracked
+- Saves resources for single-workspace use
 
 ### Restore-Workspace
 
-**Einstellung**: `restore-workspace` (Standard: **aktiviert**)
+**Setting**: `restore-workspace` (Default: **enabled**)
 
-**Aktiviert**:
-- Fenster werden auf ihre **ursprüngliche Workspace** verschoben
-- Erhält Workspace-Organisation
+**Enabled**:
+- Windows are moved to their **original workspace**
+- Maintains workspace organization
 
-**Deaktiviert**:
-- Fenster öffnen auf der **aktuellen Workspace**
-- Nützlich, wenn Sie Workspace-Zuordnung selbst steuern möchten
+**Disabled**:
+- Windows open on the **current workspace**
+- Useful if you want to control workspace assignment yourself
 
 ---
 
-## 9. Restore-Verhalten
+## 9. Restore Behavior
 
 ### Auto-Restore
 
-**Einstellung**: `auto-restore` (Standard: **aktiviert**)
+**Setting**: `auto-restore` (Default: **enabled**)
 
-**Aktiviert**:
-- Fenster werden **automatisch** positioniert beim Öffnen
-- Keine manuelle Aktion erforderlich
+**Enabled**:
+- Windows are **automatically** positioned when opened
+- No manual action required
 
-**Deaktiviert**:
-- Fenster behalten ihre **Standard-Positionen**
-- Restore nur manuell über Applet
+**Disabled**:
+- Windows keep their **default positions**
+- Restore only manually via applet
 
 ### Restore-Delay
 
-**Einstellung**: `restore-delay` (Standard: **500ms**)
+**Setting**: `restore-delay` (Default: **500ms**)
 
-Verzögerung vor dem Wiederherstellen:
+Delay before restoring:
 
-- **Zu kurz** (< 100ms): Fenster ist ggf. noch nicht bereit
-- **Zu lang** (> 2000ms): Sichtbares "Springen" des Fensters
+- **Too short** (< 100ms): Window may not be ready yet
+- **Too long** (> 2000ms): Visible window "jumping"
 - **Optimal**: 500ms
 
-**Anpassung** für langsame Apps:
+**Adjustment** for slow apps:
 
 ```
-Systemeinstellungen → Extensions → Remember → Behavior → Restore delay
+System Settings → Extensions → Remember → Behavior → Restore delay
 ```
 
 ---
 
-## 10. Capture-Mechanismus
+## 10. Capture Mechanism
 
 ### Command-Line Capture
 
-**Einstellung**: `capture-cmdline` (Standard: **aktiviert**)
+**Setting**: `capture-cmdline` (Default: **enabled**)
 
-Speichert **Command-Line-Argumente** für Session Restore:
+Saves **command-line arguments** for session restore:
 
-**Beispiel**:
+**Example**:
 ```bash
-# Gestarteter Befehl
+# Launched command
 firefox --private-window https://example.com
 
-# Gespeichert in positions.json
+# Saved in positions.json
 {
   "cmdline": "firefox --private-window https://example.com"
 }
 ```
 
-**Vorteile**:
-- **Genaue Wiederherstellung** mit allen Flags
-- Unterstützt **Flatpak**, **Snap**, **AppImage**
+**Advantages**:
+- **Accurate restoration** with all flags
+- Supports **Flatpak**, **Snap**, **AppImage**
 
-**Deaktivieren**, wenn:
-- Sie **keine Session Restore** nutzen
-- Datenschutzbedenken (Command-Lines können sensible Pfade enthalten)
+**Disable if**:
+- You don't use **session restore**
+- Privacy concerns (command lines may contain sensitive paths)
 
-### Process-Capture via `/proc`
+### Process Capture via `/proc`
 
-Die Extension liest Prozessinformationen aus `/proc/[pid]/`:
+The extension reads process information from `/proc/[pid]/`:
 
-- **cmdline**: Kompletter Start-Befehl
-- **exe**: Pfad zur ausführbaren Datei
-- **environ**: Umgebungsvariablen (z.B. `FLATPAK_ID`)
+- **cmdline**: Complete launch command
+- **exe**: Path to executable file
+- **environ**: Environment variables (e.g., `FLATPAK_ID`)
 
-**Flatpak-Erkennung**:
+**Flatpak Detection**:
 ```bash
-# Normaler Start
+# Normal launch
 /usr/bin/firefox
 
-# Flatpak-Start
+# Flatpak launch
 /usr/bin/flatpak run org.mozilla.firefox
 ```
 
 ---
 
-## Zusammenfassung
+## Summary
 
-**Window Position Remember** bietet eine umfassende Lösung für:
+**Window Position Remember** offers a comprehensive solution for:
 
-✅ **Automatisches Tracking** aller Fenster (30s Intervall)
-✅ **Multi-Monitor-Support** mit EDID-Identifikation
-✅ **Session Restore** mit automatischem App-Start
-✅ **Smart Matching** für zuverlässige Wiederherstellung
-✅ **Fenster-Status** (sticky, always-on-top, fullscreen, shaded)
-✅ **15 Plugins** für optimale App-Integration
-✅ **Blacklist-System** für Ausnahmen
-✅ **Auflösungsunabhängig** (Prozent + Pixel)
+✅ **Automatic tracking** of all windows (30s interval)
+✅ **Multi-monitor support** with EDID identification
+✅ **Session restore** with automatic app launch
+✅ **Smart matching** for reliable restoration
+✅ **Window states** (sticky, always-on-top, fullscreen, shaded)
+✅ **15 plugins** for optimal app integration
+✅ **Blacklist system** for exceptions
+✅ **Resolution-independent** (percentage + pixel)
 
-Alle Features sind **konfigurierbar** und arbeiten **automatisch im Hintergrund**.
+All features are **configurable** and work **automatically in the background**.
 
 ---
 
-**Weitere Informationen**:
+**Further Information**:
 - [Getting Started](getting-started.md)
 - [Configuration](configuration.md)
 - [FAQ](faq.md)

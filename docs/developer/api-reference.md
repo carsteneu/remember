@@ -1,8 +1,8 @@
-# Remember Extension - API-Referenz
+# Remember Extension - API Reference
 
-Diese Datei dokumentiert alle APIs der Remember Extension für Entwickler, die mit der Extension interagieren oder sie erweitern möchten.
+This file documents all APIs of the Remember Extension for developers who want to interact with or extend the extension.
 
-## Inhaltsverzeichnis
+## Table of Contents
 
 - [Main API](#main-api)
 - [Module System](#module-system)
@@ -16,12 +16,12 @@ Diese Datei dokumentiert alle APIs der Remember Extension für Entwickler, die m
 
 ## Main API
 
-Die globale API wird unter `Main.windowRemember` exposed und ist von überall im Cinnamon-Kontext zugänglich.
+The global API is exposed under `Main.windowRemember` and is accessible from anywhere in the Cinnamon context.
 
-### Verfügbarkeit
+### Availability
 
 ```javascript
-// Verfügbar nach extension.enable()
+// Available after extension.enable()
 if (Main.windowRemember) {
     // API ready
 }
@@ -29,7 +29,7 @@ if (Main.windowRemember) {
 
 ### saveAll()
 
-Speichert alle aktuell geöffneten Fenster-Positionen sofort.
+Saves all currently open window positions immediately.
 
 **Signature:**
 ```javascript
@@ -38,18 +38,18 @@ Main.windowRemember.saveAll()
 
 **Returns:** `void`
 
-**Beispiel:**
+**Example:**
 ```javascript
-// Manuelles Speichern aller Positionen
+// Manually save all positions
 Main.windowRemember.saveAll();
 // Shows notification: "Saved N window positions"
 ```
 
-**Verwendung:**
+**Usage:**
 - Applet "Save All" Button
-- User möchte manuell speichern vor Änderungen
+- User wants to manually save before changes
 
-**Interne Implementierung:**
+**Internal Implementation:**
 ```javascript
 _saveAll() {
     if (!this._storage) return;
@@ -65,7 +65,7 @@ _saveAll() {
 
 ### restoreAll()
 
-Restauriert alle Fenster-Positionen aus dem gespeicherten State.
+Restores all window positions from saved state.
 
 **Signature:**
 ```javascript
@@ -74,24 +74,24 @@ Main.windowRemember.restoreAll()
 
 **Returns:** `void`
 
-**Beispiel:**
+**Example:**
 ```javascript
-// Manuelles Restore aller Positionen
+// Manually restore all positions
 Main.windowRemember.restoreAll();
 // Shows notification: "Restored N window positions"
 ```
 
-**Verwendung:**
+**Usage:**
 - Applet "Restore All" Button
-- User hat Fenster manuell verschoben und möchte zurück zum saved state
+- User has manually moved windows and wants to return to saved state
 
-**Verhalten:**
-- Reset alle Assignments (marking instances as unassigned)
-- Matched jedes laufende Fenster zu saved instance
-- Restauriert Position, Workspace, Maximized, etc.
-- `isNewWindow=false` - keine Minimierung vor Restore
+**Behavior:**
+- Reset all assignments (marking instances as unassigned)
+- Match each running window to saved instance
+- Restore position, workspace, maximized, etc.
+- `isNewWindow=false` - no minimization before restore
 
-**Interne Implementierung:**
+**Internal Implementation:**
 ```javascript
 _restoreAll() {
     if (!this._tracker) return;
@@ -116,7 +116,7 @@ _restoreAll() {
 
 ### launchSession()
 
-Startet alle gespeicherten Apps mit `autostart=true`.
+Launches all saved apps with `autostart=true`.
 
 **Signature:**
 ```javascript
@@ -125,24 +125,24 @@ Main.windowRemember.launchSession()
 
 **Returns:** `void`
 
-**Beispiel:**
+**Example:**
 ```javascript
-// Manueller Session-Launch
+// Manual session launch
 Main.windowRemember.launchSession();
 // Shows notification: "Launching N applications..."
 ```
 
-**Verwendung:**
+**Usage:**
 - Applet "Launch Session" Button
-- User möchte manuell seine saved Session starten
+- User wants to manually start their saved session
 
-**Verhalten:**
-- Filter instances: nur `autostart=true`
+**Behavior:**
+- Filter instances: only `autostart=true`
 - Reset assignments
 - Launch via SessionLauncher
 - Shows progress window
 
-**Interne Implementierung:**
+**Internal Implementation:**
 ```javascript
 _launchSession() {
     if (!this._launcher) return;
@@ -158,16 +158,16 @@ _launchSession() {
 
 ### toggle()
 
-Aktiviert/Deaktiviert die Extension.
+Activates/Deactivates the extension.
 
 **Signature:**
 ```javascript
 Main.windowRemember.toggle()
 ```
 
-**Returns:** `boolean` - Neuer State (true=enabled, false=disabled)
+**Returns:** `boolean` - New state (true=enabled, false=disabled)
 
-**Beispiel:**
+**Example:**
 ```javascript
 // Toggle Extension
 const newState = Main.windowRemember.toggle();
@@ -178,21 +178,21 @@ if (newState) {
 }
 ```
 
-**Verwendung:**
+**Usage:**
 - Debugging
-- Quick enable/disable ohne Extension Manager
+- Quick enable/disable without Extension Manager
 
-**Verhalten:**
-- Wenn enabled: ruft `disable()` auf
-- Wenn disabled: ruft `enable()` auf
+**Behavior:**
+- If enabled: calls `disable()`
+- If disabled: calls `enable()`
 
-**WARNUNG:** Sollte nicht in Production verwendet werden. Nur für Testing.
+**WARNING:** Should not be used in production. Only for testing.
 
 ---
 
 ### getStats()
 
-Gibt Statistiken über tracked windows, saved apps/instances, etc. zurück.
+Returns statistics about tracked windows, saved apps/instances, etc.
 
 **Signature:**
 ```javascript
@@ -212,7 +212,7 @@ Main.windowRemember.getStats()
 }
 ```
 
-**Beispiel:**
+**Example:**
 ```javascript
 const stats = Main.windowRemember.getStats();
 log(`Tracking ${stats.trackedWindows} windows`);
@@ -220,7 +220,7 @@ log(`Saved ${stats.savedInstances} instances from ${stats.savedApps} apps`);
 log(`${stats.monitors} monitors detected`);
 ```
 
-**Verwendung:**
+**Usage:**
 - Settings Dialog: Overview Tab (Dashboard)
 - Applet: Tooltip
 - Debugging
@@ -229,7 +229,7 @@ log(`${stats.monitors} monitors detected`);
 
 ### isEnabled()
 
-Prüft ob Extension aktiviert ist.
+Checks if extension is enabled.
 
 **Signature:**
 ```javascript
@@ -238,7 +238,7 @@ Main.windowRemember.isEnabled()
 
 **Returns:** `boolean`
 
-**Beispiel:**
+**Example:**
 ```javascript
 if (Main.windowRemember.isEnabled()) {
     // Extension is active
@@ -249,7 +249,7 @@ if (Main.windowRemember.isEnabled()) {
 
 ### getMonitors()
 
-Gibt Liste aller erkannten Monitore zurück.
+Returns list of all detected monitors.
 
 **Signature:**
 ```javascript
@@ -271,7 +271,7 @@ Main.windowRemember.getMonitors()
 ]
 ```
 
-**Beispiel:**
+**Example:**
 ```javascript
 const monitors = Main.windowRemember.getMonitors();
 monitors.forEach(mon => {
@@ -283,7 +283,7 @@ monitors.forEach(mon => {
 
 ### closeWindow(x11WindowId)
 
-Schließt ein Fenster via X11 Window ID.
+Closes a window via X11 Window ID.
 
 **Signature:**
 ```javascript
@@ -293,9 +293,9 @@ Main.windowRemember.closeWindow(x11WindowId)
 **Parameters:**
 - `x11WindowId` (string) - X11 Window ID (e.g., "0x3a00012")
 
-**Returns:** `boolean` - true wenn erfolgreich geschlossen
+**Returns:** `boolean` - true if successfully closed
 
-**Beispiel:**
+**Example:**
 ```javascript
 // Close window from Settings Dialog
 const success = Main.windowRemember.closeWindow("0x3a00012");
@@ -306,23 +306,23 @@ if (success) {
 }
 ```
 
-**Verwendung:**
+**Usage:**
 - Settings Dialog: Windows Tab (Delete button)
 
-**Verhalten:**
-- Findet Window via X11 ID
-- Ruft `metaWindow.delete()` auf
-- Loggt wmClass und Title
+**Behavior:**
+- Finds window via X11 ID
+- Calls `metaWindow.delete()`
+- Logs wmClass and title
 
 ---
 
 ## Module System
 
-Das Modul-System löst das GJS-Caching-Problem beim Laden von Modules aus Subdirectories.
+The module system solves the GJS caching problem when loading modules from subdirectories.
 
 ### Modules.load()
 
-Lädt ein Modul aus einem Subdirectory der Extension.
+Loads a module from a subdirectory of the extension.
 
 **File:** `modules.js`
 
@@ -332,13 +332,13 @@ Modules.load(extensionMeta, subdir, moduleName)
 ```
 
 **Parameters:**
-- `extensionMeta` (Object) - Extension metadata mit `path` property
-- `subdir` (string) - Subdirectory name (z.B., "core", "services")
-- `moduleName` (string) - Module name ohne `.js` extension
+- `extensionMeta` (Object) - Extension metadata with `path` property
+- `subdir` (string) - Subdirectory name (e.g., "core", "services")
+- `moduleName` (string) - Module name without `.js` extension
 
 **Returns:** `Object` - Loaded module exports
 
-**Beispiel:**
+**Example:**
 ```javascript
 const modulesModule = getExtensionModule('modules');
 const Modules = modulesModule.Modules;
@@ -351,7 +351,7 @@ const { PositionRestorer } = Modules.load(meta, 'core', 'positionRestorer');
 const { Logger } = Modules.load(meta, 'services', 'logger');
 ```
 
-**Interne Implementierung:**
+**Internal Implementation:**
 ```javascript
 load: function(extensionMeta, subdir, moduleName) {
     const cacheKey = `_${subdir}_${moduleName}`;
@@ -388,7 +388,7 @@ load: function(extensionMeta, subdir, moduleName) {
 
 ### Modules.clearCache()
 
-Leert den Modul-Cache (für Development/Debugging).
+Clears the module cache (for development/debugging).
 
 **Signature:**
 ```javascript
@@ -397,22 +397,22 @@ Modules.clearCache()
 
 **Returns:** `void`
 
-**Beispiel:**
+**Example:**
 ```javascript
 // Clear module cache
 Modules.clearCache();
 // Next load will reload from disk
 ```
 
-**Verwendung:**
-- Development: Nach Code-Änderungen
-- Sollte NICHT in Production verwendet werden
+**Usage:**
+- Development: After code changes
+- Should NOT be used in production
 
 ---
 
 ### Modules.isCached()
 
-Prüft ob ein Modul bereits cached ist.
+Checks if a module is already cached.
 
 **Signature:**
 ```javascript
@@ -425,7 +425,7 @@ Modules.isCached(subdir, moduleName)
 
 **Returns:** `boolean`
 
-**Beispiel:**
+**Example:**
 ```javascript
 if (Modules.isCached('core', 'windowFilter')) {
     log("WindowFilter already loaded");
@@ -436,7 +436,7 @@ if (Modules.isCached('core', 'windowFilter')) {
 
 ### Modules.getLogger()
 
-Lädt Logger-Modul und gibt Logger-Funktionen zurück.
+Loads logger module and returns logger functions.
 
 **Signature:**
 ```javascript
@@ -456,7 +456,7 @@ Modules.getLogger(extensionMeta)
 }
 ```
 
-**Beispiel:**
+**Example:**
 ```javascript
 const { log, logError, isDebugMode } = Modules.getLogger(meta);
 
@@ -486,7 +486,7 @@ new PluginManager(extensionPath, extensionSettings, storage, log, logError)
 - `log` (function) - Logger function
 - `logError` (function) - Error logger function
 
-**Beispiel:**
+**Example:**
 ```javascript
 const pluginManager = new PluginManager(
     this._extPath,
@@ -501,7 +501,7 @@ const pluginManager = new PluginManager(
 
 ### loadPlugins()
 
-Lädt alle Plugins aus Built-in und User directories.
+Loads all plugins from built-in and user directories.
 
 **Signature:**
 ```javascript
@@ -510,24 +510,24 @@ pluginManager.loadPlugins()
 
 **Returns:** `void`
 
-**Beispiel:**
+**Example:**
 ```javascript
 pluginManager.loadPlugins();
 log(`PluginManager loaded ${pluginManager.getLoadedPlugins().length} plugins`);
 ```
 
-**Verhalten:**
-- Scannt `<extensionPath>/plugins/`
-- Scannt `~/.config/remember@thechief/plugins/`
-- User-Plugins überschreiben Built-in Plugins (gleicher Name)
-- Lädt `config.json` (required)
-- Lädt Handler-Klasse aus `index.js` (optional)
+**Behavior:**
+- Scans `<extensionPath>/plugins/`
+- Scans `~/.config/remember@thechief/plugins/`
+- User plugins override built-in plugins (same name)
+- Loads `config.json` (required)
+- Loads handler class from `index.js` (optional)
 
 ---
 
 ### getPlugin(wmClass)
 
-Gibt Plugin-Config für einen wmClass zurück.
+Returns plugin config for a wmClass.
 
 **Signature:**
 ```javascript
@@ -537,9 +537,9 @@ pluginManager.getPlugin(wmClass)
 **Parameters:**
 - `wmClass` (string) - Window manager class
 
-**Returns:** `Object | null` - Plugin config oder null
+**Returns:** `Object | null` - Plugin config or null
 
-**Beispiel:**
+**Example:**
 ```javascript
 const plugin = pluginManager.getPlugin('firefox');
 if (plugin) {
@@ -580,7 +580,7 @@ if (plugin) {
 
 ### getHandler(wmClass)
 
-Gibt Handler-Instanz für einen wmClass zurück.
+Returns handler instance for a wmClass.
 
 **Signature:**
 ```javascript
@@ -590,9 +590,9 @@ pluginManager.getHandler(wmClass)
 **Parameters:**
 - `wmClass` (string) - Window manager class
 
-**Returns:** `Object | null` - Handler instance oder null
+**Returns:** `Object | null` - Handler instance or null
 
-**Beispiel:**
+**Example:**
 ```javascript
 const handler = pluginManager.getHandler('firefox');
 if (handler && handler.beforeLaunch) {
@@ -629,7 +629,7 @@ class Handler {
 
 ### hasPlugin(wmClass)
 
-Prüft ob Plugin für wmClass existiert.
+Checks if plugin exists for wmClass.
 
 **Signature:**
 ```javascript
@@ -641,7 +641,7 @@ pluginManager.hasPlugin(wmClass)
 
 **Returns:** `boolean`
 
-**Beispiel:**
+**Example:**
 ```javascript
 if (pluginManager.hasPlugin('firefox')) {
     // Use plugin-based launch
@@ -654,7 +654,7 @@ if (pluginManager.hasPlugin('firefox')) {
 
 ### isSingleInstance(wmClass)
 
-Prüft ob App single-instance ist (via Plugin-Config).
+Checks if app is single-instance (via plugin config).
 
 **Signature:**
 ```javascript
@@ -666,7 +666,7 @@ pluginManager.isSingleInstance(wmClass)
 
 **Returns:** `boolean`
 
-**Beispiel:**
+**Example:**
 ```javascript
 if (pluginManager.isSingleInstance('firefox')) {
     log("Firefox is single-instance");
@@ -677,7 +677,7 @@ if (pluginManager.isSingleInstance('firefox')) {
 
 ### getTimeout(wmClass)
 
-Gibt Timeout für App zurück (aus Plugin-Config oder Default).
+Returns timeout for app (from plugin config or default).
 
 **Signature:**
 ```javascript
@@ -689,7 +689,7 @@ pluginManager.getTimeout(wmClass)
 
 **Returns:** `number` - Timeout in milliseconds
 
-**Beispiel:**
+**Example:**
 ```javascript
 const timeout = pluginManager.getTimeout('firefox');
 // Returns: 120000 (2 min for single-instance)
@@ -699,7 +699,7 @@ const timeout = pluginManager.getTimeout('firefox');
 
 ### getGracePeriod(wmClass)
 
-Gibt Grace Period für App zurück.
+Returns grace period for app.
 
 **Signature:**
 ```javascript
@@ -711,7 +711,7 @@ pluginManager.getGracePeriod(wmClass)
 
 **Returns:** `number` - Grace period in milliseconds
 
-**Beispiel:**
+**Example:**
 ```javascript
 const gracePeriod = pluginManager.getGracePeriod('firefox');
 // Returns: 60000 (1 min for single-instance)
@@ -721,7 +721,7 @@ const gracePeriod = pluginManager.getGracePeriod('firefox');
 
 ### getLoadedPlugins()
 
-Gibt Liste aller geladenen Plugin-Namen zurück.
+Returns list of all loaded plugin names.
 
 **Signature:**
 ```javascript
@@ -730,7 +730,7 @@ pluginManager.getLoadedPlugins()
 
 **Returns:** `string[]`
 
-**Beispiel:**
+**Example:**
 ```javascript
 const plugins = pluginManager.getLoadedPlugins();
 log(`Loaded plugins: ${plugins.join(', ')}`);
@@ -741,7 +741,7 @@ log(`Loaded plugins: ${plugins.join(', ')}`);
 
 ### getAllPlugins()
 
-Gibt alle Plugins mit Configs und Handlers zurück (dedupliziert).
+Returns all plugins with configs and handlers (deduplicated).
 
 **Signature:**
 ```javascript
@@ -761,7 +761,7 @@ pluginManager.getAllPlugins()
 ]
 ```
 
-**Beispiel:**
+**Example:**
 ```javascript
 const plugins = pluginManager.getAllPlugins();
 plugins.forEach(p => {
@@ -773,7 +773,7 @@ plugins.forEach(p => {
 
 ### getStats()
 
-Gibt Statistiken über geladene Plugins zurück.
+Returns statistics about loaded plugins.
 
 **Signature:**
 ```javascript
@@ -790,7 +790,7 @@ pluginManager.getStats()
 }
 ```
 
-**Beispiel:**
+**Example:**
 ```javascript
 const stats = pluginManager.getStats();
 log(`${stats.names.length} plugins loaded (${stats.handlers} handlers)`);
@@ -800,7 +800,7 @@ log(`${stats.names.length} plugins loaded (${stats.handlers} handlers)`);
 
 ### reload()
 
-Lädt alle Plugins neu (für Development).
+Reloads all plugins (for development).
 
 **Signature:**
 ```javascript
@@ -809,19 +809,19 @@ pluginManager.reload()
 
 **Returns:** `void`
 
-**Beispiel:**
+**Example:**
 ```javascript
 // After changing plugin config
 pluginManager.reload();
 ```
 
-**WARNUNG:** Sollte nicht in Production verwendet werden.
+**WARNING:** Should not be used in production.
 
 ---
 
 ### destroy()
 
-Cleanup beim Extension-Disable.
+Cleanup on extension disable.
 
 **Signature:**
 ```javascript
@@ -830,7 +830,7 @@ pluginManager.destroy()
 
 **Returns:** `void`
 
-**Beispiel:**
+**Example:**
 ```javascript
 if (this._pluginManager) {
     this._pluginManager.destroy();
@@ -850,7 +850,7 @@ if (this._pluginManager) {
 new Storage()
 ```
 
-**Beispiel:**
+**Example:**
 ```javascript
 const storage = new Storage();
 storage.init();
@@ -860,7 +860,7 @@ storage.init();
 
 ### init()
 
-Initialisiert Storage, lädt Daten, startet Auto-Save.
+Initializes storage, loads data, starts auto-save.
 
 **Signature:**
 ```javascript
@@ -869,7 +869,7 @@ storage.init()
 
 **Returns:** `void`
 
-**Beispiel:**
+**Example:**
 ```javascript
 const storage = new Storage();
 storage._log = log;
@@ -877,18 +877,18 @@ storage._logError = logError;
 storage.init();
 ```
 
-**Verhalten:**
-- Erstellt Config-Directory falls nicht vorhanden
-- Härtet Permissions (0700 directory, 0600 files)
-- Lädt `positions.json`
-- Migriert alte Datenversionen
-- Startet Auto-Save Timer (30 sec)
+**Behavior:**
+- Creates config directory if not present
+- Hardens permissions (0700 directory, 0600 files)
+- Loads `positions.json`
+- Migrates old data versions
+- Starts auto-save timer (30 sec)
 
 ---
 
 ### save()
 
-Speichert Daten synchron zu Disk.
+Saves data synchronously to disk.
 
 **Signature:**
 ```javascript
@@ -897,24 +897,24 @@ storage.save()
 
 **Returns:** `void`
 
-**Beispiel:**
+**Example:**
 ```javascript
 storage.save();
 ```
 
-**Verhalten:**
-- Serialisiert Data zu JSON
-- Schreibt zu `positions.json`
+**Behavior:**
+- Serializes data to JSON
+- Writes to `positions.json`
 - Atomic write (via `replace_contents`)
-- Härtet Permissions nach Write
+- Hardens permissions after write
 
-**WICHTIG:** Wird automatisch alle 30 Sekunden aufgerufen. Manuelles `save()` meist nicht nötig.
+**IMPORTANT:** Called automatically every 30 seconds. Manual `save()` usually not needed.
 
 ---
 
 ### load()
 
-Lädt Daten von Disk (wird von `init()` aufgerufen).
+Loads data from disk (called by `init()`).
 
 **Signature:**
 ```javascript
@@ -923,7 +923,7 @@ storage.load()
 
 **Returns:** `void`
 
-**Beispiel:**
+**Example:**
 ```javascript
 storage.load();
 ```
@@ -932,7 +932,7 @@ storage.load();
 
 ### getApp(wmClass)
 
-Gibt App-Daten für wmClass zurück.
+Returns app data for wmClass.
 
 **Signature:**
 ```javascript
@@ -953,7 +953,7 @@ storage.getApp(wmClass)
 }
 ```
 
-**Beispiel:**
+**Example:**
 ```javascript
 const appData = storage.getApp('firefox');
 if (appData) {
@@ -965,7 +965,7 @@ if (appData) {
 
 ### setApp(wmClass, appData)
 
-Setzt/Updated App-Daten.
+Sets/Updates app data.
 
 **Signature:**
 ```javascript
@@ -978,7 +978,7 @@ storage.setApp(wmClass, appData)
 
 **Returns:** `void`
 
-**Beispiel:**
+**Example:**
 ```javascript
 const appData = storage.getApp('firefox') || {
     wm_class: 'firefox',
@@ -995,13 +995,13 @@ appData.instances.push({
 storage.setApp('firefox', appData);
 ```
 
-**WICHTIG:** Nach `setApp()` muss `save()` aufgerufen werden (oder warten bis Auto-Save).
+**IMPORTANT:** After `setApp()` must call `save()` (or wait for auto-save).
 
 ---
 
 ### getAllApps()
 
-Gibt alle gespeicherten Apps zurück.
+Returns all saved apps.
 
 **Signature:**
 ```javascript
@@ -1018,7 +1018,7 @@ storage.getAllApps()
 }
 ```
 
-**Beispiel:**
+**Example:**
 ```javascript
 const apps = storage.getAllApps();
 for (const wmClass in apps) {
@@ -1031,7 +1031,7 @@ for (const wmClass in apps) {
 
 ### updateMonitorLayout(monitorManager)
 
-Aktualisiert Monitor-Layout-Informationen.
+Updates monitor layout information.
 
 **Signature:**
 ```javascript
@@ -1043,21 +1043,21 @@ storage.updateMonitorLayout(monitorManager)
 
 **Returns:** `void`
 
-**Beispiel:**
+**Example:**
 ```javascript
 storage.updateMonitorLayout(this._monitorManager);
 ```
 
-**Verhalten:**
-- Fragt alle Monitore ab via `monitorManager.getAllMonitors()`
-- Updated `this._data.monitor_layout`
-- Nächstes `save()` schreibt Layout zu Disk
+**Behavior:**
+- Queries all monitors via `monitorManager.getAllMonitors()`
+- Updates `this._data.monitor_layout`
+- Next `save()` writes layout to disk
 
 ---
 
 ### backupPositions()
 
-Erstellt timestamped Backup von positions.json.
+Creates timestamped backup of positions.json.
 
 **Signature:**
 ```javascript
@@ -1066,13 +1066,13 @@ storage.backupPositions()
 
 **Returns:** `void`
 
-**Beispiel:**
+**Example:**
 ```javascript
-// Vor Shutdown
+// Before shutdown
 storage.backupPositions();
 ```
 
-**Backup-File Format:**
+**Backup File Format:**
 ```
 positions_backup_2026-01-20T12-30-45-123Z.json
 ```
@@ -1086,7 +1086,7 @@ positions_backup_2026-01-20T12-30-45-123Z.json
 
 ### setAutoSaveCallback(callback)
 
-Setzt Callback der vor jedem Auto-Save aufgerufen wird.
+Sets callback that is called before each auto-save.
 
 **Signature:**
 ```javascript
@@ -1102,10 +1102,10 @@ storage.setAutoSaveCallback(callback)
 ```
 
 **Returns (callback):** `boolean | void`
-- `true` oder `undefined` oder `void`: Save proceeds
+- `true` or `undefined` or `void`: Save proceeds
 - `false`: Save skipped
 
-**Beispiel:**
+**Example:**
 ```javascript
 storage.setAutoSaveCallback(() => {
     if (this._isRestoringSession || this._isShuttingDown) {
@@ -1123,14 +1123,14 @@ storage.setAutoSaveCallback(() => {
 });
 ```
 
-**Verwendung:**
-- WindowTracker registriert Callback für Cleanup + Dirty-Window-Save
+**Usage:**
+- WindowTracker registers callback for cleanup + dirty-window-save
 
 ---
 
 ### stopAutoSave()
 
-Stoppt Auto-Save und setzt Shutdown-Flag.
+Stops auto-save and sets shutdown flag.
 
 **Signature:**
 ```javascript
@@ -1139,22 +1139,22 @@ storage.stopAutoSave()
 
 **Returns:** `void`
 
-**Beispiel:**
+**Example:**
 ```javascript
 // In extension.disable()
 storage.stopAutoSave();
 ```
 
-**Verhalten:**
-- Setzt `_isShuttingDown = true`
-- Stoppt Auto-Save Timer
-- Cancelt pending Save-Timeouts
+**Behavior:**
+- Sets `_isShuttingDown = true`
+- Stops auto-save timer
+- Cancels pending save timeouts
 
 ---
 
 ### blockSaves()
 
-Blockiert alle Saves bis `unblockSaves()` aufgerufen wird.
+Blocks all saves until `unblockSaves()` is called.
 
 **Signature:**
 ```javascript
@@ -1163,7 +1163,7 @@ storage.blockSaves()
 
 **Returns:** `void`
 
-**Beispiel:**
+**Example:**
 ```javascript
 // Block saves during session restore
 storage.blockSaves();
@@ -1174,13 +1174,13 @@ storage.blockSaves();
 storage.unblockSaves();
 ```
 
-**WICHTIG:** Aktuell nicht implementiert in public API. Wird intern via `_isShuttingDown` flag gehandelt.
+**IMPORTANT:** Currently not implemented in public API. Handled internally via `_isShuttingDown` flag.
 
 ---
 
 ### destroy()
 
-Cleanup beim Extension-Disable.
+Cleanup on extension disable.
 
 **Signature:**
 ```javascript
@@ -1189,7 +1189,7 @@ storage.destroy()
 
 **Returns:** `void`
 
-**Beispiel:**
+**Example:**
 ```javascript
 if (this._storage) {
     this._storage.destroy();
@@ -1207,7 +1207,7 @@ if (this._storage) {
 
 #### log(message)
 
-Debug-Logging (nur wenn `REMEMBER_DEBUG=1`).
+Debug logging (only when `REMEMBER_DEBUG=1`).
 
 **Signature:**
 ```javascript
@@ -1219,7 +1219,7 @@ log(message)
 
 **Returns:** `void`
 
-**Beispiel:**
+**Example:**
 ```javascript
 const { log } = Modules.getLogger(meta);
 log('Extension enabled');
@@ -1230,7 +1230,7 @@ log('Extension enabled');
 
 #### logError(message, error)
 
-Error-Logging (immer geloggt, unabhängig von Debug-Mode).
+Error logging (always logged, regardless of debug mode).
 
 **Signature:**
 ```javascript
@@ -1243,7 +1243,7 @@ logError(message, error)
 
 **Returns:** `void`
 
-**Beispiel:**
+**Example:**
 ```javascript
 const { logError } = Modules.getLogger(meta);
 
@@ -1259,7 +1259,7 @@ try {
 
 #### isDebugMode()
 
-Prüft ob Debug-Mode aktiviert ist.
+Checks if debug mode is enabled.
 
 **Signature:**
 ```javascript
@@ -1268,7 +1268,7 @@ isDebugMode()
 
 **Returns:** `boolean`
 
-**Beispiel:**
+**Example:**
 ```javascript
 const { isDebugMode } = Modules.getLogger(meta);
 
@@ -1288,7 +1288,7 @@ if (isDebugMode()) {
 new Logger()
 ```
 
-**Beispiel:**
+**Example:**
 ```javascript
 const logger = new Logger();
 ```
@@ -1297,7 +1297,7 @@ const logger = new Logger();
 
 #### log(message)
 
-Standard debug logging (nur in Debug-Mode).
+Standard debug logging (only in debug mode).
 
 **Signature:**
 ```javascript
@@ -1309,7 +1309,7 @@ logger.log(message)
 
 **Returns:** `void`
 
-**Beispiel:**
+**Example:**
 ```javascript
 logger.log('Window tracking enabled');
 ```
@@ -1318,7 +1318,7 @@ logger.log('Window tracking enabled');
 
 #### logSensitive(message, sensitiveData)
 
-Logging mit Sanitization von sensiblen Daten.
+Logging with sanitization of sensitive data.
 
 **Signature:**
 ```javascript
@@ -1327,7 +1327,7 @@ logger.logSensitive(message, sensitiveData)
 
 **Parameters:**
 - `message` (string) - Base message
-- `sensitiveData` (Object) - Object mit sensiblen Feldern
+- `sensitiveData` (Object) - Object with sensitive fields
 
 **Sensitive Fields:**
 ```javascript
@@ -1341,7 +1341,7 @@ logger.logSensitive(message, sensitiveData)
 
 **Returns:** `void`
 
-**Beispiel:**
+**Example:**
 ```javascript
 logger.logSensitive('Now tracking window', {
     title: '/home/user/private-document.pdf',
@@ -1350,7 +1350,7 @@ logger.logSensitive('Now tracking window', {
 });
 ```
 
-**Debug-Mode Output:**
+**Debug Mode Output:**
 ```
 remember@thechief: Now tracking window title="/home/user/private-document.pdf" cmdline=[/usr/bin/firefox /home/user/secret.html] workingDir="/home/user/private"
 ```
@@ -1364,7 +1364,7 @@ remember@thechief: Now tracking window title="/home/user/private-document.pdf" c
 
 #### logDebug(message, data)
 
-Debug-only logging mit optional data.
+Debug-only logging with optional data.
 
 **Signature:**
 ```javascript
@@ -1373,11 +1373,11 @@ logger.logDebug(message, data)
 
 **Parameters:**
 - `message` (string) - Debug message
-- `data` (any) - Optional data (wird JSON-serialisiert)
+- `data` (any) - Optional data (will be JSON-serialized)
 
 **Returns:** `void`
 
-**Beispiel:**
+**Example:**
 ```javascript
 logger.logDebug('Restore timing', { delay: 500, attempt: 2 });
 // Output: remember@thechief: [DEBUG] Restore timing: {"delay":500,"attempt":2}
@@ -1387,7 +1387,7 @@ logger.logDebug('Restore timing', { delay: 500, attempt: 2 });
 
 #### error(message, error)
 
-Error logging (immer geloggt).
+Error logging (always logged).
 
 **Signature:**
 ```javascript
@@ -1400,7 +1400,7 @@ logger.error(message, error)
 
 **Returns:** `void`
 
-**Beispiel:**
+**Example:**
 ```javascript
 logger.error('Failed to spawn process', e);
 ```
@@ -1409,7 +1409,7 @@ logger.error('Failed to spawn process', e);
 
 #### sanitizeCmdline(cmdlineArray)
 
-Sanitiert Command-Line für Production-Logs.
+Sanitizes command line for production logs.
 
 **Signature:**
 ```javascript
@@ -1421,7 +1421,7 @@ logger.sanitizeCmdline(cmdlineArray)
 
 **Returns:** `string`
 
-**Beispiel:**
+**Example:**
 ```javascript
 const cmdline = ['/usr/bin/firefox', '--profile', '/home/user/.mozilla/firefox/abc123.default', '/home/user/secret.html'];
 const sanitized = logger.sanitizeCmdline(cmdline);
@@ -1432,7 +1432,7 @@ const sanitized = logger.sanitizeCmdline(cmdline);
 
 #### sanitizeTitle(title)
 
-Sanitiert Window-Title für Production-Logs.
+Sanitizes window title for production logs.
 
 **Signature:**
 ```javascript
@@ -1444,7 +1444,7 @@ logger.sanitizeTitle(title)
 
 **Returns:** `string`
 
-**Beispiel:**
+**Example:**
 ```javascript
 const title = "Private Document.pdf - LibreOffice Writer";
 const sanitized = logger.sanitizeTitle(title);
@@ -1455,7 +1455,7 @@ const sanitized = logger.sanitizeTitle(title);
 
 #### sanitizePath(path)
 
-Sanitiert File-Path für Production-Logs.
+Sanitizes file path for production logs.
 
 **Signature:**
 ```javascript
@@ -1467,7 +1467,7 @@ logger.sanitizePath(path)
 
 **Returns:** `string`
 
-**Beispiel:**
+**Example:**
 ```javascript
 const path = "/home/user/Documents/private/secret.txt";
 const sanitized = logger.sanitizePath(path);
@@ -1482,7 +1482,7 @@ const sanitized = logger.sanitizePath(path);
 
 ### init(meta)
 
-Extension-Initialisierung (einmal beim Laden).
+Extension initialization (called once on load).
 
 **Signature:**
 ```javascript
@@ -1503,11 +1503,11 @@ function init(meta)
 
 **Returns:** `void`
 
-**Wird aufgerufen:**
-- Beim Cinnamon-Start
-- Beim Enable der Extension im Extension-Manager
+**Called when:**
+- At Cinnamon startup
+- When enabling the extension in Extension Manager
 
-**Beispiel:**
+**Example:**
 ```javascript
 function init(meta) {
     extension = new WindowRememberExtension();
@@ -1515,18 +1515,18 @@ function init(meta) {
 }
 ```
 
-**Aufgaben:**
-- Metadata speichern
-- AppletManager initialisieren
-- Applet installieren falls nötig
+**Tasks:**
+- Store metadata
+- Initialize AppletManager
+- Install applet if needed
 
-**WICHTIG:** Keine aktive Logik in `init()`, nur Setup!
+**IMPORTANT:** No active logic in `init()`, setup only!
 
 ---
 
 ### enable()
 
-Extension aktivieren.
+Enable the extension.
 
 **Signature:**
 ```javascript
@@ -1535,12 +1535,12 @@ function enable()
 
 **Returns:** `void`
 
-**Wird aufgerufen:**
-- Nach `init()`
-- Bei manueller Aktivierung
-- Nach Cinnamon-Restart (`Alt+F2 r`)
+**Called when:**
+- After `init()`
+- On manual activation
+- After Cinnamon restart (`Alt+F2 r`)
 
-**Beispiel:**
+**Example:**
 ```javascript
 function enable() {
     if (extension) {
@@ -1549,21 +1549,21 @@ function enable() {
 }
 ```
 
-**Aufgaben:**
-- Logger laden
-- Services initialisieren
-- Plugins laden
-- Window tracking starten
-- Auto-restore planen
-- Globale API exposen
+**Tasks:**
+- Load logger
+- Initialize services
+- Load plugins
+- Start window tracking
+- Schedule auto-restore
+- Expose global API
 
-**Siehe:** [Extension Lifecycle](architecture.md#extension-lifecycle)
+**See:** [Extension Lifecycle](architecture.md#extension-lifecycle)
 
 ---
 
 ### disable()
 
-Extension deaktivieren.
+Disable the extension.
 
 **Signature:**
 ```javascript
@@ -1572,13 +1572,13 @@ function disable()
 
 **Returns:** `void`
 
-**Wird aufgerufen:**
-- Bei Logout
-- Bei Shutdown
-- Bei manueller Deaktivierung
-- Vor Cinnamon-Restart
+**Called when:**
+- On logout
+- On shutdown
+- On manual deactivation
+- Before Cinnamon restart
 
-**Beispiel:**
+**Example:**
 ```javascript
 function disable() {
     if (extension) {
@@ -1587,17 +1587,17 @@ function disable() {
 }
 ```
 
-**Aufgaben:**
-- Shutdown-Flag setzen
-- Backup erstellen
-- Auto-Save stoppen
-- Signals disconnecten
-- Komponenten cleanup
-- Globale API entfernen
+**Tasks:**
+- Set shutdown flag
+- Create backup
+- Stop auto-save
+- Disconnect signals
+- Cleanup components
+- Remove global API
 
-**WICHTIG:** Kein finales Save in `disable()` - würde Partial State während Shutdown speichern!
+**IMPORTANT:** No final save in `disable()` - would save partial state during shutdown!
 
-**Siehe:** [Extension Lifecycle](architecture.md#extension-lifecycle)
+**See:** [Extension Lifecycle](architecture.md#extension-lifecycle)
 
 ---
 
@@ -1607,7 +1607,7 @@ function disable() {
 
 **File:** `services/preferences.js`
 
-Verwaltet UI-Präferenzen aus `preferences.json`.
+Manages UI preferences from `preferences.json`.
 
 **Constructor:**
 ```javascript
@@ -1620,45 +1620,45 @@ new Preferences()
 ```javascript
 preferences.init()
 ```
-Lädt preferences.json.
+Loads preferences.json.
 
 #### shouldTrackAllWorkspaces()
 ```javascript
 preferences.shouldTrackAllWorkspaces()
 ```
-**Returns:** `boolean` - Track windows auf allen Workspaces?
+**Returns:** `boolean` - Track windows on all workspaces?
 
 #### shouldRememberSticky()
 ```javascript
 preferences.shouldRememberSticky()
 ```
-**Returns:** `boolean` - Sticky-State speichern?
+**Returns:** `boolean` - Save sticky state?
 
 #### shouldRememberShaded()
 ```javascript
 preferences.shouldRememberShaded()
 ```
-**Returns:** `boolean` - Shaded-State speichern?
+**Returns:** `boolean` - Save shaded state?
 
 #### shouldRememberAlwaysOnTop()
 ```javascript
 preferences.shouldRememberAlwaysOnTop()
 ```
-**Returns:** `boolean` - Always-On-Top-State speichern?
+**Returns:** `boolean` - Save always-on-top state?
 
 #### shouldRememberFullscreen()
 ```javascript
 preferences.shouldRememberFullscreen()
 ```
-**Returns:** `boolean` - Fullscreen-State speichern?
+**Returns:** `boolean` - Save fullscreen state?
 
 #### getMinimumWindowSize()
 ```javascript
 preferences.getMinimumWindowSize()
 ```
-**Returns:** `{width: number, height: number}` - Minimale Window-Größe zum Tracken
+**Returns:** `{width: number, height: number}` - Minimum window size to track
 
-**Beispiel:**
+**Example:**
 ```javascript
 const preferences = new Preferences();
 preferences.init();
@@ -1683,7 +1683,7 @@ if (width < minSize.width || height < minSize.height) {
 
 **File:** `services/extensionSettings.js`
 
-Verwaltet Launch-Flags aus `extension-settings.json`.
+Manages launch flags from `extension-settings.json`.
 
 **Constructor:**
 ```javascript
@@ -1696,7 +1696,7 @@ new ExtensionSettings()
 ```javascript
 extensionSettings.init()
 ```
-Lädt extension-settings.json.
+Loads extension-settings.json.
 
 #### get(key)
 ```javascript
@@ -1704,9 +1704,9 @@ extensionSettings.get(key)
 ```
 **Parameters:** `key` (string) - Setting key (dot-notation)
 
-**Returns:** `any` - Setting value oder `undefined`
+**Returns:** `any` - Setting value or `undefined`
 
-**Beispiel:**
+**Example:**
 ```javascript
 const extensionSettings = new ExtensionSettings();
 extensionSettings.init();
@@ -1724,9 +1724,9 @@ const verboseMode = extensionSettings.get('debug.verbose');
 ```javascript
 extensionSettings.useBrowserSessionRestore()
 ```
-**Returns:** `boolean` - Browser session restore aktiviert?
+**Returns:** `boolean` - Browser session restore enabled?
 
-**Beispiel:**
+**Example:**
 ```javascript
 if (extensionSettings.useBrowserSessionRestore()) {
     // Use browser's own session restore
@@ -1739,7 +1739,7 @@ if (extensionSettings.useBrowserSessionRestore()) {
 
 **File:** `services/monitorManager.js`
 
-Verwaltet Monitor-Erkennung und -Matching.
+Manages monitor detection and matching.
 
 **Constructor:**
 ```javascript
@@ -1755,19 +1755,19 @@ new MonitorManager(storage)
 ```javascript
 monitorManager.enable()
 ```
-Aktiviert Monitor-Tracking.
+Enables monitor tracking.
 
 #### disable()
 ```javascript
 monitorManager.disable()
 ```
-Deaktiviert Monitor-Tracking.
+Disables monitor tracking.
 
 #### getAllMonitors()
 ```javascript
 monitorManager.getAllMonitors()
 ```
-**Returns:** `Array<Object>` - Liste aller Monitore
+**Returns:** `Array<Object>` - List of all monitors
 
 ```javascript
 [
@@ -1788,9 +1788,9 @@ monitorManager.getMonitorId(monitorIndex)
 ```
 **Parameters:** `monitorIndex` (number) - Monitor index
 
-**Returns:** `string` - Monitor ID (EDID-Hash, Connector, oder Index)
+**Returns:** `string` - Monitor ID (EDID hash, connector, or index)
 
-**Beispiel:**
+**Example:**
 ```javascript
 const monitorManager = new MonitorManager(storage);
 monitorManager.enable();
@@ -1806,9 +1806,9 @@ const monitorId = monitorManager.getMonitorId(0);
 
 ---
 
-## Code-Beispiele
+## Code Examples
 
-### Einfache Extension Integration
+### Simple Extension Integration
 
 ```javascript
 // Check if extension is available
@@ -1949,8 +1949,8 @@ if (pluginManager.hasPlugin('firefox')) {
 
 ---
 
-## Weitere Dokumentation
+## Further Documentation
 
-- **Architecture:** `architecture.md` - System-Architektur und Design
-- **Plugin Development:** `plugin-development.md` - Plugin-Entwicklung Guide
-- **Contributing:** `contributing.md` - Code-Style, Testing, PR-Process
+- **Architecture:** `architecture.md` - System architecture and design
+- **Plugin Development:** `plugin-development.md` - Plugin development guide
+- **Contributing:** `contributing.md` - Code style, testing, PR process

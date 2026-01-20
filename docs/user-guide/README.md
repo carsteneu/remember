@@ -1,262 +1,262 @@
 # User Guide - Window Position Remember
 
-Vollständige Benutzer-Dokumentation für die **Window Position Remember** Cinnamon Extension.
+Complete user documentation for the **Window Position Remember** Cinnamon Extension.
 
 ---
 
-## Übersicht
+## Overview
 
-**Window Position Remember** ist eine leistungsstarke Cinnamon Extension, die automatisch Fensterpositionen speichert und wiederherstellt. Mit Multi-Monitor-Support, Session Restore und 15+ vorkonfigurierten Plugins bietet sie eine umfassende Lösung für die Fensterverwaltung.
+**Window Position Remember** is a powerful Cinnamon Extension that automatically saves and restores window positions. With multi-monitor support, session restore, and 15+ pre-configured plugins, it offers a comprehensive solution for window management.
 
 ---
 
-## Dokumentations-Index
+## Documentation Index
 
-### 1. [Getting Started](getting-started.md) - Erste Schritte
+### 1. [Getting Started](getting-started.md) - First Steps
 
-**Für neue Benutzer** - Schnelleinstieg in 5 Minuten:
+**For new users** - Quick start in 5 minutes:
 
 - ✅ Installation (Cinnamon Spices + Git)
-- ✅ Extension aktivieren
-- ✅ Applet zum Panel hinzufügen
-- ✅ Erste Schritte: Automatisches Speichern
-- ✅ Test durchführen
-- ✅ Multi-Monitor-Unterstützung verstehen
-- ✅ Session Restore aktivieren
+- ✅ Enable extension
+- ✅ Add applet to panel
+- ✅ First steps: Automatic saving
+- ✅ Run test
+- ✅ Understand multi-monitor support
+- ✅ Enable session restore
 
-**Empfohlen für**: Erstbenutzer, Schnellstart
-
----
-
-### 2. [Features](features.md) - Funktionsübersicht
-
-**Detaillierte Feature-Beschreibungen**:
-
-- 🔄 **Window Position Tracking** - Automatisches Speichern (alle 30s)
-- 🖥️ **Multi-Monitor Support** - EDID-Identifikation, auflösungsunabhängig
-- 🚀 **Session Restore** - Auto-Launch beim Login
-- 🎯 **Smart Window Matching** - 5 Matching-Strategien
-- 💾 **Fenster-Status** - sticky, always-on-top, fullscreen, shaded
-- 🔌 **Plugin-System** - 15+ vorkonfigurierte Plugins
-- 🚫 **Blacklist-System** - Anwendungen ausschließen
-- 📐 **Workspace-Support** - Multi-Workspace-Verfolgung
-
-**Empfohlen für**: Alle Benutzer, die Features im Detail verstehen möchten
+**Recommended for**: First-time users, quick start
 
 ---
 
-### 3. [Configuration](configuration.md) - Konfiguration
+### 2. [Features](features.md) - Feature Overview
 
-**Vollständige Einstellungs-Referenz**:
+**Detailed feature descriptions**:
+
+- 🔄 **Window Position Tracking** - Automatic saving (every 30s)
+- 🖥️ **Multi-Monitor Support** - EDID identification, resolution-independent
+- 🚀 **Session Restore** - Auto-launch on login
+- 🎯 **Smart Window Matching** - 5 matching strategies
+- 💾 **Window States** - sticky, always-on-top, fullscreen, shaded
+- 🔌 **Plugin System** - 15+ pre-configured plugins
+- 🚫 **Blacklist System** - Exclude applications
+- 📐 **Workspace Support** - Multi-workspace tracking
+
+**Recommended for**: All users who want to understand features in detail
+
+---
+
+### 3. [Configuration](configuration.md) - Configuration
+
+**Complete settings reference**:
 
 #### Cinnamon Settings (Built-in)
 - **General**: track-all-workspaces, track-dialogs, auto-restore, auto-launch, capture-cmdline
 - **Behavior**: save-delay, restore-delay, use-percentage, clamp-to-screen, restore-workspace
 - **Window States**: remember-sticky, remember-always-on-top, remember-shaded, remember-fullscreen, restore-minimized
-- **Blacklist**: Ausgeschlossene Anwendungen
+- **Blacklist**: Excluded applications
 
-#### Python Settings UI (Erweitert)
-- **Overview Tab**: Dashboard, Statistiken, Quick Actions
-- **Windows Tab**: Alle gespeicherten Fenster, Filter, Suche
-- **Apps Tab**: Launch Flags, Autostart, Blacklist Management
-- **About Tab**: Extension-Informationen
+#### Python Settings UI (Advanced)
+- **Overview Tab**: Dashboard, statistics, quick actions
+- **Windows Tab**: All saved windows, filters, search
+- **Apps Tab**: Launch flags, autostart, blacklist management
+- **About Tab**: Extension information
 
-#### Datenspeicherung
-- `positions.json` - Fensterpositionen & Monitore
-- `preferences.json` - UI-Einstellungen
-- `extension-settings.json` - Launch-Flags
-- Backup-System (7 Tage)
+#### Data Storage
+- `positions.json` - Window positions & monitors
+- `preferences.json` - UI settings
+- `extension-settings.json` - Launch flags
+- Backup system (7 days)
 
-**Empfohlen für**: Benutzer, die Einstellungen anpassen möchten
-
----
-
-### 4. [FAQ & Troubleshooting](faq.md) - Häufige Fragen
-
-**Lösungen für häufige Probleme**:
-
-#### Häufig gestellte Fragen
-- ❓ Wo werden Daten gespeichert?
-- ❓ Wie funktioniert Multi-Monitor?
-- ❓ Wie oft werden Positionen gespeichert?
-- ❓ Werden sensible Daten gespeichert?
-- ❓ Funktioniert es mit Flatpak/Snap/AppImage?
-- ❓ Wie erstelle ich Backups?
-
-#### Konfiguration
-- 🔧 Anwendung zur Blacklist hinzufügen
-- 🔧 Launch-Flags ändern
-- 🔧 Session Restore für bestimmte App deaktivieren
-
-#### Probleme & Lösungen
-- 🐛 Extension startet nicht
-- 🐛 Fenster wird nicht wiederhergestellt
-- 🐛 Fenster an falscher Position
-- 🐛 Session Restore funktioniert nicht
-- 🐛 Applet zeigt keine Daten
-- 🐛 Performance-Probleme
-
-#### Erweiterte Themen
-- 🔬 Daten zwischen Rechnern synchronisieren
-- 🔬 Extension-Probleme debuggen
-- 🔬 Bug-Report erstellen
-
-**Empfohlen für**: Benutzer mit Problemen oder spezifischen Fragen
+**Recommended for**: Users who want to customize settings
 
 ---
 
-## Schnellzugriff
+### 4. [FAQ & Troubleshooting](faq.md) - Frequently Asked Questions
 
-### Installation (Kurzfassung)
+**Solutions for common problems**:
+
+#### Frequently Asked Questions
+- ❓ Where is data stored?
+- ❓ How does multi-monitor work?
+- ❓ How often are positions saved?
+- ❓ Is sensitive data stored?
+- ❓ Does it work with Flatpak/Snap/AppImage?
+- ❓ How do I create backups?
+
+#### Configuration
+- 🔧 Add application to blacklist
+- 🔧 Change launch flags
+- 🔧 Disable session restore for specific app
+
+#### Issues & Solutions
+- 🐛 Extension doesn't start
+- 🐛 Window not restored
+- 🐛 Window at wrong position
+- 🐛 Session restore doesn't work
+- 🐛 Applet shows no data
+- 🐛 Performance issues
+
+#### Advanced Topics
+- 🔬 Sync data between computers
+- 🔬 Debug extension problems
+- 🔬 Create bug report
+
+**Recommended for**: Users with problems or specific questions
+
+---
+
+## Quick Access
+
+### Installation (Summary)
 
 ```bash
-# Über Cinnamon Spices
-Systemeinstellungen → Extensions → Download → "Window Position Remember"
+# Via Cinnamon Spices
+System Settings → Extensions → Download → "Window Position Remember"
 
-# Oder via Git
+# Or via Git
 cd ~/.local/share/cinnamon/extensions/
 git clone https://github.com/carsteneu/remember.git remember@thechief
 cinnamon --replace &
 ```
 
-### Wichtige Einstellungen
+### Important Settings
 
 ```bash
-# Cinnamon Settings öffnen
+# Open Cinnamon Settings
 cinnamon-settings extensions remember@thechief
 
-# Python Settings UI öffnen
+# Open Python Settings UI
 python3 ~/.local/share/cinnamon/extensions/remember@thechief/settings.py
 ```
 
-### Logs anzeigen
+### View Logs
 
 ```bash
-# Extension-Logs filtern
+# Filter extension logs
 tail -f ~/.xsession-errors | grep "remember@thechief"
 
-# Gespeicherte Daten anzeigen
+# View saved data
 cat ~/.config/remember@thechief/positions.json | jq
 ```
 
-### Backup erstellen
+### Create Backup
 
 ```bash
-# Manuelles Backup
+# Manual backup
 cp ~/.config/remember@thechief/positions.json \
    ~/remember_backup_$(date +%Y-%m-%d).json
 
-# Automatische Backups ansehen
+# View automatic backups
 ls -lh ~/.config/remember@thechief/backups/
 ```
 
 ---
 
-## Unterstützte Anwendungen
+## Supported Applications
 
-Die Extension funktioniert mit **allen Anwendungen**, aber 15+ Plugins bieten erweiterte Funktionen:
+The extension works with **all applications**, but 15+ plugins offer enhanced features:
 
-### Browser
-- **Firefox** - Session Restore mit `--restore-session`
-- **Chrome / Chromium** - Multi-Window Support
-- **Brave** - Session Restore
+### Browsers
+- **Firefox** - Session restore with `--restore-session`
+- **Chrome / Chromium** - Multi-window support
+- **Brave** - Session restore
 
-### Editoren & IDEs
-- **Visual Studio Code** - Workspace-Restore
+### Editors & IDEs
+- **Visual Studio Code** - Workspace restore
 - **JetBrains IDEs** (IntelliJ IDEA, PyCharm, WebStorm, etc.)
-- **gedit, xed, kate, SciTE** - Datei-Restore
+- **gedit, xed, kate, SciTE** - File restore
 
 ### Office & Tools
-- **LibreOffice** - Dokument-Pfad-Restore
-- **Thunderbird** - Multi-Profil Support
-- **GIMP** - Bilddatei-Restore
-- **Nemo** - Dateimanager-Fenster
+- **LibreOffice** - Document path restore
+- **Thunderbird** - Multi-profile support
+- **GIMP** - Image file restore
+- **Nemo** - File manager windows
 
-### Sonstige
-- **Wave Terminal** - Terminal-Session
-- **Gradia** - Screenshot-Tool (Flatpak)
-
----
-
-## Systemanforderungen
-
-- **Cinnamon Desktop**: 6.0+ (empfohlen: aktuelle stabile Version)
-- **Python**: 3.8+ (für Settings UI)
-- **GTK**: 3.0+ (für Settings UI)
+### Other
+- **Wave Terminal** - Terminal session
+- **Gradia** - Screenshot tool (Flatpak)
 
 ---
 
-## Dateien & Verzeichnisse
+## System Requirements
 
-| Pfad | Beschreibung |
-|------|--------------|
-| `~/.local/share/cinnamon/extensions/remember@thechief/` | Extension-Installation |
-| `~/.local/share/cinnamon/applets/remember-applet@thechief/` | Applet-Installation |
-| `~/.config/remember@thechief/positions.json` | Fensterpositionen & Monitore |
-| `~/.config/remember@thechief/preferences.json` | UI-Einstellungen |
-| `~/.config/remember@thechief/extension-settings.json` | Launch-Flags |
-| `~/.config/remember@thechief/positions_backup_*.json` | Automatische Backups (7 Tage) |
-| `~/.xsession-errors` | Cinnamon-Logs |
+- **Cinnamon Desktop**: 6.0+ (recommended: current stable version)
+- **Python**: 3.8+ (for Settings UI)
+- **GTK**: 3.0+ (for Settings UI)
 
 ---
 
-## Links & Ressourcen
+## Files & Directories
+
+| Path | Description |
+|------|-------------|
+| `~/.local/share/cinnamon/extensions/remember@thechief/` | Extension installation |
+| `~/.local/share/cinnamon/applets/remember-applet@thechief/` | Applet installation |
+| `~/.config/remember@thechief/positions.json` | Window positions & monitors |
+| `~/.config/remember@thechief/preferences.json` | UI settings |
+| `~/.config/remember@thechief/extension-settings.json` | Launch flags |
+| `~/.config/remember@thechief/positions_backup_*.json` | Automatic backups (7 days) |
+| `~/.xsession-errors` | Cinnamon logs |
+
+---
+
+## Links & Resources
 
 - **GitHub Repository**: https://github.com/carsteneu/remember
 - **GitHub Issues**: https://github.com/carsteneu/remember/issues
 - **Cinnamon Spices**: https://cinnamon-spices.linuxmint.com/extensions/view/remember@thechief
-- **Dokumentation**: Dieses Verzeichnis (`docs/user-guide/`)
+- **Documentation**: This directory (`docs/user-guide/`)
 
 ---
 
-## Support & Mitwirkung
+## Support & Contributing
 
-### Bug-Reports
+### Bug Reports
 
-Erstellen Sie ein **GitHub Issue** mit:
-- System-Informationen (Cinnamon-Version, Distribution)
-- Extension-Version
+Create a **GitHub Issue** with:
+- System information (Cinnamon version, distribution)
+- Extension version
 - Logs (`~/.xsession-errors`)
-- Schritte zur Reproduktion
+- Steps to reproduce
 
-### Feature-Requests
+### Feature Requests
 
-Schlagen Sie neue Features über **GitHub Issues** vor.
+Propose new features via **GitHub Issues**.
 
-### Mitwirkung
+### Contributing
 
-Pull Requests sind willkommen! Siehe [CONTRIBUTING.md](../../CONTRIBUTING.md) für Details.
-
----
-
-## Lizenz
-
-**MIT License** - Siehe [LICENSE](../../LICENSE) für Details.
+Pull requests are welcome! See [CONTRIBUTING.md](../../CONTRIBUTING.md) for details.
 
 ---
 
-## Über den Autor
+## License
 
-**carsteneu** - Extension-Entwickler
+**MIT License** - See [LICENSE](../../LICENSE) for details.
+
+---
+
+## About the Author
+
+**carsteneu** - Extension Developer
 
 - GitHub: https://github.com/carsteneu
-- Extension-Homepage: https://github.com/carsteneu/remember
+- Extension Homepage: https://github.com/carsteneu/remember
 
 ---
 
 ## Changelog
 
-Siehe [CHANGELOG.md](../../CHANGELOG.md) für Versions-Historie.
+See [CHANGELOG.md](../../CHANGELOG.md) for version history.
 
 ---
 
-**Viel Erfolg mit Window Position Remember!**
+**Enjoy Window Position Remember!**
 
-Bei Fragen oder Problemen:
-1. Lesen Sie die [FAQ](faq.md)
-2. Prüfen Sie [GitHub Issues](https://github.com/carsteneu/remember/issues)
-3. Erstellen Sie ein neues Issue mit detaillierten Informationen
+If you have questions or problems:
+1. Read the [FAQ](faq.md)
+2. Check [GitHub Issues](https://github.com/carsteneu/remember/issues)
+3. Create a new issue with detailed information
 
 ---
 
-*Letzte Aktualisierung: Januar 2026*
+*Last updated: January 2026*
