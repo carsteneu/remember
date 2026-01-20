@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.2] - 2025-01
+
+### Added
+- Comprehensive documentation (User Guide, Developer Guide, API Reference)
+- Logger refactoring infrastructure with debug mode control
+
+### Changed
+- Logging now controlled via REMEMBER_DEBUG=1 environment variable
+- Production mode only logs errors, debug mode enables verbose logging
+- Updated Cinnamon version requirement to 6.6 (tested version)
+
 ## [1.1] - 2025-01
 
 ### Added
