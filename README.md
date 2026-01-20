@@ -48,6 +48,14 @@ Then enable the extension in System Settings → Extensions.
 3. Positions are automatically saved every 30 seconds
 4. On next login, windows are restored to their saved positions
 
+## Documentation
+
+Comprehensive documentation is available:
+
+- **[User Guide](docs/user-guide/README.md)** - Getting started, features, and configuration
+- **[Developer Guide](docs/developer-guide/README.md)** - Architecture, API, and plugin development
+- **[API Reference](docs/api/README.md)** - Complete API documentation
+
 ## Configuration
 
 Right-click the extension in the Extensions list and select **Configure** to open the settings dialog.
