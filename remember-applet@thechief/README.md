@@ -121,4 +121,6 @@ GPL-3.0 - See LICENSE file for details
 ## Links
 
 - [GitHub Repository](https://github.com/carsteneu/remember)
+- [Window Position Remember Extension](https://cinnamon-spices.linuxmint.com/extensions/view/remember@thechief)
+- [Cinnamon Spices](https://cinnamon-spices.linuxmint.com/)
 - [Report Issues](https://github.com/carsteneu/remember/issues)

@@ -134,7 +134,7 @@ This ensures your layout is restored correctly even when monitors are reconnecte
 
 ## Technical Details
 
-- **Cinnamon Version**: 5.0 - 6.4
+- **Cinnamon Version**: 6.6
 - **Languages**: JavaScript (Extension), Python 3 (Settings UI)
 - **Auto-save Interval**: 30 seconds
 - **Config Directory**: `~/.config/remember@thechief/`

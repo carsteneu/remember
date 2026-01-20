@@ -71,5 +71,8 @@ create_applet_placeholders.py
 # Development files (not for distribution)
 .claude/
 CLAUDE.md
-docs/
 plan/
+
+# Bitbucket-only files (not synced to GitHub)
+LOGGER_REFACTOR_PLAN.md
+sync-to-github.sh
