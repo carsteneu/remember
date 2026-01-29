@@ -20,6 +20,7 @@ var WindowMatcher = class WindowMatcher {
      */
     constructor(getX11WindowIdFn, log = null, logError = null) {
         this._getX11WindowId = getX11WindowIdFn;
+        this._idCounter = 0;  // Counter to ensure unique IDs when Date.now() is same
 
         // Logger injection - no-op until injected
         this._log = log || function() {};
@@ -373,8 +374,9 @@ var WindowMatcher = class WindowMatcher {
         }
 
         // 6. Create new instance only if no match found
+        // Use counter to ensure unique IDs even when multiple windows created in same millisecond
         const newInstance = {
-            id: `${appData.wm_class}-${Date.now()}`,
+            id: `${appData.wm_class}-${Date.now()}-${this._idCounter++}`,
             stable_sequence: windowSeq,
             x11_window_id: windowXid,
             title_pattern: null,

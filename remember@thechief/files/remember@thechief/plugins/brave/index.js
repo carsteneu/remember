@@ -22,6 +22,10 @@ var BraveHandler = class BraveHandler {
         // Logger injection - no-op until injected
         this._log = log || function() {};
         this._logError = logError || global.logError;
+
+        // Brave self-restores session which can take time
+        // Use multiple restore attempts to handle workspace changes
+        this.restoreTimings = [300, 800, 1500, 3000];
     }
 
     /**

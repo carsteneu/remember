@@ -12,6 +12,7 @@ const UUID = "remember@thechief";
 
 const CONFIG = {
     RESTORE_DELAY: 500,
+    WORKSPACE_SWITCH_DELAY: 150,        // Delay after workspace change before geometry restore
     MIN_WINDOW_WIDTH: 200,
     MIN_WINDOW_HEIGHT: 150
 };
@@ -192,6 +193,14 @@ var PositionRestorer = class PositionRestorer {
                     if (targetWs && !metaWindow.is_on_all_workspaces() && currentWsIndex !== targetWsIndex) {
                         metaWindow.change_workspace(targetWs);
                         this._log(`Moved ${metaWindow.get_wm_class()} from WS ${currentWsIndex + 1} to WS ${targetWsIndex + 1}`);
+
+                        // CRITICAL: Wait for workspace switch to complete before applying geometry
+                        // This prevents windows from being positioned on wrong workspace
+                        Mainloop.timeout_add(CONFIG.WORKSPACE_SWITCH_DELAY, () => {
+                            this._applyGeometry(metaWindow, instance);
+                            return false;
+                        });
+                        return; // Early return - geometry will be applied after delay
                     } else if (currentWsIndex === targetWsIndex) {
                         this._log(`${metaWindow.get_wm_class()} already on correct WS ${targetWsIndex + 1}`);
                     }
@@ -200,6 +209,25 @@ var PositionRestorer = class PositionRestorer {
                 }
             }
 
+            // Apply geometry immediately if no workspace change needed
+            this._applyGeometry(metaWindow, instance);
+        } catch (e) {
+            this._logError(`${UUID}: Error in applyPosition: ${e}`);
+        }
+    }
+
+    /**
+     * Apply geometry (position, size, states) to window
+     * Extracted from applyPosition() to allow delayed execution after workspace change
+     * @param {Meta.Window} metaWindow - The window to position
+     * @param {Object} instance - The saved instance data
+     */
+    _applyGeometry(metaWindow, instance) {
+        if (!metaWindow || metaWindow.is_on_all_workspaces === undefined) {
+            return;  // Window destroyed
+        }
+
+        try {
             // Handle maximized windows
             if (instance.maximized) {
                 metaWindow.unmaximize(Meta.MaximizeFlags.BOTH); // Unmaximize first if needed

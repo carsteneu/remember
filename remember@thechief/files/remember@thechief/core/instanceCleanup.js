@@ -96,7 +96,26 @@ var InstanceCleanup = class InstanceCleanup {
                 continue;
             }
 
-            // STEP 1: Remove duplicate instances with same x11_window_id
+            // STEP 1a: Remove duplicate instances with same ID
+            // This can happen when multiple windows are created in same millisecond
+            const seenIds = new Set();
+            let idDeduplicatedInstances = [];
+            for (const instance of appData.instances) {
+                const id = instance.id;
+                if (id && seenIds.has(id)) {
+                    // Duplicate ID - remove this instance
+                    this._log(`Removing duplicate instance for ${wmClass} with id ${id}`);
+                    removedCount++;
+                    continue;
+                }
+                if (id) {
+                    seenIds.add(id);
+                }
+                idDeduplicatedInstances.push(instance);
+            }
+            appData.instances = idDeduplicatedInstances;
+
+            // STEP 1b: Remove duplicate instances with same x11_window_id
             // Keep only the first instance for each unique x11_window_id
             const seenXids = new Set();
             const deduplicatedInstances = [];

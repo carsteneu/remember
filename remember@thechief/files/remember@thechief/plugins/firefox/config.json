@@ -1,8 +1,12 @@
 {
   "name": "firefox",
   "displayName": "Firefox",
+  "displayName_de": "Firefox",
   "version": "1.0.0",
   "description": "Browser session restore support",
+  "description_de": "Unterstützung für Browser-Sitzungswiederherstellung",
+  "about": "Enables Firefox to automatically restore your previous browsing session including all tabs and windows.",
+  "about_de": "Ermöglicht Firefox, Ihre vorherige Browser-Sitzung einschließlich aller Tabs und Fenster automatisch wiederherzustellen.",
   "wmClass": ["firefox", "Firefox", "Navigator"],
   "type": "mozilla-browser",
 
@@ -10,14 +14,23 @@
     "sessionRestore": {
       "type": "app_config",
       "label": "Session Restore",
-      "description": "Configure Firefox to restore previous session on startup",
+      "label_de": "Sitzungswiederherstellung",
+      "description": "Configure Firefox to automatically restore previous session on startup (no manual click needed)",
+      "description_de": "Firefox so konfigurieren, dass die vorherige Sitzung beim Start automatisch wiederhergestellt wird (kein manuelles Klicken erforderlich)",
       "check": {
         "type": "firefox_profile",
         "pattern": "browser.startup.page\", 3"
       },
       "configure": {
         "type": "firefox",
-        "prefLine": "user_pref(\"browser.startup.page\", 3);",
+        "prefLines": [
+          "user_pref(\"browser.startup.page\", 3);",
+          "user_pref(\"browser.sessionstore.resume_from_crash\", true);",
+          "user_pref(\"browser.sessionstore.max_resumed_crashes\", -1);",
+          "user_pref(\"browser.sessionstore.resuming_after_os_restart\", true);",
+          "user_pref(\"browser.warnOnQuit\", false);",
+          "user_pref(\"browser.tabs.warnOnClose\", false);"
+        ],
         "checkPattern": "browser.startup.page\", 3"
       },
       "unconfigure": {
@@ -34,9 +47,7 @@
   "launch": {
     "executables": ["firefox"],
     "flags": [],
-    "conditionalFlags": {
-      "launchFlags.firefoxSessionRestore": ["--restore-session"]
-    }
+    "conditionalFlags": {}
   },
 
   "features": {

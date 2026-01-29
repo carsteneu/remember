@@ -48,9 +48,9 @@
   },
 
   "features": {
-    "isSingleInstance": true,
-    "timeout": 90000,
-    "gracePeriod": 45000,
+    "isSingleInstance": false,
+    "timeout": 45000,
+    "gracePeriod": 15000,
     "autoRestore": true,
     "titleStabilizationDelay": 1500
   }

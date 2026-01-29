@@ -7,6 +7,7 @@
 
 const Gio = imports.gi.Gio;
 const GLib = imports.gi.GLib;
+const Mainloop = imports.mainloop;
 
 const UUID = "remember@thechief";
 
@@ -62,7 +63,16 @@ var ProcessCapture = class ProcessCapture {
 
         try {
             const pid = metaWindow.get_pid();
-            if (!pid || pid <= 0) return;
+            if (!pid || pid <= 0) {
+                // PID not available yet - retry after delay
+                // This can happen with apps that spawn child processes (VSCode, Electron apps)
+                this._log(`PID not available for ${wmClass}, scheduling retry...`);
+                Mainloop.timeout_add(500, () => {
+                    this._retryCmdlineCapture(metaWindow, instanceData, appData, 0);
+                    return false;
+                });
+                return;
+            }
 
             // Read cmdline ONCE
             const cmdlineFile = Gio.File.new_for_path(`/proc/${pid}/cmdline`);
@@ -109,6 +119,98 @@ var ProcessCapture = class ProcessCapture {
 
         } catch (e) {
             this._logError(`${UUID}: Failed to capture initial process info: ${e}`);
+        }
+    }
+
+    /**
+     * Retry cmdline capture with exponential backoff
+     * @param {Meta.Window} metaWindow - The window to capture
+     * @param {Object} instanceData - Instance data to populate
+     * @param {Object} appData - App data container
+     * @param {number} attempt - Current retry attempt (0-based)
+     * @private
+     */
+    _retryCmdlineCapture(metaWindow, instanceData, appData, attempt) {
+        const wmClass = metaWindow.get_wm_class();
+        const MAX_RETRIES = 3;
+        const RETRY_DELAYS = [500, 1000, 2000];  // Exponential backoff
+
+        // Window destroyed
+        if (!metaWindow || metaWindow.is_on_all_workspaces === undefined) {
+            this._log(`Window destroyed before cmdline capture for ${wmClass}`);
+            return;
+        }
+
+        // Already captured
+        if (instanceData.cmdline && instanceData.cmdline.length > 0) {
+            this._log(`Cmdline already captured for ${wmClass} on retry ${attempt}`);
+            return;
+        }
+
+        try {
+            const pid = metaWindow.get_pid();
+            if (!pid || pid <= 0) {
+                if (attempt < MAX_RETRIES) {
+                    const nextDelay = RETRY_DELAYS[attempt];
+                    this._log(`PID still unavailable for ${wmClass}, retry ${attempt + 1}/${MAX_RETRIES} in ${nextDelay}ms`);
+                    Mainloop.timeout_add(nextDelay, () => {
+                        this._retryCmdlineCapture(metaWindow, instanceData, appData, attempt + 1);
+                        return false;
+                    });
+                } else {
+                    this._log(`WARNING: PID never became available for ${wmClass} after ${MAX_RETRIES} retries`);
+                }
+                return;
+            }
+
+            // PID now available - capture cmdline
+            const cmdlineFile = Gio.File.new_for_path(`/proc/${pid}/cmdline`);
+            if (!cmdlineFile.query_exists(null)) {
+                this._log(`WARNING: /proc/${pid}/cmdline doesn't exist for ${wmClass}`);
+                return;
+            }
+
+            const [success, contents] = cmdlineFile.load_contents(null);
+            if (!success) return;
+
+            const cmdlineStr = imports.byteArray.toString(contents);
+            let cmdline = cmdlineStr.split('\0').filter(s => s);
+            if (cmdline.length === 0) return;
+
+            // Chromium workaround
+            const wmClassLower = wmClass.toLowerCase();
+            const isChromiumBrowser = wmClassLower.includes('brave') ||
+                                      wmClassLower.includes('chrome') ||
+                                      wmClassLower.includes('chromium');
+
+            if (isChromiumBrowser && cmdline.length === 1 && cmdline[0].includes(' --')) {
+                const spaceIndex = cmdline[0].indexOf(' ');
+                if (spaceIndex > 0) {
+                    cmdline = [cmdline[0].substring(0, spaceIndex)];
+                }
+            }
+
+            instanceData.cmdline = cmdline;
+
+            // Read working directory
+            try {
+                const cwdLink = Gio.File.new_for_path(`/proc/${pid}/cwd`);
+                const cwdInfo = cwdLink.query_info('standard::symlink-target', Gio.FileQueryInfoFlags.NONE, null);
+                instanceData.working_dir = cwdInfo.get_symlink_target();
+            } catch (e) {
+                instanceData.working_dir = GLib.get_home_dir();
+            }
+
+            // Initial document capture for document-based apps
+            if (this.isDocumentApp(wmClass)) {
+                this.captureOpenDocuments(pid, wmClass, instanceData);
+            }
+
+            this._storage.setApp(wmClass, appData);
+            this._log(`Captured process info for ${wmClass} on retry ${attempt} (PID: ${pid})`);
+
+        } catch (e) {
+            this._logError(`${UUID}: Failed to capture cmdline on retry for ${wmClass}: ${e}`);
         }
     }
 
@@ -188,6 +290,7 @@ var ProcessCapture = class ProcessCapture {
     /**
      * Capture open document files from /proc/pid/fd/
      * Extracts document paths for office suites and similar apps
+     * For LibreOffice (single process, multiple windows), matches document to window title
      * @param {number} pid - Process ID
      * @param {string} wmClass - Window manager class
      * @param {Object} instanceData - Instance data object to populate
@@ -203,6 +306,20 @@ var ProcessCapture = class ProcessCapture {
             '.pdf', '.csv', '.rtf'
         ];
 
+        // For LibreOffice (single process, multiple windows), extract expected
+        // document name from the window title to match the correct document
+        let expectedDocName = null;
+        const title = instanceData.title_snapshot || '';
+        const wmClassLower = wmClass.toLowerCase();
+        if (wmClassLower.includes('libreoffice') || wmClassLower.includes('soffice')) {
+            // Title format: "DocumentName.ext – LibreOffice Component"
+            const suffixIndex = title.indexOf(' – LibreOffice');
+            if (suffixIndex > 0) {
+                expectedDocName = title.substring(0, suffixIndex).trim();
+                this._log(`Looking for document "${expectedDocName}" for ${wmClass}`);
+            }
+        }
+
         try {
             const fdDir = Gio.File.new_for_path(`/proc/${pid}/fd`);
             if (!fdDir.query_exists(null)) return;
@@ -213,6 +330,7 @@ var ProcessCapture = class ProcessCapture {
                 null
             );
 
+            let fallbackDocument = null;  // Store first matching document as fallback
             let info;
             while ((info = enumerator.next_file(null)) !== null) {
                 try {
@@ -232,18 +350,40 @@ var ProcessCapture = class ProcessCapture {
                     const targetLower = target.toLowerCase();
                     for (const ext of documentExtensions) {
                         if (targetLower.endsWith(ext)) {
-                            // Found a document file!
                             // Verify it's not a temp file
-                            if (!target.includes('/tmp/') && !target.includes('/.~lock.')) {
+                            if (target.includes('/tmp/') || target.includes('/.~lock.')) {
+                                continue;
+                            }
+
+                            // If we have an expected document name, match it exactly
+                            if (expectedDocName) {
+                                const fileName = target.split('/').pop();
+                                if (fileName === expectedDocName) {
+                                    instanceData.document_path = target;
+                                    this._log(`Matched document path for ${wmClass}: ${target}`);
+                                    return;
+                                }
+                                // Store as fallback in case no exact match
+                                if (!fallbackDocument) {
+                                    fallbackDocument = target;
+                                }
+                            } else {
+                                // No expected name, use first match (non-LibreOffice apps)
                                 instanceData.document_path = target;
                                 this._log(`Captured document path for ${wmClass}: ${target}`);
-                                return; // Use the first matching document
+                                return;
                             }
                         }
                     }
                 } catch (e) {
                     // Skip unreadable fd entries (common for sockets, pipes, etc.)
                 }
+            }
+
+            // Use fallback if no exact match found (should rarely happen)
+            if (fallbackDocument && !instanceData.document_path) {
+                instanceData.document_path = fallbackDocument;
+                this._log(`Using fallback document path for ${wmClass}: ${fallbackDocument}`);
             }
         } catch (e) {
             // Can't enumerate fd directory - permissions or process gone

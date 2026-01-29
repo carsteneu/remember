@@ -1,8 +1,12 @@
 {
   "name": "libreoffice",
   "displayName": "LibreOffice",
-  "version": "1.0.0",
-  "description": "Office suite with document path extraction from window title",
+  "displayName_de": "LibreOffice",
+  "version": "1.1.0",
+  "description": "Office suite with crash recovery integration and document restoration",
+  "description_de": "Office-Suite mit Crash-Recovery-Integration und Dokumentwiederherstellung",
+  "about": "LibreOffice plugin with advanced document recovery features. Parses LibreOffice's internal RecoveryList to restore all open documents after system reboot or crash, bypassing the recovery dialog.",
+  "about_de": "LibreOffice-Plugin mit erweiterten Dokumentwiederherstellungs-Features. Parst LibreOffices interne RecoveryList um alle geöffneten Dokumente nach Systemreboot oder Crash wiederherzustellen, ohne Recovery-Dialog.",
   "wmClass": [
     "libreoffice-calc", "libreoffice-writer", "libreoffice-impress",
     "libreoffice-draw", "libreoffice-base", "libreoffice-math",
@@ -11,17 +15,31 @@
   "type": "office-suite",
   "handler": "index.js",
 
+  "settings": {
+    "disableRecoveryDialog": {
+      "type": "app_config",
+      "label": "Disable Recovery Dialog",
+      "label_de": "Recovery-Dialog deaktivieren",
+      "description": "Adds --norestore flag to prevent LibreOffice crash recovery dialog. Documents are restored via saved window positions instead.",
+      "description_de": "Fügt --norestore Flag hinzu um LibreOffice Crash-Recovery-Dialog zu verhindern. Dokumente werden über gespeicherte Fensterpositionen wiederhergestellt.",
+      "defaultValue": true
+    }
+  },
+
   "launch": {
     "executables": ["libreoffice", "soffice"],
     "flags": ["--nologo"],
-    "conditionalFlags": {}
+    "conditionalFlags": {
+      "pluginSettings.libreoffice.disableRecoveryDialog": ["--norestore"]
+    }
   },
 
   "features": {
     "isSingleInstance": false,
     "timeout": 60000,
     "gracePeriod": 30000,
-    "needsTitleParsing": true
+    "needsTitleParsing": true,
+    "recoveryDataPath": "~/.config/libreoffice/4/user/registrymodifications.xcu"
   },
 
   "titlePatterns": {

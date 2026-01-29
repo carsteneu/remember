@@ -289,36 +289,45 @@ class ManualConfigureHandler(ConfigureHandler):
 class FirefoxConfigureHandler(ConfigureHandler):
     """Configures Firefox by writing to user.js in profile directory."""
 
-    def __init__(self, pref_line: str, check_pattern: str):
-        self.pref_line = pref_line
+    def __init__(self, pref_lines: list, check_pattern: str):
+        # Support both single string and array of strings
+        if isinstance(pref_lines, str):
+            self.pref_lines = [pref_lines] if pref_lines else []
+        else:
+            self.pref_lines = pref_lines or []
         self.check_pattern = check_pattern
-        self.profile_dir = os.path.expanduser("~/.mozilla/firefox")
+        # Check both common Firefox profile locations
+        self.profile_dirs = [
+            os.path.expanduser("~/.mozilla/firefox"),
+            os.path.expanduser("~/.config/mozilla/firefox")
+        ]
 
     def configure(self) -> bool:
-        if not os.path.exists(self.profile_dir):
-            return False
-
-        configured = False
-        for item in os.listdir(self.profile_dir):
-            if '.default' not in item:
+        for profile_dir in self.profile_dirs:
+            if not os.path.exists(profile_dir):
                 continue
 
-            user_js_path = os.path.join(self.profile_dir, item, "user.js")
+            for item in os.listdir(profile_dir):
+                if '.default' not in item:
+                    continue
 
-            # Check if already configured
-            if os.path.exists(user_js_path):
-                with open(user_js_path, 'r') as f:
-                    if self.check_pattern in f.read():
-                        return True
+                user_js_path = os.path.join(profile_dir, item, "user.js")
 
-            # Append configuration
-            with open(user_js_path, 'a') as f:
-                f.write('\n// Added by Window Position Remember\n')
-                f.write(f'{self.pref_line}\n')
-            configured = True
-            break
+                # Check if already configured
+                if os.path.exists(user_js_path):
+                    with open(user_js_path, 'r') as f:
+                        if self.check_pattern in f.read():
+                            return True
 
-        return configured
+                # Write configuration (overwrite to ensure clean state)
+                with open(user_js_path, 'w') as f:
+                    f.write('// Firefox session restore configuration\n')
+                    f.write('// Added by Window Position Remember\n')
+                    for line in self.pref_lines:
+                        f.write(f'{line}\n')
+                return True
+
+        return False
 
 
 class OpenSettingsHandler(ConfigureHandler):
@@ -416,8 +425,10 @@ class HandlerFactory:
                 parent_window=parent_window
             )
         elif handler_type == 'firefox':
+            # Support both prefLine (string) and prefLines (array)
+            pref_lines = config.get('prefLines', config.get('prefLine', ''))
             return FirefoxConfigureHandler(
-                pref_line=config.get('prefLine', ''),
+                pref_lines=pref_lines,
                 check_pattern=config.get('checkPattern', '')
             )
         elif handler_type == 'url' or handler_type == 'open_settings':

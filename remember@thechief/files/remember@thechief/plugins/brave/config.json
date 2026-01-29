@@ -1,8 +1,12 @@
 {
   "name": "brave",
   "displayName": "Brave Browser",
+  "displayName_de": "Brave Browser",
   "version": "1.0.0",
-  "description": "Browser session restore support with preferences fix",
+  "description": "Chromium-based browser with privacy features. Supports multi-window session restore and tab recovery.",
+  "description_de": "Chromium-basierter Browser mit Datenschutz-Funktionen. Unterstützt Multi-Window Session Restore und Tab-Wiederherstellung.",
+  "about": "Brave is a privacy-focused browser built on Chromium. This plugin enables automatic session restoration by managing Brave's preferences file and using the --restore-last-session flag.\n\nFeatures:\n• Automatic session restore configuration\n• Multi-window and multi-tab support\n• Preferences fix for exit_type handling\n• Single-instance app management with timeout",
+  "about_de": "Brave ist ein datenschutzorientierter Browser auf Basis von Chromium. Dieses Plugin ermöglicht automatische Sitzungswiederherstellung durch Verwaltung der Brave-Einstellungsdatei und Verwendung des --restore-last-session Flags.\n\nFunktionen:\n• Automatische Konfiguration der Sitzungswiederherstellung\n• Multi-Window und Multi-Tab Unterstützung\n• Preferences-Fix für exit_type Behandlung\n• Single-Instance App Management mit Timeout",
   "wmClass": ["brave-browser", "Brave-browser", "brave", "Brave"],
   "type": "chromium-browser",
   "handler": "index.js",
@@ -11,7 +15,9 @@
     "sessionRestore": {
       "type": "app_config",
       "label": "Session Restore",
-      "description": "Configure Brave to restore previous session on startup",
+      "label_de": "Sitzungswiederherstellung",
+      "description": "Automatically configure Brave to restore previous session on startup. The extension will modify Brave's Preferences file to enable session restore.",
+      "description_de": "Konfiguriert Brave automatisch, um die vorherige Sitzung beim Start wiederherzustellen. Die Extension ändert Braves Preferences-Datei, um Session Restore zu aktivieren.",
       "check": {
         "type": "json_key",
         "path": "~/.config/BraveSoftware/Brave-Browser/Default/Preferences",
@@ -19,12 +25,16 @@
         "value": 1
       },
       "configure": {
-        "type": "manual",
-        "message": "Brave settings cannot be changed externally.\n\nPlease configure manually:\n1. Open Brave\n2. Go to Settings (brave://settings/)\n3. Find 'On startup'\n4. Select 'Continue where you left off'"
+        "type": "json_set",
+        "path": "~/.config/BraveSoftware/Brave-Browser/Default/Preferences",
+        "key": "session.restore_on_startup",
+        "value": 1
       },
       "unconfigure": {
-        "type": "manual",
-        "message": "Please disable session restore in Brave settings manually:\n1. Open Brave\n2. Go to Settings (brave://settings/)\n3. Find 'On startup'\n4. Select 'Open the New Tab page'"
+        "type": "json_set",
+        "path": "~/.config/BraveSoftware/Brave-Browser/Default/Preferences",
+        "key": "session.restore_on_startup",
+        "value": 5
       },
       "openSettings": {
         "type": "url",

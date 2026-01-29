@@ -56,6 +56,10 @@ var SessionLauncher = class SessionLauncher {
 
         // Progress IDs map - for single-instance apps, maps primary instanceId to all covered instanceIds
         this._progressIdsMap = new Map();   // instanceId -> [instanceId1, instanceId2, ...]
+
+        // Single-instance pending windows - tracks all expected windows for single-instance apps
+        // Key: wmClass, Value: Array of { instanceId, instance, matched: boolean }
+        this._singleInstancePendingWindows = new Map();
     }
 
     /**
@@ -385,6 +389,18 @@ var SessionLauncher = class SessionLauncher {
                 this._log(`${wmClass} is single-instance app - launching once, showing ${appInstances.length} instances in progress`);
                 const instance = appInstances[0];
                 const instanceId = instance.id || `${wmClass}-${baseTime}-0`;
+
+                // Build list of all instances for this single-instance app
+                const allInstances = appInstances.map((inst, idx) => ({
+                    instanceId: inst.id || `${wmClass}-${baseTime}-${idx}`,
+                    instance: inst,
+                    matched: false
+                }));
+
+                // Register all instances for window matching
+                this._singleInstancePendingWindows.set(wmClass, allInstances);
+                this._log(`Registered ${allInstances.length} pending windows for single-instance ${wmClass}`);
+
                 this._launchQueue.push({
                     wmClass: wmClass,
                     appData: appData,
@@ -473,9 +489,39 @@ var SessionLauncher = class SessionLauncher {
         // Store progressIds for status updates (single-instance apps cover multiple instances)
         this._progressIdsMap.set(instanceId, progressIds);
 
-        // Launch the app
+        // For single-instance apps, register all instances in expectedLaunches with timeouts
+        if (item.coveredInstanceIds && item.coveredInstanceIds.length > 1) {
+            const pendingWindows = this._singleInstancePendingWindows.get(wmClass);
+            if (pendingWindows) {
+                const { timeout } = this._getTimeouts(wmClass);
+                for (const pending of pendingWindows) {
+                    if (!this._expectedLaunches.has(pending.instanceId)) {
+                        this._expectedLaunches.set(pending.instanceId, {
+                            wmClass: wmClass,
+                            instance: pending.instance,
+                            startTime: Date.now(),
+                            timeout: timeout,
+                            timedOut: false,
+                            gracePeriod: null,
+                            isSingleInstance: true
+                        });
+
+                        // Set timeout for each instance
+                        const timeoutId = Mainloop.timeout_add(timeout, () => {
+                            this._onLaunchTimeout(pending.instanceId);
+                            return false;
+                        });
+                        this._launchTimeouts.set(pending.instanceId, timeoutId);
+                        this._totalLaunches++;
+                    }
+                }
+                this._log(`Registered ${pendingWindows.length} expected launches for single-instance ${wmClass}`);
+            }
+        }
+
+        // Launch the app - pass all covered instances for single-instance apps
         this._notifyProgress(progressIds, wmClass, 'launching');
-        this._launchApp(wmClass, item.appData, item.instance, instanceId);
+        this._launchApp(wmClass, item.appData, item.instance, instanceId, item.coveredInstanceIds);
 
         // Determine delay until next launch
         let delay = this._launchConfig.LAUNCH_DELAY_BETWEEN_APPS;
@@ -1161,6 +1207,7 @@ var SessionLauncher = class SessionLauncher {
         const wmClass = metaWindow.get_wm_class();
         if (!wmClass) return null;
 
+        // First, check direct pending launches (for multi-instance apps)
         for (const [instanceId, pending] of this._pendingLaunches.entries()) {
             // Check direct wmClass match OR related wmClass via plugin
             if (this._wmClassMatches(wmClass, pending.wmClass)) {
@@ -1181,6 +1228,61 @@ var SessionLauncher = class SessionLauncher {
                 // Return both instance and instanceId for progress tracking
                 return { instance: pending.instance, instanceId: instanceId };
             }
+        }
+
+        // Second, check single-instance pending windows (for Brave, Firefox, etc.)
+        // These are windows opened by the app's own session restore
+        const singleInstanceMatch = this._checkSingleInstancePendingWindow(wmClass);
+        if (singleInstanceMatch) {
+            return singleInstanceMatch;
+        }
+
+        return null;
+    }
+
+    /**
+     * Check if a window matches a pending single-instance app window
+     * Returns {instance, instanceId} or null
+     */
+    _checkSingleInstancePendingWindow(wmClass) {
+        // Check all registered single-instance apps
+        for (const [pendingWmClass, instances] of this._singleInstancePendingWindows.entries()) {
+            // Check if wmClass matches (direct or via plugin)
+            if (!this._wmClassMatches(wmClass, pendingWmClass)) {
+                continue;
+            }
+
+            // Find the first unmatched instance
+            const unmatched = instances.find(i => !i.matched);
+            if (!unmatched) {
+                continue; // All instances already matched
+            }
+
+            // Mark as matched
+            unmatched.matched = true;
+            const instanceId = unmatched.instanceId;
+
+            this._log(`Single-instance window appeared for ${pendingWmClass}: ${wmClass} (${instanceId})`);
+            this._notifyProgress(instanceId, wmClass, 'positioning');
+
+            // Remove from expected launches and clear timeout if any
+            this._expectedLaunches.delete(instanceId);
+            const timeoutId = this._launchTimeouts.get(instanceId);
+            if (timeoutId) {
+                Mainloop.source_remove(timeoutId);
+                this._launchTimeouts.delete(instanceId);
+            }
+
+            // Check if all instances are now matched
+            const allMatched = instances.every(i => i.matched);
+            if (allMatched) {
+                this._singleInstancePendingWindows.delete(pendingWmClass);
+                this._log(`All ${instances.length} windows matched for single-instance ${pendingWmClass}`);
+            }
+
+            this._checkAllLaunchesComplete();
+
+            return { instance: unmatched.instance, instanceId: instanceId };
         }
 
         return null;

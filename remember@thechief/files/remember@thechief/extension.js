@@ -75,6 +75,9 @@ class WindowRememberExtension {
         this._extPath = meta.path;
         global.log(`${UUID}: Extension initialized at ${this._extPath}`);
 
+        // Install translations if needed
+        this._installTranslationsIfNeeded();
+
         // Load core modules via modules.js for AppletManager (needed early)
         const modulesModule = getExtensionModule('modules');
         const Modules = modulesModule.Modules;
@@ -84,6 +87,55 @@ class WindowRememberExtension {
         // Initialize AppletManager and install applet if needed
         this._appletManager = new AppletManager(this._extPath);
         this._appletManager.installIfNeeded();
+    }
+
+    /**
+     * Install translation .mo files to ~/.local/share/locale if needed
+     */
+    _installTranslationsIfNeeded() {
+        const localeBase = GLib.build_filenamev([GLib.get_home_dir(), '.local', 'share', 'locale']);
+        const poDir = GLib.build_filenamev([this._extPath, 'po']);
+
+        // Check if po directory exists
+        const poDirFile = Gio.File.new_for_path(poDir);
+        if (!poDirFile.query_exists(null)) {
+            return;
+        }
+
+        // List .mo files in po directory
+        const enumerator = poDirFile.enumerate_children('standard::name', Gio.FileQueryInfoFlags.NONE, null);
+        let info;
+        while ((info = enumerator.next_file(null)) !== null) {
+            const name = info.get_name();
+            if (!name.endsWith('.mo')) continue;
+
+            const lang = name.slice(0, -3);  // Remove .mo extension
+            const targetDir = GLib.build_filenamev([localeBase, lang, 'LC_MESSAGES']);
+            const targetPath = GLib.build_filenamev([targetDir, `${UUID}.mo`]);
+
+            // Check if already installed
+            const targetFile = Gio.File.new_for_path(targetPath);
+            if (targetFile.query_exists(null)) {
+                continue;  // Already installed
+            }
+
+            // Create target directory
+            try {
+                GLib.mkdir_with_parents(targetDir, 0o755);
+            } catch (e) {
+                global.logError(`${UUID}: Failed to create locale dir ${targetDir}: ${e}`);
+                continue;
+            }
+
+            // Copy .mo file
+            const sourceFile = Gio.File.new_for_path(GLib.build_filenamev([poDir, name]));
+            try {
+                sourceFile.copy(targetFile, Gio.FileCopyFlags.OVERWRITE, null, null);
+                global.log(`${UUID}: Installed translation for ${lang}`);
+            } catch (e) {
+                global.logError(`${UUID}: Failed to install translation ${lang}: ${e}`);
+            }
+        }
     }
 
     /**

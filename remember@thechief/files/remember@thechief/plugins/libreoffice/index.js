@@ -61,14 +61,25 @@ var LibreOfficeHandler = class LibreOfficeHandler {
 
         // LibreOffice positions its windows quickly and may override
         // window manager positioning. Use multiple restore attempts.
-        this.restoreTimings = [0, 200, 500];  // ms after window appears
+        // Increased timings for better workspace + geometry restoration
+        this.restoreTimings = [300, 700, 1200, 2500];  // ms after window appears
+
+        // Track if we already cleaned recovery state (do only once per session)
+        this._recoveryStateCleaned = false;
     }
 
     /**
      * Hook: Called before launching the app
      * Adds the appropriate component flag based on wmClass or title
+     * Cleans recovery state to prevent crash recovery dialog
      */
     beforeLaunch(instance, launchParams) {
+        // Clean recovery state on first launch only (not for every window)
+        if (!this._recoveryStateCleaned) {
+            this._cleanRecoveryState();
+            this._recoveryStateCleaned = true;
+        }
+
         // First try to get component from wmClass
         let componentFlag = this._componentMap[instance.wm_class];
 
@@ -84,6 +95,84 @@ var LibreOfficeHandler = class LibreOfficeHandler {
         }
 
         return launchParams;
+    }
+
+    /**
+     * Archive LibreOffice lock files to prevent crash recovery dialog
+     * Lock files are moved to backup folder with timestamp instead of deleted
+     * @private
+     */
+    _cleanupLockFiles() {
+        try {
+            const lockPath = GLib.build_filenamev([
+                GLib.get_home_dir(),
+                '.config',
+                'libreoffice',
+                '4',
+                '.lock'
+            ]);
+
+            const lockFile = Gio.File.new_for_path(lockPath);
+            if (lockFile.query_exists(null)) {
+                // Create backup directory
+                const backupDir = GLib.build_filenamev([
+                    GLib.get_home_dir(),
+                    '.config',
+                    'libreoffice',
+                    '4',
+                    'user',
+                    'backup'
+                ]);
+
+                const backupDirFile = Gio.File.new_for_path(backupDir);
+                if (!backupDirFile.query_exists(null)) {
+                    backupDirFile.make_directory_with_parents(null);
+                }
+
+                // Archive lock file with timestamp
+                const timestamp = GLib.DateTime.new_now_local().format('%Y%m%d-%H%M%S');
+                const archivePath = GLib.build_filenamev([backupDir, `.lock.${timestamp}`]);
+                const archiveFile = Gio.File.new_for_path(archivePath);
+
+                lockFile.move(archiveFile, Gio.FileCopyFlags.NONE, null, null);
+                this._log(`LibreOffice: Archived lock file to ${archivePath}`);
+
+                // Clean up old backups (older than 7 days)
+                this._cleanOldBackups(backupDir);
+            }
+        } catch (e) {
+            this._log(`LibreOffice: Could not archive lock file: ${e}`);
+        }
+    }
+
+    /**
+     * Remove lock file backups older than 7 days
+     * @param {string} backupDir - Path to backup directory
+     * @private
+     */
+    _cleanOldBackups(backupDir) {
+        try {
+            const dir = Gio.File.new_for_path(backupDir);
+            const enumerator = dir.enumerate_children('standard::name,time::modified', Gio.FileQueryInfoFlags.NONE, null);
+
+            const now = GLib.DateTime.new_now_local();
+            const sevenDaysAgo = now.add_days(-7);
+
+            let info;
+            while ((info = enumerator.next_file(null)) !== null) {
+                const name = info.get_name();
+                if (name.startsWith('.lock.')) {
+                    const modTime = info.get_modification_date_time();
+                    if (modTime && modTime.compare(sevenDaysAgo) < 0) {
+                        const oldFile = dir.get_child(name);
+                        oldFile.delete(null);
+                        this._log(`LibreOffice: Deleted old backup: ${name}`);
+                    }
+                }
+            }
+        } catch (e) {
+            // Ignore errors during cleanup
+        }
     }
 
     /**
@@ -414,6 +503,52 @@ var LibreOfficeHandler = class LibreOfficeHandler {
         }
 
         return false;
+    }
+
+    /**
+     * Clean LibreOffice recovery state to prevent crash recovery dialog
+     * Sets Crashed=false in registrymodifications.xcu and archives lock file
+     * @private
+     */
+    _cleanRecoveryState() {
+        try {
+            // 1. Archive lock file
+            this._cleanupLockFiles();
+
+            // 2. Set Crashed=false in registry to prevent dialog
+            const file = Gio.File.new_for_path(this._recentDocsPath);
+            if (!file.query_exists(null)) return;
+
+            const [success, contents] = file.load_contents(null);
+            if (!success) return;
+
+            let xml = imports.byteArray.toString(contents);
+            let modified = false;
+
+            // Set Crashed=false
+            const crashedTrue = /<prop oor:name="Crashed"[^>]*><value>true<\/value>/g;
+            if (xml.match(crashedTrue)) {
+                xml = xml.replace(crashedTrue, '<prop oor:name="Crashed" oor:op="fuse"><value>false</value>');
+                modified = true;
+                this._log('LibreOffice: Set Crashed=false');
+            }
+
+            // Set SessionData=false
+            const sessionTrue = /<prop oor:name="SessionData"[^>]*><value>true<\/value>/g;
+            if (xml.match(sessionTrue)) {
+                xml = xml.replace(sessionTrue, '<prop oor:name="SessionData" oor:op="fuse"><value>false</value>');
+                modified = true;
+                this._log('LibreOffice: Set SessionData=false');
+            }
+
+            if (modified) {
+                file.replace_contents(xml, null, false, Gio.FileCreateFlags.REPLACE_DESTINATION, null);
+                this._log('LibreOffice: Recovery state cleaned');
+            }
+
+        } catch (e) {
+            this._log(`LibreOffice: Could not clean recovery state: ${e}`);
+        }
     }
 
     destroy() {
