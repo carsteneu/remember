@@ -374,25 +374,19 @@ class WindowRememberExtension {
     _saveAllWindows() {
         if (!this._tracker || !this._storage) return;
 
-        let savedCount = 0;
-        global.get_window_actors().forEach(actor => {
-            const metaWindow = actor.get_meta_window();
-            if (metaWindow && this._tracker._windowFilter.shouldTrack(metaWindow)) {
-                // Call _onWindowChanged to save the window state
-                this._tracker._onWindowChanged(metaWindow);
-                savedCount++;
-            }
-        });
-
+        // Use full-snapshot save (captures all tracked windows)
+        this._tracker._saveAllOpenWindows();
         this._storage.save();
-        log(`Full save completed - ${savedCount} windows saved`);
+        log(`Full save completed`);
     }
 
     /**
      * Force save all window positions
      */
     _saveAll() {
-        if (!this._storage) return;
+        if (!this._tracker || !this._storage) return;
+        // Capture current window state with full-snapshot
+        this._tracker._saveAllOpenWindows();
         this._storage.save();
         const stats = this._getStats();
         log('Force saved all positions');

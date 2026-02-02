@@ -16,7 +16,7 @@ const SignalManager = imports.misc.signalManager;
 const UUID = "remember@thechief";
 
 // Core modules (loaded via modules.js)
-let WindowFilter, WindowMatcher, PositionRestorer, ProcessCapture, WmClassMigration, InstanceCleanup, CONFIG;
+let WindowFilter, WindowMatcher, PositionRestorer, ProcessCapture, WmClassMigration, CONFIG;
 
 /**
  * Window Tracker Class
@@ -30,8 +30,6 @@ var WindowTracker = class WindowTracker {
         this._extensionMeta = extensionMeta;
         this._signals = new SignalManager.SignalManager(null);
         this._trackedWindows = new Map();  // metaWindow -> signalIds
-        this._dirtyWindows = new Set();    // Windows with unsaved changes (dirty flag)
-        this._everTrackedWmClasses = new Set(); // All wmClasses ever tracked this session (survives window close)
         this._pendingRestores = new Map(); // wmClass -> instance data
         this._sessionLauncher = null;
         this._pluginManager = null;
@@ -76,15 +74,6 @@ var WindowTracker = class WindowTracker {
             findDesktopExecFn: this._findDesktopExec.bind(this),
             onWindowChangedFn: this._onWindowChanged.bind(this)
         });
-
-        this._instanceCleanup = new InstanceCleanup({
-            storage: this._storage,
-            sessionLauncher: this._sessionLauncher,
-            shouldTrackFn: this._windowFilter.shouldTrack.bind(this._windowFilter),
-            getX11WindowIdFn: this._getX11WindowId.bind(this),
-            isWmClassBlacklistedFn: this._windowFilter.isWmClassBlacklisted.bind(this._windowFilter),
-            everTrackedWmClasses: this._everTrackedWmClasses
-        });
     }
 
     /**
@@ -95,21 +84,74 @@ var WindowTracker = class WindowTracker {
         const originalSearchPath = imports.searchPath.slice();
         try {
             imports.searchPath.unshift(extensionMeta.path);
+
+            // Clear any stale GJS module cache entries for our core modules
+            // This prevents issues after Cinnamon restart where old module refs persist
+            // Note: Don't try to delete 'modules' - it may be non-configurable in GJS
+            const modulesToClear = ['windowFilter', 'windowMatcher',
+                                    'positionRestorer', 'processCapture',
+                                    'wmClassMigration'];
+            for (const modName of modulesToClear) {
+                try {
+                    if (imports[modName]) {
+                        delete imports[modName];
+                    }
+                } catch (e) {
+                    // Property may be non-configurable, skip silently
+                }
+            }
+
             const modulesModule = imports.modules;
+            if (!modulesModule || !modulesModule.Modules) {
+                throw new Error('modules.js failed to load or Modules not exported');
+            }
             const Modules = modulesModule.Modules;
 
-            // Load core modules
+            // Clear modules.js internal cache to force fresh loads
+            Modules.clearCache();
+
+            // Load core modules with explicit error checking
+            global.log(`${UUID}: Loading windowFilter...`);
             const windowFilterModule = Modules.load(extensionMeta, 'core', 'windowFilter');
+            if (!windowFilterModule || !windowFilterModule.WindowFilter) {
+                throw new Error('windowFilter module loaded but WindowFilter class not found');
+            }
             WindowFilter = windowFilterModule.WindowFilter;
             CONFIG = windowFilterModule.CONFIG;
 
-            WindowMatcher = Modules.load(extensionMeta, 'core', 'windowMatcher').WindowMatcher;
-            PositionRestorer = Modules.load(extensionMeta, 'core', 'positionRestorer').PositionRestorer;
-            ProcessCapture = Modules.load(extensionMeta, 'core', 'processCapture').ProcessCapture;
-            WmClassMigration = Modules.load(extensionMeta, 'core', 'wmClassMigration').WmClassMigration;
-            InstanceCleanup = Modules.load(extensionMeta, 'core', 'instanceCleanup').InstanceCleanup;
+            global.log(`${UUID}: Loading windowMatcher...`);
+            const windowMatcherModule = Modules.load(extensionMeta, 'core', 'windowMatcher');
+            if (!windowMatcherModule || !windowMatcherModule.WindowMatcher) {
+                throw new Error('windowMatcher module loaded but WindowMatcher class not found');
+            }
+            WindowMatcher = windowMatcherModule.WindowMatcher;
 
-            this._log(`Core modules loaded successfully`);
+            global.log(`${UUID}: Loading positionRestorer...`);
+            const positionRestorerModule = Modules.load(extensionMeta, 'core', 'positionRestorer');
+            if (!positionRestorerModule || !positionRestorerModule.PositionRestorer) {
+                throw new Error('positionRestorer module loaded but PositionRestorer class not found');
+            }
+            PositionRestorer = positionRestorerModule.PositionRestorer;
+
+            global.log(`${UUID}: Loading processCapture...`);
+            const processCaptureModule = Modules.load(extensionMeta, 'core', 'processCapture');
+            if (!processCaptureModule || !processCaptureModule.ProcessCapture) {
+                throw new Error('processCapture module loaded but ProcessCapture class not found');
+            }
+            ProcessCapture = processCaptureModule.ProcessCapture;
+
+            global.log(`${UUID}: Loading wmClassMigration...`);
+            const wmClassMigrationModule = Modules.load(extensionMeta, 'core', 'wmClassMigration');
+            if (!wmClassMigrationModule || !wmClassMigrationModule.WmClassMigration) {
+                throw new Error('wmClassMigration module loaded but WmClassMigration class not found');
+            }
+            WmClassMigration = wmClassMigrationModule.WmClassMigration;
+
+            global.log(`${UUID}: Core modules loaded successfully`);
+        } catch (e) {
+            global.logError(`${UUID}: FATAL - Failed to load core modules: ${e.message}`);
+            global.logError(`${UUID}: Stack: ${e.stack}`);
+            throw e;  // Re-throw to prevent extension from running with broken modules
         } finally {
             // Restore the original search path
             imports.searchPath.length = 0;
@@ -126,7 +168,6 @@ var WindowTracker = class WindowTracker {
         this._sessionLauncher = launcher;
         // Update references in modules that need it
         this._positionRestorer._sessionLauncher = launcher;
-        this._instanceCleanup._sessionLauncher = launcher;
     }
 
     /**
@@ -165,16 +206,14 @@ var WindowTracker = class WindowTracker {
             this._onMonitorsChanged.bind(this)
         );
 
-        // Register full-save callback - saves ALL open windows every 5 seconds
-        // Also cleans up orphaned instances (windows that were closed by user)
+        // Register full-save callback - saves ALL open windows every 30 seconds
+        // Full-snapshot approach: completely replaces instances[] with current state
         this._storage.setAutoSaveCallback(() => {
             // Only save if not restoring session and not shutting down
             if (this._isRestoringSession || this._isShuttingDown) {
                 return false; // Skip save
             }
-            // First cleanup orphaned instances (windows user closed)
-            this._instanceCleanup.cleanupOrphanedInstances();
-            // Then save all currently open windows
+            // Save all currently open windows (full snapshot)
             this._saveAllOpenWindows();
             return true; // Proceed with save
         });
@@ -201,7 +240,6 @@ var WindowTracker = class WindowTracker {
 
         this._trackedWindows.clear();
         this._pendingRestores.clear();
-        this._everTrackedWmClasses.clear();
 
         this._log(`Window tracking disabled`);
     }
@@ -255,11 +293,6 @@ var WindowTracker = class WindowTracker {
         this._trackedWindows.set(metaWindow, signalIds);
 
         const wmClass = metaWindow.get_wm_class();
-
-        // Remember this wmClass was tracked this session (survives window close)
-        if (wmClass) {
-            this._everTrackedWmClasses.add(wmClass);
-        }
 
         // Use logger if available (sanitizes title in production mode)
         if (this._logger) {
@@ -369,6 +402,18 @@ var WindowTracker = class WindowTracker {
                 }
             }
 
+            // Determine if we should restore position for this window
+            // - Always restore if launched by SessionLauncher (session restore)
+            // - Only restore for manually opened windows if it's the FIRST window of this app
+            //   (i.e., user reopened an app they had closed)
+            // - Don't restore if user manually opens a NEW window while others are already open
+            const shouldRestorePosition = launchedInstance !== null || this._isFirstWindowOfApp(wmClass);
+
+            if (!shouldRestorePosition) {
+                this._log(`Skipping position restore for ${wmClass} - manual new window while app already open`);
+                return false;
+            }
+
             if (titleStabilizationDelay > 0 && !launchedInstance) {
                 // Wait for title to stabilize before matching (for single-instance apps
                 // where VSCode opens additional windows without pendingLaunch)
@@ -390,7 +435,7 @@ var WindowTracker = class WindowTracker {
 
     /**
      * Handle window position/size changes
-     * Now uses dirty-flag system: just marks window as dirty, actual save happens in bulk
+     * Just marks window as tracked - actual save happens in periodic full-snapshot
      */
     _onWindowChanged(metaWindow) {
         if (!this._windowFilter.shouldTrack(metaWindow)) return;
@@ -400,8 +445,8 @@ var WindowTracker = class WindowTracker {
             return;
         }
 
-        // Mark window as dirty - will be processed in next auto-save cycle
-        this._dirtyWindows.add(metaWindow);
+        // Window is already in _trackedWindows, nothing else needed
+        // Full-snapshot save will capture all tracked windows periodically
     }
 
     /**
@@ -572,6 +617,29 @@ var WindowTracker = class WindowTracker {
      * Note: We keep X11 IDs and stable sequences - they'll be updated if windows reappear
      * This preserves title_snapshot as primary identifier after restart
      */
+    /**
+     * Check if this is the first window of the given wmClass
+     * Used to determine if we should restore position for manually opened windows
+     * @param {string} wmClass - The window class to check
+     * @returns {boolean} True if no other windows of this class are currently tracked
+     */
+    _isFirstWindowOfApp(wmClass) {
+        // Count how many windows of this wmClass are already tracked
+        // Note: The new window is already in _trackedWindows at this point
+        let count = 0;
+        for (const metaWindow of this._trackedWindows.keys()) {
+            try {
+                if (metaWindow && metaWindow.get_wm_class && metaWindow.get_wm_class() === wmClass) {
+                    count++;
+                }
+            } catch (e) {
+                // Window might be destroyed
+            }
+        }
+        // If count is 1, this is the only (first) window
+        return count <= 1;
+    }
+
     resetAssignments() {
         const apps = this._storage.getAllApps();
         for (const wmClass in apps) {
@@ -609,43 +677,155 @@ var WindowTracker = class WindowTracker {
     }
 
     /**
-     * Save only DIRTY windows to storage (optimized auto-save)
-     * Called periodically by auto-save - only processes windows that changed
+     * Full-snapshot save: captures ALL open windows and replaces instances[]
+     * This approach automatically handles closed windows (they won't be in the snapshot)
+     * Called periodically (every 30s) by auto-save
      */
     _saveAllOpenWindows() {
-        const dirtyCount = this._dirtyWindows.size;
+        // Build map of wmClass -> instances for all currently open windows
+        const currentState = new Map(); // wmClass -> {appData, instances[]}
 
-        if (dirtyCount === 0) {
-            // Nothing changed, skip save entirely
-            return;
-        }
-
-        // Process only dirty windows
-        for (const metaWindow of this._dirtyWindows) {
+        // Collect all tracked windows
+        let windowCount = 0;
+        for (const metaWindow of this._trackedWindows.keys()) {
             try {
-                // Window might have been destroyed since marked dirty
-                if (metaWindow && metaWindow.get_wm_class) {
-                    this._saveWindowStateInternal(metaWindow);
+                if (!metaWindow || !metaWindow.get_wm_class) continue;
+
+                const wmClass = metaWindow.get_wm_class();
+                if (!wmClass) continue;
+
+                // Initialize app entry if needed
+                if (!currentState.has(wmClass)) {
+                    const existingAppData = this._storage.getApp(wmClass);
+                    currentState.set(wmClass, {
+                        wm_class: wmClass,
+                        desktop_file: existingAppData?.desktop_file || this._findDesktopFile(metaWindow),
+                        desktop_exec: existingAppData?.desktop_exec || this._findDesktopExec(metaWindow),
+                        instances: []
+                    });
+                }
+
+                // Build instance data for this window
+                const instanceData = this._buildInstanceData(metaWindow);
+                if (instanceData) {
+                    currentState.get(wmClass).instances.push(instanceData);
+                    windowCount++;
                 }
             } catch (e) {
-                // Window was destroyed, ignore
+                // Window was destroyed, skip
             }
         }
 
-        // Clear dirty set
-        this._dirtyWindows.clear();
+        // Remove apps that no longer have any windows open
+        const existingApps = this._storage.getAllApps();
+        for (const wmClass in existingApps) {
+            if (!currentState.has(wmClass)) {
+                // Check if SessionLauncher is still expecting windows for this app
+                const expectedIds = this._sessionLauncher ?
+                    this._sessionLauncher.getExpectedInstances(wmClass) : [];
+
+                if (expectedIds.length > 0) {
+                    // Don't remove - windows are still expected to appear
+                    this._log(`Keeping ${wmClass} - ${expectedIds.length} instances still expected`);
+                    continue;
+                }
+
+                // No windows and none expected - remove from storage
+                this._storage.removeApp(wmClass);
+                this._log(`Removed app ${wmClass} (no windows open)`);
+            }
+        }
+
+        // Update storage with current snapshot
+        for (const [wmClass, appData] of currentState) {
+            this._storage.setApp(wmClass, appData);
+        }
 
         // Update monitor layout before save
         if (this._monitorManager) {
             this._storage.updateMonitorLayout(this._monitorManager);
         }
 
-        this._log(`Saved ${dirtyCount} dirty windows`);
+        if (windowCount > 0) {
+            this._log(`Full snapshot: ${windowCount} windows across ${currentState.size} apps`);
+        }
+    }
+
+    /**
+     * Build instance data for a single window (used by full-snapshot save)
+     */
+    _buildInstanceData(metaWindow) {
+        const wmClass = metaWindow.get_wm_class();
+        const title = metaWindow.get_title() || '';
+        const rect = metaWindow.get_frame_rect();
+        const workspace = metaWindow.get_workspace();
+        const workspaceIndex = workspace ? workspace.index() : 0;
+        const monitorIndex = metaWindow.get_monitor();
+
+        // Check if we should track this workspace
+        if (!this._preferences.shouldTrackAllWorkspaces()) {
+            const currentWorkspace = global.workspace_manager.get_active_workspace();
+            const currentWorkspaceIndex = currentWorkspace ? currentWorkspace.index() : 0;
+            if (workspaceIndex !== currentWorkspaceIndex) {
+                return null;
+            }
+        }
+
+        const isMaximized = metaWindow.get_maximized() === Meta.MaximizeFlags.BOTH;
+        const monitorGeom = global.display.get_monitor_geometry(monitorIndex);
+        const monitorId = this._monitorManager ? this._monitorManager.getMonitorId(monitorIndex) : `index:${monitorIndex}`;
+
+        const geometryPercent = {
+            x: (rect.x - monitorGeom.x) / monitorGeom.width,
+            y: (rect.y - monitorGeom.y) / monitorGeom.height,
+            width: rect.width / monitorGeom.width,
+            height: rect.height / monitorGeom.height
+        };
+
+        // Generate deterministic ID based on wmClass and stable_sequence
+        const stableSeq = metaWindow.get_stable_sequence();
+        const instanceId = `${wmClass}-${stableSeq}`;
+
+        const instanceData = {
+            id: instanceId,
+            title_snapshot: title,
+            monitor_index: monitorIndex,
+            monitor_id: monitorId,
+            geometry_percent: geometryPercent,
+            geometry_absolute: {
+                x: rect.x,
+                y: rect.y,
+                width: rect.width,
+                height: rect.height
+            },
+            workspace: workspaceIndex,
+            maximized: isMaximized,
+            stable_sequence: stableSeq,
+            x11_window_id: this._getX11WindowId(metaWindow)
+        };
+
+        // Add optional properties based on preferences
+        if (this._preferences.shouldRememberSticky()) {
+            instanceData.sticky = metaWindow.is_on_all_workspaces();
+        }
+        if (this._preferences.shouldRememberShaded()) {
+            instanceData.shaded = metaWindow.shaded || false;
+        }
+        if (this._preferences.shouldRememberAlwaysOnTop()) {
+            instanceData.alwaysOnTop = metaWindow.is_above();
+        }
+        if (this._preferences.shouldRememberFullscreen()) {
+            instanceData.fullscreen = metaWindow.is_fullscreen();
+        }
+        instanceData.skipTaskbar = metaWindow.is_skip_taskbar();
+        instanceData.minimized = metaWindow.minimized;
+
+        return instanceData;
     }
 
     /**
      * Save state of a single window (legacy compatibility)
-     * @deprecated Use _saveWindowStateInternal via dirty-flag system
+     * @deprecated Use _buildInstanceData via full-snapshot system
      */
     _saveWindowState(metaWindow) {
         this._saveWindowStateInternal(metaWindow);
